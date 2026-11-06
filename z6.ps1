@@ -3,7 +3,7 @@ param(
  [Parameter(Position=0)][ValidateSet('instalar','configurar','diagnosticar','exportar','verificar','restaurar','compilar')][string]$Operacion='diagnosticar',
  [string]$Dispositivo,[string]$Perfil='replica',[string]$AdbPath,[string]$Respaldo,[string]$CarpetaApks,
  [string]$Jdk,[string]$Keystore,[string]$Salida,[string]$EstadoLocal,
- [switch]$Simular,[switch]$RecuperarVersion
+ [switch]$Simular,[switch]$RecuperarVersion,[switch]$SoloPanel
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'herramientas\comun.ps1')
@@ -52,10 +52,11 @@ function Save-Original {
  foreach($key in @('enabled_accessibility_services','accessibility_enabled')){$settings.secure[$key]=Get-Z6Setting 'secure' $key}
  foreach($key in @('window_animation_scale','transition_animation_scale','animator_duration_scale')){$settings.global[$key]=Get-Z6Setting 'global' $key}
  $permissions=[ordered]@{};$dump=Get-PanelDump
- foreach($permission in @('android.permission.WRITE_SECURE_SETTINGS','android.permission.ACCESS_FINE_LOCATION','android.permission.ACCESS_BACKGROUND_LOCATION')){$permissions[$permission]=[bool]($dump -match ([regex]::Escape($permission)+': granted=true'))}
+ foreach($permission in @('android.permission.WRITE_SECURE_SETTINGS','android.permission.ACCESS_FINE_LOCATION','android.permission.ACCESS_BACKGROUND_LOCATION','android.permission.BLUETOOTH_CONNECT','android.permission.BLUETOOTH_SCAN')){$permissions[$permission]=[bool]($dump -match ([regex]::Escape($permission)+': granted=true'))}
  $prefs=$null
  if($panelPath){$prefs=Get-Z6PanelPreferences}
  $snapshot=[ordered]@{schema=1;createdUtc=[DateTime]::UtcNow.ToString('o');device=$device;home=$device.home;homePackage=$homePackage;homeEnabled=(Get-Z6PackageState $homePackage);panelPresent=[bool]$panelPath;panelCode=(Get-PanelCode);preferences=$prefs;settings=$settings;permissions=$permissions}
+ if($device.api -ge 31){$op=Invoke-Z6Shell @('cmd','appops','get','local.z6panel','SCHEDULE_EXACT_ALARM') -AllowFailure;$mode=[regex]::Match($op,'SCHEDULE_EXACT_ALARM:\s*(allow|default|ignore|deny)');$snapshot.alarmMode=if($mode.Success){$mode.Groups[1].Value}else{'default'}}
  if($panelPath){New-Item -ItemType Directory -Force -Path $deviceDir|Out-Null;Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'pull',$panelPath,(Join-Path $deviceDir 'panel-anterior.apk'))|Out-Null}
  Write-Z6Json $snapshot $snapshotPath
  return Read-Z6Json $snapshotPath
@@ -64,6 +65,7 @@ function Write-Report([string]$State){
  Write-Z6Json ([ordered]@{schema=1;timeUtc=[DateTime]::UtcNow.ToString('o');operation=$Operacion;status=$State;device=$device;backup=$snapshotPath;steps=@($steps.ToArray());limitations=@($warnings.ToArray());physicalTests='Not performed by installer: remote, audio, sleep and reboot require physical validation.'}) (Join-Path $deviceDir 'ultimo-informe.json')
 }
 function Install-ProvidedApps {
+ if($SoloPanel){$steps.Add('External applications deferred by request');return}
  foreach($app in $profile.apps){
   $existing=Invoke-Z6Shell @('pm','path',$app.package) -AllowFailure
   if($existing -match '^package:'){continue}
@@ -78,10 +80,13 @@ function Install-ProvidedApps {
  }
 }
 function Configure-Panel {
- foreach($permission in @('android.permission.WRITE_SECURE_SETTINGS','android.permission.ACCESS_FINE_LOCATION','android.permission.ACCESS_BACKGROUND_LOCATION')){
+ $permissions=@('android.permission.WRITE_SECURE_SETTINGS')
+ if($device.api -ge 31){$permissions+=@('android.permission.BLUETOOTH_CONNECT','android.permission.BLUETOOTH_SCAN')}else{$permissions+=@('android.permission.ACCESS_FINE_LOCATION','android.permission.ACCESS_BACKGROUND_LOCATION')}
+ foreach($permission in $permissions){
   $null=Invoke-Z6Shell @('pm','grant','local.z6panel',$permission) -AllowFailure
   if((Get-PanelDump) -notmatch ([regex]::Escape($permission)+': granted=true')){Add-Limitation ('Permission unavailable: '+$permission)}
  }
+ if($device.api -ge 31){$null=Invoke-Z6Shell @('cmd','appops','set','local.z6panel','SCHEDULE_EXACT_ALARM','allow') -AllowFailure}
  $enabled=Get-Z6Setting 'secure' 'enabled_accessibility_services'
  $services=@($enabled -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/'})
  if($services -notcontains 'local.z6panel/local.z6panel.PanelService'){$services+='local.z6panel/local.z6panel.PanelService'}
@@ -98,7 +103,7 @@ function Configure-Panel {
  foreach($p in $profile.global.PSObject.Properties){Set-Z6Setting 'global' $p.Name ([string]$p.Value)}
  $steps.Add('Preferences, accessibility and animation values verified')
  # Local authorization is requested only on the Android-10 transport supported by this APK.
- if($device.properties['service.adb.tcp.port'] -eq '5555'){
+ if($device.properties['service.adb.tcp.port'] -eq '5555' -or $Dispositivo -match '^emulator-\d+$'){
   $opened=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','open','--arg','diagnostics')
   if($opened -notmatch 'status=OK'){throw 'Cannot open helper diagnostics'}
   $repair=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','action','--arg','repair')
@@ -111,7 +116,23 @@ function Configure-Panel {
   else{Add-Limitation 'Local helper authorization pending. Use Equipo > Diagnostico > Recuperar control.'}
  }else{Add-Limitation 'This APK requires authorized local ADB on port 5555 for autonomous helper startup. Native Android settings remain the fallback; do not force a firmware change.'}
  Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0','local.z6panel/.HomeActivity')|Out-Null
- if((Normalize-Component (Get-Z6Home)) -ne 'local.z6panel/local.z6panel.HomeActivity'){throw 'Default HOME verification failed; previous launcher not disabled'}
+ if((Normalize-Component (Get-Z6Home)) -ne 'local.z6panel/local.z6panel.HomeActivity'){
+  # Some TV launchers have higher intent priority than user-selected HOME.
+  # Prove the replacement is resumed before a reversible, verified priority change.
+  Invoke-Z6Shell @('am','start','-W','-n','local.z6panel/.HomeActivity')|Out-Null
+  $proof=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','inspect')
+  if($proof -notmatch '"homeVisible":true' -or $original.homePackage -eq 'local.z6panel'){throw 'Default HOME verification failed; previous launcher not disabled'}
+  try{
+   Set-Z6PackageState $original.homePackage 3
+   Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0','local.z6panel/.HomeActivity')|Out-Null
+   if((Normalize-Component (Get-Z6Home)) -ne 'local.z6panel/local.z6panel.HomeActivity'){throw 'Default HOME verification failed after priority change'}
+   $steps.Add('Vendor HOME priority handled after foreground proof')
+  }catch{
+   Set-Z6PackageState $original.homePackage $original.homeEnabled
+   Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0',$original.home)|Out-Null
+   throw
+  }
+ }
  $steps.Add('Z6 HOME verified')
  if($original.homePackage -ne 'local.z6panel'){Set-Z6PackageState $original.homePackage 3;$steps.Add('Previous HOME disabled reversibly')}
  Invoke-Z6Shell @('am','start','-a','android.intent.action.MAIN','-c','android.intent.category.HOME')|Out-Null
@@ -120,7 +141,7 @@ try{
  switch($Operacion){
   {$_ -in 'diagnosticar','verificar'} {
    $dump=Get-PanelDump;$ping=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','bridge','--arg','PING') -AllowFailure
-   [pscustomobject]@{device=$device;panelCode=(Get-PanelCode);accessibility=(Get-Z6Setting 'secure' 'enabled_accessibility_services');securePermission=[bool]($dump -match 'android.permission.WRITE_SECURE_SETTINGS: granted=true');helper=$ping;compatibility=$(if($device.api -eq 29){'Android 10 baseline; physical tests required'}else{'Not validated for this APK; newer-Android adaptation is a separate release'})}|ConvertTo-Json -Depth 8
+   [pscustomobject]@{device=$device;panelCode=(Get-PanelCode);accessibility=(Get-Z6Setting 'secure' 'enabled_accessibility_services');securePermission=[bool]($dump -match 'android.permission.WRITE_SECURE_SETTINGS: granted=true');helper=$ping;compatibility=$(if($device.api -in @($profile.validatedApi)){'Profile-supported API; review device-specific validation'}else{'API not validated for this profile'})}|ConvertTo-Json -Depth 8
   }
   'exportar' {
    $prefs=Get-Z6PanelPreferences
@@ -130,7 +151,7 @@ try{
    $steps.Add('Private preference snapshot exported');Write-Report 'exported';Write-Output $Salida
   }
   {$_ -in 'instalar','configurar'} {
-   if($device.api -notin @($profile.validatedApi)){throw 'This preserved APK is validated on API 29 only. No configuration applied. Use diagnostics and see docs\COMPATIBILIDAD.md for other versions.'}
+   if($device.api -notin @($profile.validatedApi)){throw 'Android API is not validated for this profile. No configuration applied. See docs\COMPATIBILIDAD.md.'}
    $original=Save-Original
    if($Operacion -eq 'instalar'){
     $artifact=Get-Z6Artifact
@@ -151,7 +172,8 @@ try{
    if(!(Test-Path -LiteralPath $snapshotPath)){throw 'No original snapshot. Provide -Respaldo from this device.'}
    $original=Read-Z6Json $snapshotPath
    if($original.device.id -ne $device.id){throw 'Backup belongs to a different TV Box; restoration refused'}
-   if($RecuperarVersion){$artifact=Get-Z6Artifact -Recovery;if((Get-PanelCode) -gt $artifact.code){throw 'Recovery APK is older than installed version. A higher signed recovery code is required.'};Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'install','-r',$artifact.path)|Out-Null;if((Get-PanelCode) -ne $artifact.code){throw 'Recovery APK version verification failed'};$steps.Add('Recovery code 23 installed; future updates require code 24 or later')}
+   if(Get-PanelPath){$cancel=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','timer_cancel');if($cancel -notmatch 'status=OK'){throw 'Cannot verify timer cancellation; restore aborted before changing HOME'}}
+   if($RecuperarVersion){$artifact=Get-Z6Artifact -Recovery;if($device.api -ge 31){throw 'Android 12 recovery restores original HOME and settings without installing the Android-10-only recovery APK. Omit -RecuperarVersion.'};if((Get-PanelCode) -gt $artifact.code){throw 'Recovery APK is older than installed version. A higher signed recovery code is required.'};Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'install','-r',$artifact.path)|Out-Null;if((Get-PanelCode) -ne $artifact.code){throw 'Recovery APK version verification failed'};$steps.Add(('Recovery code '+$artifact.code+' installed; future updates require a higher code'))}
    Set-Z6PackageState $original.homePackage $original.homeEnabled
    Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0',$original.home)|Out-Null
    if((Normalize-Component (Get-Z6Home)) -ne (Normalize-Component $original.home)){throw 'Original HOME restoration failed'}
@@ -163,6 +185,7 @@ try{
    Set-Z6Setting 'secure' 'accessibility_enabled' $(if($services.Count){'1'}else{$original.settings.secure.accessibility_enabled})
    foreach($p in $original.settings.global.PSObject.Properties){Set-Z6Setting 'global' $p.Name ([string]$p.Value)}
    foreach($p in $original.permissions.PSObject.Properties){if(!$p.Value){$null=Invoke-Z6Shell @('pm','revoke','local.z6panel',$p.Name) -AllowFailure;if((Get-PanelDump) -match ([regex]::Escape($p.Name)+': granted=true')){throw ('Permission restoration failed: '+$p.Name)}}}
+   if($device.api -ge 31 -and ($original.PSObject.Properties['alarmMode'] -or !$original.panelPresent)){$mode=if($original.PSObject.Properties['alarmMode']){$original.alarmMode}else{'default'};Invoke-Z6Shell @('cmd','appops','set','local.z6panel','SCHEDULE_EXACT_ALARM',$mode)|Out-Null}
    if(!$original.panelPresent){$helperPids=Invoke-Z6Shell @('pidof','z6panel_bridge') -AllowFailure;foreach($helperPid in ($helperPids -split '\s+')){if($helperPid -match '^\d+$'){Invoke-Z6Shell @('kill',$helperPid)|Out-Null}}}
    Invoke-Z6Shell @('am','start','-a','android.intent.action.MAIN','-c','android.intent.category.HOME')|Out-Null
    $steps.Add('Original HOME and modified settings restored; unrelated accessibility services retained; panel data not uninstalled')

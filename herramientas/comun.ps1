@@ -87,7 +87,7 @@ function Set-Z6PanelPreferences([string]$Encoded){
 }
 function Get-Z6Artifact([switch]$Recovery){
  $manifest=Read-Z6Json (Join-Path $script:Z6Root 'entregas\manifest.json')
- $name=if($Recovery){'Z6-Panel-recuperacion-0.10.3.apk'}else{'Z6-Panel-0.10.4.apk'}
+ $name=if($Recovery -and $manifest.PSObject.Properties['recovery']){$manifest.recovery}elseif(!$Recovery -and $manifest.PSObject.Properties['current']){$manifest.current}elseif($Recovery){'Z6-Panel-recuperacion-0.10.3.apk'}else{'Z6-Panel-0.10.4.apk'}
  $entry=@($manifest.artifacts|Where-Object {$_.file -eq $name})[0]
  $path=Join-Path $script:Z6Root ('entregas\'+$name)
  if(!(Test-Path -LiteralPath $path)){throw "Missing signed APK: $name. Download the private release into entregas."}

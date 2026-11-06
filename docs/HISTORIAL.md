@@ -7,5 +7,6 @@
 - 0.10.2–0.10.3: reloj y fecha opcionales, finalmente en panel superior derecho con letras grises.
 - 0.10.4: menor altura inferior, manteniendo iconos, botones, reloj superior y preferencias.
 - Consolidación: una carpeta independiente, instalador Windows y pruebas locales; sin nueva versión de aplicación ni modificación del firmware.
+- 0.11.0/código 24: adaptación en emulador Android TV 12, permisos Bluetooth y alarmas, auxiliar compatible, Home sobre tarea existente y navegación nativa. Se mantienen reloj gris, altura compacta y optimizaciones. Recuperación histórica 0.10.4/código 25 solo para API 29. El TV físico permanece en 0.10.4.
 
 Los datos de auditoría advierten que los valores declarados por un firmware genérico no certifican por sí solos el fabricante ni la memoria física. Tampoco se consideran malware o publicidad los paquetes solo por sus nombres. Por eso no se traslada automáticamente la limpieza histórica a otro modelo.

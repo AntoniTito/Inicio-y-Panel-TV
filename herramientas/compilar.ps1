@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$Jdk,[string]$Keystore,[string]$Salida)
+param([string]$Jdk,[string]$Keystore,[string]$Salida,[string]$Proyecto)
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'comun.ps1')
 if(!$Jdk){
@@ -13,7 +13,7 @@ $sdk=Join-Path $script:Z6Root '.local\sdk'
 $bt=Join-Path $sdk 'build-tools\35.0.0'
 $android=Join-Path $sdk 'platforms\android-35\android.jar'
 if(!(Test-Path -LiteralPath $android) -or !(Test-Path -LiteralPath (Join-Path $bt 'aapt2.exe'))){throw 'Android SDK missing. See docs\COMPILACION.md.'}
-$project=Join-Path $script:Z6Root 'app'
+$project=if($Proyecto){[IO.Path]::GetFullPath($Proyecto)}else{Join-Path $script:Z6Root 'app'}
 if(!$Salida){$Salida=Join-Path $script:Z6Root '.local\build\Z6-Panel-recompilado.apk'}
 $Salida=[IO.Path]::GetFullPath($Salida)
 foreach($entry in (Read-Z6Json (Join-Path $script:Z6Root 'entregas\manifest.json')).artifacts){if($Salida -eq [IO.Path]::GetFullPath((Join-Path $script:Z6Root ('entregas\'+$entry.file)))){throw 'Build output must not overwrite a verified release.'}}

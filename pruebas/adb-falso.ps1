@@ -21,7 +21,7 @@ switch -Regex ($command){
  '^settings put (secure|global) (\S+) (.+)$' {Set-Field $state.settings.($Matches[1]) $Matches[2] $Matches[3];Save-State;Emit '';break}
  '^settings delete (secure|global) (\S+)$' {$state.settings.($Matches[1]).PSObject.Properties.Remove($Matches[2]);Save-State;Emit 'Deleted 1 rows';break}
  '^cmd package resolve-activity ' {Emit ("priority=0`n"+$state.home);break}
- '^cmd package set-home-activity --user 0 (.+)$' {if(!$state.PSObject.Properties['failHomeSet'] -or !$state.failHomeSet){$state.home=$Matches[1]};Save-State;Emit 'Success';break}
+ '^cmd package set-home-activity --user 0 (.+)$' {$failed=$state.PSObject.Properties['failHomeSet'] -and $state.failHomeSet;$priority=$state.PSObject.Properties['priorityHome'] -and $state.priorityHome;if(!$failed -and (!$priority -or $state.packages.'vendor.launcher' -eq 3 -or $Matches[1] -eq 'vendor.launcher/.Home')){$state.home=$Matches[1]};Save-State;Emit 'Success';break}
  '^pm path (.+)$' {$pkg=$Matches[1];Emit $(if($pkg -eq 'local.z6panel' -and $state.code -gt 0){'package:/data/app/panel/base.apk'}elseif($pkg -ne 'local.z6panel'){'package:/system/app/existing.apk'}else{''});break}
  '^dumpsys package (.+)$' {
   $pkg=$Matches[1]
@@ -35,7 +35,9 @@ switch -Regex ($command){
  }
  '^pm (default-state|enable|disable|disable-user|disable-until-used) --user 0 (.+)$' {$value=switch($Matches[1]){'default-state'{0}'enable'{1}'disable'{2}'disable-user'{3}'disable-until-used'{4}};Set-Field $state.packages $Matches[2] $value;Save-State;Emit 'Success';break}
  '^pm (grant|revoke) local.z6panel (.+)$' {Set-Field $state.permissions $Matches[2] ($Matches[1] -eq 'grant');Save-State;Emit '';break}
- '^install -r (.+)$' {$state.code=if($Matches[1] -like '*recuperacion*'){23}else{22};Save-State;Emit 'Success';break}
+ '^install -r (.+)$' {$state.code=if($Matches[1] -like '*recuperacion-0.10.4*'){25}elseif($Matches[1] -like '*recuperacion*'){23}elseif($Matches[1] -like '*0.11.0*'){24}else{22};Save-State;Emit 'Success';break}
+ '^cmd appops set local.z6panel SCHEDULE_EXACT_ALARM (allow|default|deny|ignore)$' {Set-Field $state 'alarmMode' $Matches[1];Save-State;Emit '';break}
+ '^cmd appops get local.z6panel SCHEDULE_EXACT_ALARM$' {Emit $(if($state.PSObject.Properties['alarmMode']){'SCHEDULE_EXACT_ALARM: '+$state.alarmMode}else{'No operations.'});break}
  '^pull \S+ (.+)$' {[IO.File]::WriteAllText($Matches[1],'FAKE APK');Emit 'pulled';break}
  '^content call ' {
   $method=$tokens[([Array]::IndexOf($tokens,'--method')+1)]
@@ -43,14 +45,15 @@ switch -Regex ($command){
   switch($method){
    'prefs_export' {$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($state.preferences|ConvertTo-Json -Depth 20 -Compress)));Emit ('Result: Bundle[{base64='+$encoded+'}]')}
    'prefs_restore' {$state.preferences=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($argument))|ConvertFrom-Json;Save-State;Emit 'Result: Bundle[{status=OK}]'}
-   'inspect' {Emit $(if($state.code -gt 0 -and $state.settings.secure.enabled_accessibility_services -match 'z6panel'){ 'Result: Bundle[{json={}}]' }else{'Result: Bundle[{error=Panel service is not active}]'})}
+   'inspect' {Emit $(if($state.code -gt 0 -and $state.settings.secure.enabled_accessibility_services -match 'z6panel'){if($state.PSObject.Properties['homeForeground'] -and $state.homeForeground){'Result: Bundle[{json={"homeVisible":true}}]'}else{'Result: Bundle[{json={}}]'}}else{'Result: Bundle[{error=Panel service is not active}]'})}
+   'timer_cancel' {Set-Field $state 'timerCancelled' $true;Save-State;Emit 'Result: Bundle[{status=OK}]'}
    'open' {Emit 'Result: Bundle[{status=OK}]'}
    'action' {$state.helper=$true;Set-Field $state.preferences 'local_adb_enabled' ([pscustomobject]@{type='boolean';value=$true});Save-State;Emit 'Result: Bundle[{status=OK}]'}
    'bridge' {Emit $(if($state.helper){'Result: Bundle[{status=OK}]'}else{'Result: Bundle[{status=Unavailable}]'})}
    default {throw "Unhandled provider method: $method"}
   };break
  }
- '^am start ' {Emit 'Starting: Intent';break}
+ '^am start ' {if($command -match '-n local.z6panel/.HomeActivity'){Set-Field $state 'homeForeground' $true;Save-State};Emit 'Starting: Intent';break}
  '^pidof z6panel_bridge$' {Emit $(if($state.helper){'4321'}else{''});break}
  '^kill \d+$' {$state.helper=$false;Save-State;Emit '';break}
  default {throw "Unhandled fake ADB command: $command"}

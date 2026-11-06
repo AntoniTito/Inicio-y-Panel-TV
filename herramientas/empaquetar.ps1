@@ -2,8 +2,10 @@
 param([string]$Salida)
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'comun.ps1')
-$null=Get-Z6Artifact;$null=Get-Z6Artifact -Recovery
-if(!$Salida){$Salida=Join-Path $script:Z6Root '.local\Z6-Panel-0.10.4-portable.zip'}
+$release=Get-Z6Artifact;$recovery=Get-Z6Artifact -Recovery
+$releaseManifest=Read-Z6Json (Join-Path $script:Z6Root 'entregas\manifest.json')
+$version=([xml](Get-Content -LiteralPath (Join-Path $script:Z6Root 'app\AndroidManifest.xml') -Raw -Encoding UTF8)).manifest.versionName
+if(!$Salida){$Salida=Join-Path $script:Z6Root ('.local\Z6-Panel-'+$version+'-portable.zip')}
 $staging=Join-Path $script:Z6Root ('.local\package\'+[guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force -Path $staging|Out-Null
 foreach($folder in @('app','herramientas','perfiles','pruebas')){Copy-Item -LiteralPath (Join-Path $script:Z6Root $folder) -Destination $staging -Recurse}
@@ -11,7 +13,10 @@ $docTarget=Join-Path $staging 'docs';New-Item -ItemType Directory -Force -Path $
 Get-ChildItem -LiteralPath (Join-Path $script:Z6Root 'docs') -File|ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination $docTarget}
 foreach($name in @('README.md','AGENTS.md','CLAUDE.md','z6.ps1','.gitignore')){Copy-Item -LiteralPath (Join-Path $script:Z6Root $name) -Destination $staging}
 $releaseTarget=Join-Path $staging 'entregas';New-Item -ItemType Directory -Force -Path $releaseTarget|Out-Null
-foreach($name in @('manifest.json','Z6-Panel-0.10.4.apk','Z6-Panel-recuperacion-0.10.3.apk')){Copy-Item -LiteralPath (Join-Path $script:Z6Root ('entregas\'+$name)) -Destination $releaseTarget}
+$names=@([IO.Path]::GetFileName($release.path),[IO.Path]::GetFileName($recovery.path))
+foreach($name in $names){Copy-Item -LiteralPath (Join-Path $script:Z6Root ('entregas\'+$name)) -Destination $releaseTarget}
+$releaseManifest.artifacts=@($releaseManifest.artifacts|Where-Object {$_.file -in $names})
+Write-Z6Json $releaseManifest (Join-Path $releaseTarget 'manifest.json')
 New-Item -ItemType Directory -Force -Path (Split-Path ([IO.Path]::GetFullPath($Salida)) -Parent)|Out-Null
 Compress-Archive -Path (Join-Path $staging '*') -DestinationPath $Salida -Force
 $path=[IO.Path]::GetFullPath($staging);$allowed=[IO.Path]::GetFullPath((Join-Path $script:Z6Root '.local\package'))+[IO.Path]::DirectorySeparatorChar

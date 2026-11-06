@@ -2,7 +2,9 @@
 
 Lee README.md y docs/COMPATIBILIDAD.md. Usa z6.ps1 como interfaz común; no reconstruyas instrucciones de memoria ni ejecutes scripts históricos del equipo original sobre otro TV.
 
-- Mantén las fuentes 0.10.4 sin cambios durante la consolidación. Nuevas funciones requieren otra versión y su recuperación firmada.
+Consulta docs/VERSIONES.md: v0.10.4/android10 es la base anterior y v0.11.0/main la adaptacion Android 12. Selecciona la linea conforme al encargo; no muevas etiquetas existentes ni cambies la rama con trabajo pendiente. Cambiar de version en Git no actualiza ni restaura un dispositivo.
+
+- La base vigente es 0.11.0/código 24, adaptada en emulador API 31. La base histórica 0.10.4 y su firma están preservadas privadamente. No actualices el TV físico sin un encargo específico y validación de regresión.
 - Para instalar, pide o descubre el identificador del destino y pásalo explícitamente. Empieza por `instalar -Simular` y `diagnosticar`. Ejecuta los cambios solo dentro del encargo del usuario.
 - Conserva los respaldos iniciales e identidades; no restaures un respaldo de otro TV. No copies redes, autorizaciones ADB, cuentas ni temporizadores.
 - No publiques privado/, .local/, claves, contraseñas ni datos personales. La firma original es necesaria para actualizar conservando datos; no la sustituyas.

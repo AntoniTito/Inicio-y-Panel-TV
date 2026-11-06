@@ -91,6 +91,8 @@ public class PanelService extends AccessibilityService {
  private boolean btShowPaired=true,btShowFound=false;
  private String managerFilter="Todas";
  private String foregroundPackage;
+ private String lastExternalPackage;
+ private boolean explicitHomeRequested,restoringHome;
  private volatile boolean bridgeReady=false;
  private boolean bridgeChecking=false;
  private long lastHealthCheck=0;
@@ -152,6 +154,7 @@ public class PanelService extends AccessibilityService {
   String pkg=packageName.toString();
   if(pkg.equals(getPackageName())||pkg.equals("android")||pkg.equals("com.android.systemui"))return;
   foregroundGeneration++;foregroundPackage=catalog.find(pkg)==null?null:pkg;if(foregroundPackage!=null)lastForegroundCheck=SystemClock.elapsedRealtime();
+  if(foregroundPackage!=null)lastExternalPackage=foregroundPackage;
  }
  public void onInterrupt(){hide();}
  public void onDestroy(){
@@ -174,18 +177,32 @@ public class PanelService extends AccessibilityService {
  }
  public void openPage(String name){if(panel==null)show();if(name!=null)push(new Page(name,null));refreshForeground();}
  public void onHomeVisible(){if(panel!=null&&pages.isEmpty())hide();}
+ public boolean restoreOverlayAfterHome(Intent intent){
+  if(Build.VERSION.SDK_INT<30||intent==null||!intent.hasCategory(Intent.CATEGORY_HOME)||!prefs.getBoolean("home",true))return false;
+  if(explicitHomeRequested){explicitHomeRequested=false;return false;}
+  if(restoringHome||lastExternalPackage==null||!ready())return false;
+  final String pkg=lastExternalPackage;final boolean close=panel!=null;
+  restoringHome=true;
+  loader.execute(()->{String result=SystemBridge.call("RESUME_APP:"+pkg);ui.post(()->{
+   restoringHome=false;if(destroyed)return;
+   if(!"OK".equals(result)){message("No se pudo recuperar la app: "+result);return;}
+   ui.postDelayed(()->{if(destroyed||HomeActivity.visible)return;if(close)hide();else if(panel==null)show();},180);
+  });});
+  return true;
+ }
  public void toggle(){if(panel!=null)hide();else if(!HomeActivity.visible)show();}
  private void show(){
   pages.clear();generation++;lastPanelColor=Integer.MIN_VALUE;panel=new LinearLayout(this);panel.setOrientation(LinearLayout.VERTICAL);
+  if(Build.VERSION.SDK_INT>=30){panel.setFocusableInTouchMode(true);panel.setDescendantFocusability(android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS);panel.setOnKeyListener((view,key,event)->onKeyEvent(event));}
   WindowManager.LayoutParams p=params(false);
-  try{wm.addView(panel,p);renderBottom();refreshCatalog();refreshForeground();refreshAudioState();scheduleTimerTick();if(prefs.getBoolean("animate",false)){panel.setTranslationY(dp(30));panel.animate().translationY(0).setDuration(120).start();}}
+  try{wm.addView(panel,p);if(Build.VERSION.SDK_INT>=30)panel.requestFocus();renderBottom();refreshCatalog();refreshForeground();refreshAudioState();scheduleTimerTick();if(prefs.getBoolean("animate",false)){panel.setTranslationY(dp(30));panel.animate().translationY(0).setDuration(120).start();}}
   catch(RuntimeException e){hide();Toast.makeText(this,"No se pudo abrir el panel",Toast.LENGTH_SHORT).show();}
  }
  private WindowManager.LayoutParams params(boolean side){
   int width=side?Math.min(dp(360),getResources().getDisplayMetrics().widthPixels*38/100):WindowManager.LayoutParams.MATCH_PARENT;
   int chrome=104;if(side&&subtitle!=null&&subtitle.getText().length()>0)chrome=128;
   WindowManager.LayoutParams p=new WindowManager.LayoutParams(width,side?Math.min(getResources().getDisplayMetrics().heightPixels*90/100,dp(chrome+Math.min(8,Math.max(2,actions.size()-2))*44)):WindowManager.LayoutParams.WRAP_CONTENT,
-   WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,PixelFormat.TRANSLUCENT);
+   WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|(Build.VERSION.SDK_INT<30?WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE:0),PixelFormat.TRANSLUCENT);
   p.gravity=side?(Gravity.RIGHT|Gravity.CENTER_VERTICAL):Gravity.BOTTOM;p.x=side?dp(14):0;return p;
  }
  private void hide(){
@@ -460,10 +477,10 @@ public class PanelService extends AccessibilityService {
  }
  private void startLocalControl(boolean authorize){
   if(localStarting||!authorize&&!prefs.getBoolean("local_adb_enabled",false))return;localStarting=true;bridgeStatus="Iniciando control…";final int token=localGeneration;if(authorize){if(!prefs.getBoolean("local_adb_enabled",false))hide();message("Esperando autorización en la Z6…");}
-  bootstrapWorker.execute(()->{String result;try{result=LocalAdb.start(this,authorize);}catch(java.net.SocketTimeoutException e){result="Autorización o conexión pendiente";}catch(Exception e){android.util.Log.w("Z6LocalAdb",e.toString());result="Inicio local no disponible: "+e.getClass().getSimpleName();}final String status=result;
-   ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")){localAttempts=0;prefs.edit().putBoolean("local_adb_enabled",true).apply();ui.postDelayed(()->finishLocalControl(authorize,0),1200);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3)ui.postDelayed(()->startLocalControl(false),30000);}});});
+  bootstrapWorker.execute(()->{String result;try{result=LocalAdb.start(this,authorize);}catch(java.net.SocketTimeoutException e){result="Autorización o conexión pendiente";}catch(Exception e){android.util.Log.w("Z6LocalAdb","Bootstrap failed",e);result="Inicio local no disponible: "+e.getClass().getSimpleName();}final String status=result;
+   ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")||status.equals("STARTED")){localAttempts=0;ui.postDelayed(()->finishLocalControl(authorize,0),500);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3)ui.postDelayed(()->startLocalControl(false),30000);}});});
  }
- private void finishLocalControl(boolean authorize,int attempt){if(destroyed)return;final int token=localGeneration;loader.execute(()->{String result=SystemBridge.read("PING",1200);ui.post(()->{if(destroyed||token!=localGeneration)return;bridgeReady="OK".equals(result);bridgeStatus=bridgeReady?"Conectado":result;if(panel!=null&&!pages.isEmpty())renderSide();if(!bridgeReady&&attempt<5)ui.postDelayed(()->{if(token==localGeneration)finishLocalControl(authorize,attempt+1);},5000);else if(authorize)message(bridgeReady?"Control autónomo activo":result);});});}
+ private void finishLocalControl(boolean authorize,int attempt){if(destroyed)return;final int token=localGeneration;loader.execute(()->{String result=SystemBridge.read("PING",1200);ui.post(()->{if(destroyed||token!=localGeneration)return;bridgeReady="OK".equals(result);if(bridgeReady&&authorize)prefs.edit().putBoolean("local_adb_enabled",true).apply();bridgeStatus=bridgeReady?"Conectado":result;if(panel!=null&&!pages.isEmpty())renderSide();if(!bridgeReady&&attempt<5)ui.postDelayed(()->{if(token==localGeneration)finishLocalControl(authorize,attempt+1);},5000);else if(authorize)message(bridgeReady?"Control autónomo activo":result);});});}
  private void setTimezone(String zone){
   if(!canSecure()){message("Permiso de sistema pendiente");return;}int old=Settings.Global.getInt(getContentResolver(),Settings.Global.AUTO_TIME_ZONE,0);
   if(!Settings.Global.putInt(getContentResolver(),Settings.Global.AUTO_TIME_ZONE,0)){message("No se pudo desactivar la zona automática");return;}
@@ -499,6 +516,7 @@ public class PanelService extends AccessibilityService {
   catch(RuntimeException e){message("Android no permite abrir esta opción o ya no está instalada.");refreshCatalog();}
  }
  private void goHome(){
+  explicitHomeRequested=true;lastExternalPackage=null;
   pages.clear();
   hide();
   try{startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));}
@@ -563,6 +581,7 @@ public class PanelService extends AccessibilityService {
     return true;
    case "timer":
     title.setText("Temporizador");subtitle.setText(SleepTimer.summary(this));
+    if(Build.VERSION.SDK_INT>=31&&!((android.app.AlarmManager)getSystemService(ALARM_SERVICE)).canScheduleExactAlarms())addKey("alarmPermission","Permitir temporizadores exactos","Autorizar en Android",()->nativePage("Temporizadores",new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,android.net.Uri.parse("package:"+getPackageName()))));
     for(int min:new int[]{30,60,90}){final int value=min;addKey("timer"+min,min+" minutos","Pausar y suspender el TV Box",ready()?()->scheduleTimer(value):null);}
     addKey("timerCancel","Cancelar temporizador","Mantener el equipo encendido",SleepTimer.remainingMillis(this)>0?()->{SleepTimer.cancel(this);renderSide();}:null);
     if(!ready())addKey("repair","Recuperar control","Necesario para programar la suspensión",()->push(new Page("diagnostics",null)));
@@ -577,8 +596,8 @@ public class PanelService extends AccessibilityService {
     title.setText("Diagnóstico y permisos");subtitle.setText(bridgeStatus);
     info("Control del equipo: "+(ready()?"conectado":"no disponible"));
     info("Ajustes de sistema: "+(canSecure()?"permitidos":"pendientes"));
-    info("Bluetooth: "+(checkSelfPermission(android.Manifest.permission.BLUETOOTH)==PackageManager.PERMISSION_GRANTED?"permitido":"pendiente"));
-    info("Ubicación para buscar: "+(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED?"permitida":"pendiente"));
+    info("Bluetooth: "+(bluetooth.permissionsGranted()?"permitido":"pendiente"));
+    if(Build.VERSION.SDK_INT<31)info("Ubicación para buscar: "+(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED?"permitida":"pendiente"));
     addKey("repair","Recuperar control",localStarting?"Iniciando…":"Autoriza la clave local si Android lo solicita",localStarting?null:()->startLocalControl(true));
     addKey("check","Comprobar conexión","Consultar el servicio auxiliar",()->systemCommand("PING"));
     addKey("autonomous","Inicio autónomo: "+(prefs.getBoolean("local_adb_enabled",false)?"activado":"desactivado"),"Recuperar la depuración al encender, sin PC",()->{if(prefs.getBoolean("local_adb_enabled",false)){localGeneration++;prefs.edit().putBoolean("local_adb_enabled",false).apply();renderSide();}else startLocalControl(true);});
@@ -707,7 +726,14 @@ public class PanelService extends AccessibilityService {
   }else if(page.name.equals("bluetooth")){
    title.setText("Bluetooth");android.bluetooth.BluetoothAdapter adapter=bluetooth.adapter;
    if(adapter==null){subtitle.setText("No disponible");}
-   else if(Build.VERSION.SDK_INT>30){add("Bluetooth","",()->nativeSettings("Bluetooth",Settings.ACTION_BLUETOOTH_SETTINGS));}
+   else if(Build.VERSION.SDK_INT>=31){
+    subtitle.setText(bluetooth.permissionsGranted()?"Dispositivos y salida de audio":"Permiso de dispositivos cercanos pendiente");
+    if(bluetooth.permissionsGranted()){
+     info(adapter.isEnabled()?"Bluetooth activado":"Bluetooth desactivado");
+     for(android.bluetooth.BluetoothDevice device:bluetooth.devices())addKey("btNative:"+device.getAddress(),bluetooth.label(device),bluetooth.state(device)+" · gestionar en Android",()->nativeSettings("Bluetooth",Settings.ACTION_BLUETOOTH_SETTINGS));
+    }else addKey("btPermission","Autorizar dispositivos cercanos","Abre la configuración del panel",()->launchIntent(new Intent(this,SetupActivity.class)));
+    addKey("btNative","Configurar Bluetooth en Android","Conectar, buscar y seleccionar salida · abre otra pantalla",()->nativeSettings("Bluetooth",Settings.ACTION_BLUETOOTH_SETTINGS));
+   }
    else{
     java.util.List<android.bluetooth.BluetoothDevice> bluetoothDevices=bluetooth.devices();
     java.util.ArrayList<android.bluetooth.BluetoothDevice> pairedDevices=new java.util.ArrayList<>();

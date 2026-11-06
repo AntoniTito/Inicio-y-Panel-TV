@@ -1,17 +1,17 @@
-# Compatibilidad real de la base conservada
+# Compatibilidad comprobada
 
-Esta consolidación preserva 0.10.4, código 22. No modifica sus fuentes Java ni añade soporte que aún no está comprobado.
+La entrega vigente es 0.11.0/código 24. La base histórica 0.10.4 y la firma están preservadas. La adaptación se comprobó en Android TV 12 emulado; el TV físico no fue modificado.
 
 | Entorno | Estado |
 |---|---|
-| TV Box original, Android 10/API 29 | Base funcional previamente comprobada. Esta consolidación no modifica el TV. |
-| Otro Android 10 | Instalador disponible; permisos, control físico y arranque deben verificarse en ese firmware. |
-| Android 11 | Diagnóstico disponible; pendiente de adaptación y validación. |
-| Android 12–16 | Diagnóstico disponible; instalación automática bloqueada para no presentar un APK antiguo como adaptado. |
-| Emuladores | Pruebas físicas de Bluetooth/HDMI no sustituibles. No se ejecutaron emuladores durante la consolidación. |
+| TV Box original, Android 10/API 29 | Sigue en 0.10.4/código 22, con funciones y rendimiento previamente comprobados. |
+| Otro Android 10/API 29 | Instalador admitido; regresión física de 0.11.0 pendiente en el destino. |
+| Emulador Android TV 12/API 31 | 0.11.0: 27 comprobaciones aprobadas, incluido reinicio y recuperación autónoma. |
+| Otro equipo Android 12/API 31 | Instalador admitido; las diferencias de firmware requieren validación propia. |
+| API distintas de 29/31 | Diagnóstico disponible; instalación automática bloqueada hasta adaptación y validación. |
 
-La conexión A2DP directa usa compatibilidad específica de API 29. Las versiones nuevas requieren BLUETOOTH_SCAN/CONNECT, manejo de permisos y nuevas restricciones de activar/desactivar Bluetooth. El temporizador necesita declarar y gestionar acceso a alarmas exactas en Android reciente. El auxiliar usa interfaces internas cuyo transporte y firma pueden variar. Son tareas para una actualización separada y con recuperación firmada.
+Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación APK 0.10.4/código 25 se limita a API 29; en API 31 se restauran el HOME y los ajustes originales.
 
 Mantener los valores propios del destino no significa inventar capacidades: Wi-Fi, Bluetooth, HDMI-CEC, suspensión, Home y recuperación autónoma dependen del firmware. Los ajustes nativos son la alternativa donde estén disponibles. No se eliminan confirmaciones de Android ni se promete apagar el televisor mediante CEC.
 
-El perfil no deshabilita paquetes del fabricante. La lista histórica sirve para estudiar el modelo original; aplicarla automáticamente a otro equipo puede afectar servicios necesarios.
+El perfil no aplica listas de paquetes del fabricante. Solo se deshabilita reversiblemente el launcher anterior después de probar que Z6 abre y verificar la selección HOME. Las aplicaciones externas se instalarán después por decisión del usuario; su reproducción, audio JBL, control físico y HDMI-CEC siguen pendientes en el emulador. Consulta VERIFICACION.md y EMULADOR-TV12.md.

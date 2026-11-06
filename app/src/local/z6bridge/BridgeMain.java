@@ -3,7 +3,7 @@ import android.os.*;import android.content.*;import android.content.pm.*;import 
 /** ADB shell helper. Binder authenticates the app UID. No network listener or arbitrary commands. */
 public final class BridgeMain {
  static final String DESCRIPTOR="local.z6panel.system.v1";
- static final String VERSION="0.10.1";
+ static final String VERSION="0.11.0";
  static final java.util.concurrent.atomic.AtomicLong attachAttempts=new java.util.concurrent.atomic.AtomicLong();
  static volatile boolean clientLinked;
  static final class Attacher implements Runnable {
@@ -18,7 +18,7 @@ public final class BridgeMain {
     Bundle extras=new Bundle();extras.putBinder("bridge",bridge);
     Object holder=managerType.getMethod("getContentProviderExternal",String.class,int.class,IBinder.class,String.class).invoke(manager,"local.z6panel.bridge",0,token,"z6panel");acquired=true;
     Object provider=holder.getClass().getField("provider").get(holder);
-    Bundle answer=(Bundle)Class.forName("android.content.IContentProvider").getMethod("call",String.class,String.class,String.class,String.class,Bundle.class).invoke(provider,"com.android.shell","local.z6panel.bridge","attach",null,extras);
+    Bundle answer=attachProvider(provider,extras);
     if(answer==null||!answer.getBoolean("attached",false))throw new IOException("Client did not acknowledge attachment");
     final IBinder next=answer.getBinder("client_life");
     retries=0;
@@ -26,9 +26,22 @@ public final class BridgeMain {
     client=next;
     next.linkToDeath(()->{if(client==next){client=null;clientLinked=false;later(500);}},0);
     clientLinked=true;
-   }catch(Exception e){client=null;clientLinked=false;later(Math.min(15000,500L<<Math.min(retries++,5)));android.util.Log.w("Z6Bridge","Attach pending: "+e.getClass().getSimpleName());}
+   }catch(Exception e){client=null;clientLinked=false;later(Math.min(15000,500L<<Math.min(retries++,5)));android.util.Log.w("Z6Bridge","Attach pending",e);}
    finally{if(acquired)try{managerType.getMethod("removeContentProviderExternalAsUser",String.class,IBinder.class,int.class).invoke(manager,"local.z6panel.bridge",token,0);}catch(Exception ignored){}}
   }
+ }
+ static Bundle attachProvider(Object provider,Bundle extras)throws Exception {
+  Class<?> type=Class.forName("android.content.IContentProvider");
+  if(Build.VERSION.SDK_INT>=31){
+   Class<?> source=Class.forName("android.content.AttributionSource");
+   Class<?> builderType=Class.forName("android.content.AttributionSource$Builder");
+   Object builder=builderType.getConstructor(int.class).newInstance(android.os.Process.myUid());
+   builderType.getMethod("setPackageName",String.class).invoke(builder,"com.android.shell");
+   Object attribution=builderType.getMethod("build").invoke(builder);
+   return (Bundle)type.getMethod("call",source,String.class,String.class,String.class,Bundle.class).invoke(provider,attribution,"local.z6panel.bridge","attach",null,extras);
+  }
+  if(Build.VERSION.SDK_INT==30)return (Bundle)type.getMethod("call",String.class,String.class,String.class,String.class,String.class,Bundle.class).invoke(provider,"com.android.shell",null,"local.z6panel.bridge","attach",null,extras);
+  return (Bundle)type.getMethod("call",String.class,String.class,String.class,String.class,Bundle.class).invoke(provider,"com.android.shell","local.z6panel.bridge","attach",null,extras);
  }
  static final ThreadPoolExecutor COMMANDS=new ThreadPoolExecutor(0,1,30,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(1),r->{Thread t=new Thread(r,"Z6Bridge-command");t.setDaemon(true);return t;});
  static int allowedUid;
@@ -65,6 +78,7 @@ public final class BridgeMain {
   if("PING".equals(op))return recoveryRequired?"ERROR: RECOVERY_REQUIRED; restart local control":"OK";
   if("FOREGROUND_APP".equals(op))return foregroundApp();
   if(op!=null&&op.startsWith("RESTART_APP:"))return restartApp(op.substring(12));
+  if(op!=null&&op.startsWith("RESUME_APP:"))return resumeApp(op.substring(11));
   if("RECENTS_TRIM".equals(op))return trimRecentTasks();
   if("VOLUME_UI_OFF".equals(op)){
    IBinder binder=(IBinder)Class.forName("android.os.ServiceManager").getMethod("getService",String.class).invoke(null,"audio");
@@ -116,13 +130,23 @@ public final class BridgeMain {
  /** Read-only: never infer foreground from baseIntent, process order or old recents. */
  static String foregroundApp(){
   Object manager=null;Class<?> type=null;
-  try{manager=taskManager();type=Class.forName("android.app.IActivityTaskManager");String pkg=topPackage(type.getMethod("getFocusedStackInfo").invoke(manager));if(pkg!=null)return pkg;}catch(Exception ignored){}
+  try{manager=taskManager();type=Class.forName("android.app.IActivityTaskManager");String pkg=topPackage(type.getMethod(Build.VERSION.SDK_INT>=30?"getFocusedRootTaskInfo":"getFocusedStackInfo").invoke(manager));if(pkg!=null)return pkg;}catch(Exception ignored){}
+  try{if(manager!=null&&type!=null&&Build.VERSION.SDK_INT>=30){List<?> tasks=(List<?>)type.getMethod("getTasks",int.class,boolean.class,boolean.class).invoke(manager,1,false,false);if(tasks!=null&&!tasks.isEmpty()){String pkg=topPackage(tasks.get(0));if(pkg!=null)return pkg;}}}catch(Exception ignored){}
   try{if(manager!=null&&type!=null){List<?> tasks=(List<?>)type.getMethod("getTasks",int.class).invoke(manager,1);if(tasks!=null&&!tasks.isEmpty()){String pkg=topPackage(tasks.get(0));if(pkg!=null)return pkg;}}}catch(Exception ignored){}
   // Some vendor builds retain the pre-Q task query on IActivityManager.
   try{Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);List<?> tasks=(List<?>)Class.forName("android.app.IActivityManager").getMethod("getTasks",int.class).invoke(am,1);if(tasks!=null&&!tasks.isEmpty()){String pkg=topPackage(tasks.get(0));if(pkg!=null)return pkg;}}catch(Exception ignored){}
   return "ERROR: FOREGROUND_UNAVAILABLE; retry";
  }
  static boolean validPackage(String pkg){return pkg!=null&&pkg.length()<=200&&pkg.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+");}
+ /** Bring an existing task forward, without force-stop or sending a launch intent. */
+ static String resumeApp(String pkg)throws Exception {
+  if(!validPackage(pkg)||pkg.equals("local.z6panel"))return "DENIED";
+  Object manager=taskManager();Class<?> type=Class.forName("android.app.IActivityTaskManager");
+  List<?> tasks=Build.VERSION.SDK_INT>=30?(List<?>)type.getMethod("getTasks",int.class,boolean.class,boolean.class).invoke(manager,50,false,false):(List<?>)type.getMethod("getTasks",int.class).invoke(manager,50);
+  for(Object task:tasks){if(!pkg.equals(topPackage(task)))continue;int id=task.getClass().getField(Build.VERSION.SDK_INT>=30?"taskId":"id").getInt(task);
+   type.getMethod("moveTaskToFront",Class.forName("android.app.IApplicationThread"),String.class,int.class,int.class,Bundle.class).invoke(manager,null,"com.android.shell",id,0,null);return "OK";
+  }return "ERROR: TASK_NOT_FOUND";
+ }
  static Object packageManager()throws Exception {return Class.forName("android.app.ActivityThread").getMethod("getPackageManager").invoke(null);}
  static ApplicationInfo applicationInfo(Object pm,String pkg)throws Exception {return (ApplicationInfo)Class.forName("android.content.pm.IPackageManager").getMethod("getApplicationInfo",String.class,int.class,int.class).invoke(pm,pkg,0,0);}
  static List<?> listSlice(Object value)throws Exception {if(value instanceof List)return (List<?>)value;return value==null?Collections.emptyList():(List<?>)value.getClass().getMethod("getList").invoke(value);}

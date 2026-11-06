@@ -1,0 +1,13 @@
+﻿{
+    "version":  "0.11.0",
+    "api":  31,
+    "checkedUtc":  "2026-11-06T06:12:11.7982620Z",
+    "coldBootWithExplicitZone":  true,
+    "reboot":  true,
+    "timezone":  "America/Lima",
+    "helperAutonomous":  true,
+    "home":  "local.z6panel",
+    "nativeHomeRestoreAndReinstall":  true,
+    "externalApplicationsDeferred":  true,
+    "physicalBoxModified":  false
+}

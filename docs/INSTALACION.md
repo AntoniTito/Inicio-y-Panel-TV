@@ -14,13 +14,13 @@ La identidad del respaldo utiliza huella de firmware, número de serie y Android
 
 Si Accesibilidad no se activa automáticamente, habilita Z6 Panel en Android y repite el mismo comando. Las otras aplicaciones y sus sesiones no se recrean con las preferencias del panel. El listado de aplicaciones faltantes y permisos pendientes queda en `ultimo-informe.json`.
 
-El auxiliar autónomo requiere la autorización propia del TV y un transporte local compatible. En Android 10 con ADB local en 5555 se solicita la autorización desde Diagnóstico. PING comprueba la conexión actual; el informe no lo confunde con una prueba de arranque sin PC. Para el resto se conservan los accesos nativos existentes y se declara la limitación.
+El auxiliar autónomo requiere la autorización propia del destino y un transporte local compatible. Se solicita desde Diagnóstico. Se comprobó su recuperación tras reinicio en el emulador API 31; otro firmware requiere su propia prueba. PING solo comprueba la conexión actual. Si falta capacidad se conserva el acceso nativo y se declara la limitación. Usa `-SoloPanel` para instalar las aplicaciones externas después.
 
 ## Recuperación
 
 `z6.ps1 restaurar -Dispositivo IP:PUERTO` usa el respaldo inicial del destino. También puedes indicar `-Respaldo ARCHIVO`. Rechaza identidades diferentes, restaura el HOME y las animaciones, recupera los permisos que modificó y conserva otros servicios de accesibilidad activados posteriormente. Z6 Panel permanece instalado para evitar perder sus datos.
 
-`-RecuperarVersion` utiliza el APK de recuperación firmado con código 23; no funciona encima de códigos superiores. Antes de una futura actualización se debe generar una recuperación con código mayor, con la misma firma.
+`-RecuperarVersion` utiliza 0.10.4/código 25 y solo se permite en API 29. No funciona encima de códigos superiores; tras recuperarlo, una actualización debe tener código 26 o mayor y la misma firma. En API 31 usa restauración del HOME y ajustes originales, conservando la app moderna. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
 
 Los estados originales de la limpieza antigua se conservan en `privado/referencia/original`. No son una receta para otros modelos. El restaurador específico se niega a ejecutarlos sin una identidad comprobada del TV original. Los respaldos del instalador nuevo sí incluyen su identidad desde el principio.
 

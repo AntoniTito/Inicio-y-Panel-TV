@@ -1,5 +1,7 @@
 # Proyecto consolidado
 
+Este documento registra la consolidación histórica de 0.10.4. Después se creó 0.11.0 para Android TV 12; consulta README.md y EMULADOR-TV12.md para la entrega vigente.
+
 Una única base de código, 0.10.4/código 22, conserva el launcher, los paneles, reloj superior, Ajustes, temporizador, auxiliar y optimizaciones. No se combinaron versiones Java antiguas con la actual.
 
 ## Conservado

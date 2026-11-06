@@ -5,9 +5,9 @@ Usa este repositorio para reproducir Z6 Panel en el TV Box de destino. Lee READM
 
 1. Comprueba los APK firmados y herramientas; instala ADB si falta.
 2. Ejecuta z6.ps1 instalar -Dispositivo DESTINO -Simular y diagnosticar.
-3. En un firmware compatible, ejecuta instalar -Dispositivo DESTINO -Perfil replica. Conserva el respaldo inicial.
+3. En API 29 o 31, ejecuta instalar -Dispositivo DESTINO -Perfil replica. Añade -SoloPanel si el usuario instalará otras aplicaciones después. Conserva el respaldo inicial.
 4. Solicita solo las autorizaciones de Android y los APK o datos indispensables que falten. No copies identidades, cuentas ni conexiones del original.
 5. Verifica según docs/PRUEBAS-FISICAS.md y entrega el informe y método de restauración.
 
-No instales el APK conservado en Android reciente como si estuviera adaptado: el instalador lo bloquea y la matriz indica las tareas pendientes. No cambies firmware ni apliques listas de paquetes de otros modelos. No publiques privado/ ni .local/. Usa las mismas herramientas que una persona, sin depender de instrucciones guardadas en otro chat.
+La entrega vigente es 0.11.0/código 24, comprobada en emulador Android TV 12/API 31. El TV físico sigue en 0.10.4; no declares su regresión moderna como realizada. Las API distintas de 29/31 están bloqueadas hasta validación. Lee EMULADOR-TV12.md si corresponde. No cambies firmware ni apliques listas de paquetes de otros modelos. No publiques privado/ ni .local/. Usa las mismas herramientas que una persona, sin depender de instrucciones guardadas en otro chat.
 ```
