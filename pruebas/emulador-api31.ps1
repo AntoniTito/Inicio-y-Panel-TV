@@ -25,6 +25,8 @@ function OverSettings {
  Start-Sleep -Milliseconds 200
  Key 3
  $p=Panel inspect ''
+ $homeDeadline=[DateTime]::UtcNow.AddSeconds(5)
+ while((!$p.visible -or $p.homeVisible -or $p.page -ne 'bottom') -and [DateTime]::UtcNow -lt $homeDeadline){Start-Sleep -Milliseconds 100;$p=Panel inspect ''}
  Check ($p.visible -and !$p.homeVisible -and $p.page -eq 'bottom') 'Native HOME restores existing task and opens overlay' $p.foreground
 }
 $before=Get-Z6PanelPreferences
@@ -88,7 +90,7 @@ try{
  }
  $null=Panel timer_cancel ''
  Set-Z6PanelPreferences $before
- Write-Z6Json ([ordered]@{version='0.12.0';code=26;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-regresion-0.12.0-api31.json')
+ Write-Z6Json ([ordered]@{version='0.13.0';code=32;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-regresion-0.13.0-api31.json')
  Write-Output ('Passed '+$checks.Count+' emulator checks.')
 }finally{
  Invoke-Z6Shell @('input','keyevent','224') -AllowFailure|Out-Null

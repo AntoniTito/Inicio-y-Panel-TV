@@ -27,7 +27,7 @@ public final class BridgeProvider extends ContentProvider {
     else if("inspect".equals(method))result.putString("json",service.inspectForShell());
     else if("home_inspect".equals(method))result.putString("json",HomeActivity.inspectHome());
     else if("wallpaper_inspect".equals(method))result.putString("json",WallpaperActivity.inspect());
-    else if("wallpaper_open".equals(method)){getContext().startActivity(new Intent(getContext(),WallpaperActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));result.putString("status","OK");}
+    else if("wallpaper_open".equals(method)){getContext().startActivity(new Intent(getContext(),WallpaperActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));result.putString("status","OK");}
     else if("wallpaper_action".equals(method))result.putString("status",WallpaperActivity.shellAction(arg));
     else if("wallpaper_next".equals(method)){HomeActivity.advanceWallpaperForShell();result.putString("status","OK");}
     else if("open".equals(method)){service.openForShell(arg);result.putString("status","OK");}

@@ -11,7 +11,7 @@ import java.util.*;
 
 /** Temporary LAN receiver. No exported service, background listener, or arbitrary file paths. */
 final class PhotoReceiver implements AutoCloseable {
- interface Listener {void message(String text);default void received(String id,String name){message("Foto recibida: "+name);}}
+ interface Listener {void message(String text);default void received(String id,String name){message("Foto recibida: "+name);}default void received(String id,String name,String detail){received(id,name);}}
  private final WallpaperStore store;private final Listener listener;private final ServerSocket server;private final String token;
  private final long deadline=SystemClock.elapsedRealtime()+15*60000L;private volatile boolean closed;private volatile Socket client;private Thread thread;
  PhotoReceiver(Context context,Listener l)throws IOException {store=new WallpaperStore(context);listener=l;byte[] b=new byte[16];new SecureRandom().nextBytes(b);StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.ROOT,"%02x",v&255));token=s.toString();server=new ServerSocket();server.setReuseAddress(true);server.bind(new InetSocketAddress(0),1);server.setSoTimeout(1000);}
@@ -31,7 +31,7 @@ final class PhotoReceiver implements AutoCloseable {
   try{String value=headers.get("content-length");long length=value==null?-1:Long.parseLong(value);if(length<=0||length>WallpaperStore.MAX_INPUT){reply(socket,413,"application/json",new JSONObject().put("error","Máximo 20 MB por imagen").toString());return;}
    String name=URLDecoder.decode(request[1].substring((path()+"upload?name=").length()),"UTF-8");if(name.length()>200)name=name.substring(0,200);listener.message("Recibiendo foto…");temp=store.receive(in,length);if(closed||SystemClock.elapsedRealtime()>=deadline)throw new IOException("Sesión caducada");photo=store.importImage(temp,name);
    if(closed||SystemClock.elapsedRealtime()>=deadline){store.remove(photo.id);photo=null;throw new IOException("Sesión cerrada; vuelve a enviar");}
-   listener.received(photo.id,photo.name);reply(socket,200,"application/json",new JSONObject().put("ok",true).put("name",photo.name).toString());
+   listener.received(photo.id,photo.name,"Guardada en el TV · "+photo.dimensions()+" · "+WallpaperImages.bytes(photo.file.length())+(photo.warning(store.context).isEmpty()?"":" · "+photo.warning(store.context)));reply(socket,200,"application/json",photo.json().put("ok",true).put("warning",photo.warning(store.context)).toString());
   }catch(Exception e){String error=e.getMessage()==null?"No se pudo importar; usa JPG o PNG":e.getMessage();if(photo==null)listener.message("No se recibió la foto: "+error);reply(socket,400,"application/json",new JSONObject().put("error",error).toString());}finally{if(temp!=null)temp.delete();}
  }
  private void reply(Socket socket,int status,String type,String body)throws IOException {byte[] bytes=body.getBytes(StandardCharsets.UTF_8);OutputStream out=socket.getOutputStream();String reason=status==200?"OK":"Error";out.write(("HTTP/1.1 "+status+" "+reason+"\r\nContent-Type: "+type+"\r\nContent-Length: "+bytes.length+"\r\nConnection: close\r\nCache-Control: no-store\r\nReferrer-Policy: no-referrer\r\nX-Content-Type-Options: nosniff\r\nContent-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-Z6Upload'; connect-src 'self'; img-src 'self'\r\n\r\n").getBytes(StandardCharsets.US_ASCII));out.write(bytes);out.flush();}

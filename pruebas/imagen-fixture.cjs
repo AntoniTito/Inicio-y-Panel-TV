@@ -1,0 +1,6 @@
+// Deterministic synthetic PNG for a fresh checkout. Never reads personal photos.
+const fs=require('fs'),path=require('path'),zlib=require('zlib');
+function crc32(bytes){let crc=0xffffffff;for(const byte of bytes){crc^=byte;for(let bit=0;bit<8;bit++)crc=(crc>>>1)^((crc&1)?0xedb88320:0)}return (crc^0xffffffff)>>>0}
+function chunk(type,data){const kind=Buffer.from(type),size=Buffer.alloc(4),crc=Buffer.alloc(4);size.writeUInt32BE(data.length);crc.writeUInt32BE(crc32(Buffer.concat([kind,data])));return Buffer.concat([size,kind,data,crc])}
+function syntheticImage(root){const file=path.join(root,'.local/test-images/amber.png');if(fs.existsSync(file))return file;fs.mkdirSync(path.dirname(file),{recursive:true});const width=2400,height=1350,header=Buffer.alloc(13);header.writeUInt32BE(width);header.writeUInt32BE(height,4);header[8]=8;header[9]=2;const pixels=Buffer.alloc((width*3+1)*height);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const at=y*(width*3+1)+1+x*3;pixels[at]=192;pixels[at+1]=131;pixels[at+2]=37}fs.writeFileSync(file,Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),chunk('IHDR',header),chunk('IDAT',zlib.deflateSync(pixels)),chunk('IEND',Buffer.alloc(0))]));return file}
+module.exports={syntheticImage};

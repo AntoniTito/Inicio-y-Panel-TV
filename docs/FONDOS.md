@@ -17,14 +17,14 @@ Abre **Ajustes → Panel e inicio → Fondos del inicio**. También hay un acces
 
 Las fotos solo aparecen en la pantalla de inicio. No se colocan detrás del panel sobre YouTube u otra aplicación. No se modifica el fondo de Android de otras apps ni se usan fondos animados.
 
-Calidad **Ligera** limita la imagen a 720p; **Equilibrada** permite hasta 1080p. Ambas respetan la resolución efectiva del dispositivo. La presentación y las consultas automáticas se detienen al salir del inicio; sus imágenes se liberan de memoria.
+Calidad ofrece **Automático, 720p, 1080p y 4K** según la resolución efectiva y la memoria. Automático usa hasta 1080p y baja a 720p en equipos con pocos recursos; 4K es manual. Se conservan las preferencias anteriores: light equivale a 720p y balanced a 1080p. La presentación y las consultas automáticas se detienen al salir del inicio; sus imágenes se liberan de memoria.
 
 ## Enviar desde el celular
 
 1. En Fondos, selecciona **Recibir del celular**.
 2. Conecta el celular a la misma red local que el TV y escanea el QR con su cámara. También puedes escribir la dirección mostrada.
 3. Selecciona fotos y pulsa Enviar fotos en el navegador. Revisa el resultado de cada archivo.
-4. En el TV aparece **Foto recibida** y un contador. Pulsa **Ver foto recibida** para previsualizar y luego **Usar esta foto** para aplicarla; o **Terminar y abrir biblioteca** para ver todas. Puedes seguir enviando mientras el QR esté abierto. Atrás regresa a la biblioteca si recibiste fotos.
+4. En el TV aparece **Foto recibida**, un contador y **Guardada en el TV · resolución · tamaño**. Pulsa **Ver foto recibida** para previsualizar y luego **Usar esta foto** para aplicarla; o **Terminar y abrir biblioteca** para ver todas. Puedes seguir enviando mientras el QR esté abierto. Atrás regresa a la biblioteca si recibiste fotos.
 
 No se necesita instalar una app adicional. El TV puede estar conectado por Ethernet si pertenece a la misma red que el celular. Esta versión requiere una dirección IPv4 local. Las redes de invitados o con aislamiento entre equipos pueden impedir la conexión.
 
@@ -38,7 +38,7 @@ Los archivos se guardan en el TV y no se envían a Internet. Recibir no cambia e
 
 Si un USB no aparece, Android puede no exponer ese volumen o sus imágenes. Copia las fotos a Imágenes del TV o utiliza recepción por QR. Los permisos y selectores varían según el firmware; no se solicita acceso completo al almacenamiento ni root.
 
-Z6 guarda una copia optimizada y normaliza la orientación. Puedes retirar el USB después de importar. Quitar una foto elimina solo su copia en la biblioteca, sin borrar el archivo original. Al quitar la foto seleccionada y volver al inicio, se recupera el fondo original si esa selección ya no existe.
+Z6 guarda una sola copia optimizada, normaliza la orientación y no conserva el original pesado. Puedes retirar el USB después de importar. Quitar una foto elimina solo su copia en la biblioteca, sin borrar el archivo original. Al quitar la foto seleccionada y volver al inicio, se recupera el fondo original si esa selección ya no existe.
 
 ## Internet y recursos
 
@@ -58,8 +58,18 @@ Las recuperaciones con código 27 no muestran esta biblioteca, pero una actualiz
 
 ## Corrección 0.12.1
 
-El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones de 0.12.1 usan código 29. La recuperación vigente para 0.12.2 vuelve a 0.12.1 con código 31 en ambas API; no desinstales para bajar una versión.
+El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones de 0.12.1 usan código 29. La recuperación vigente para 0.13.0 vuelve a 0.12.2 con código 33 en ambas API; no desinstales para bajar una versión.
 
 ## Recepción más clara en 0.12.2
 
 Cada foto guardada produce una confirmación visible y actualiza el contador sin reconstruir la pantalla ni generar otro QR. El primer éxito enfoca Ver foto recibida. Abrir la vista previa o terminar cierra el receptor. Los archivos inválidos muestran el fallo sin incrementar el contador. Una foto ya guardada sigue disponible aunque caduque la sesión. No se añaden consultas periódicas, servicios ni animaciones.
+
+## Biblioteca visual y calidad en 0.13.0
+
+Mi biblioteca muestra ocho miniaturas por página, nombre, resolución y tamaño. OK abre la vista previa. Seleccionar permite marcar varias fotos; Eliminar (N) y Eliminar todas piden confirmación. Cancelar conserva las imágenes. Solo se eliminan copias de Z6. Al quitar la foto activa se vuelve al fondo actual; la presentación continúa con las restantes.
+
+Las fotos verticales y cuadradas se centran completas con espacio oscuro alrededor. Las horizontales se recortan al centro para llenar el inicio, antes de reducir su resolución. Las nuevas copias se guardan hasta la mayor calidad útil del equipo: 720p/1 MB, 1080p/2 MB o 4K/4 MB. La compresión JPEG va de 85 a 75; no se agranda una foto pequeña ni se inventa detalle. Las fotos existentes conservan sus archivos; para recuperar detalle perdido hay que reenviar el original.
+
+Probar calidad abre una vista a pantalla completa: izquierda/derecha cambia la resolución, OK aplica la foto y la calidad, Atrás cancela sin cambiar preferencias. El aviso Puede verse borrosa permite continuar. La misma copia de máxima resolución sirve para las comparaciones; no se guardan versiones duplicadas. El límite depende del inicio real, no de la capacidad anunciada para reproducir video 4K.
+
+La carga grande se serializa y las solicitudes antiguas se descartan. La caché de miniaturas está limitada a 4 MB y solo carga la página visible. Ante presión de memoria se reduce la calidad mostrada, conservando el archivo; al volver al inicio se reevalúan los recursos. No hay fondos animados ni servicios periódicos nuevos.

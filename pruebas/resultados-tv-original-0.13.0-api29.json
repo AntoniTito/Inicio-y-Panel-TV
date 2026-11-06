@@ -1,0 +1,100 @@
+{
+    "version":  "0.13.0",
+    "code":  32,
+    "api":  29,
+    "emulator":  false,
+    "date":  "2026-11-06T15:35:09.004Z",
+    "environment":  "Original TV GRATIS, 1280x720",
+    "checks":  [
+                   {
+                       "name":  "Auxiliary control recovers after signed APK update",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Every original preference is unchanged after update",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "All three legacy photo IDs, sizes and dimensions preserved",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "720p TV offers only useful quality choices",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Current receiver serves upload page over direct physical LAN",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical API29 saves a complete optimized portrait within 720p/1 MB",
+                       "passed":  true,
+                       "evidence":  {
+                                        "width":  450,
+                                        "height":  720,
+                                        "bytes":  3061
+                                    }
+                   },
+                   {
+                       "name":  "Physical API29 saves an optimized landscape fitting the screen",
+                       "passed":  true,
+                       "evidence":  {
+                                        "width":  1280,
+                                        "height":  720,
+                                        "bytes":  11289
+                                    }
+                   },
+                   {
+                       "name":  "TV displays saved resolution and size",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical library displays legacy and new thumbnails within 4 MB",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Unsupported legacy 1080p preference is clamped for the preview without changing settings",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical Back cancels full-screen preview without modifying preferences",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical HOME renders complete portrait in full-size wallpaper layer",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical HOME renders landscape at 1280x720",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical batch delete cancellation preserves photos",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Physical confirmed batch removal deletes only the two temporary fixtures",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "All original photos remain after physical tests",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Original photo selection, quality and all preferences restored",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "User confirms recognizable thumbnails and fluid navigation with physical remote",
+                       "passed":  true,
+                       "evidence":  "Sí, las miniaturas y la navegación funcionan bien"
+                   }
+               ],
+    "originalPhotoCount":  3,
+    "temporaryFixturesRemoved":  true,
+    "pending":  [
+                    "Physical 1080p/4K hardware",
+                    "Physical USB import and codec differences",
+                    "Full reboot, video/audio continuity and HDMI-CEC regression on this release"
+                ]
+}

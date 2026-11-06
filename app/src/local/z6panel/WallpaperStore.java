@@ -6,44 +6,50 @@ import android.util.AtomicFile;
 import org.json.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-/** Private, bounded library. Image I/O is called only from image workers. */
+/** One private optimized master per photo. Thumbnail files are disposable cache. */
 final class WallpaperStore {
- static final long MAX_INPUT=20L*1024*1024, MAX_LIBRARY=100L*1024*1024;
+ static final long MAX_INPUT=20L*1024*1024,MAX_LIBRARY=100L*1024*1024;
  static final int MAX_IMAGES=50;
  private static final Object LOCK=new Object();
- final Context context; final File dir;
+ private static final Map<String,int[]> LEGACY=new ConcurrentHashMap<>();
+ final Context context;final File dir;
  WallpaperStore(Context c){context=c.getApplicationContext();dir=new File(context.getFilesDir(),"wallpapers");dir.mkdirs();}
  static final class Photo {
-  final String id,name; final File file;
-  Photo(String i,String n,File f){id=i;name=n;file=f;}
+  final String id,name,fit;final File file;final int width,height,sourceWidth,sourceHeight;
+  Photo(JSONObject p,File f){id=p.optString("id");name=p.optString("name","Imagen");file=f;int w=p.optInt("width"),h=p.optInt("height");if(w<=0||h<=0){int[] bounds=LEGACY.get(id);if(bounds==null){BitmapFactory.Options o=new BitmapFactory.Options();o.inJustDecodeBounds=true;BitmapFactory.decodeFile(f.getPath(),o);bounds=new int[]{Math.max(1,o.outWidth),Math.max(1,o.outHeight)};LEGACY.put(id,bounds);}w=bounds[0];h=bounds[1];}width=w;height=h;sourceWidth=p.optInt("sourceWidth",w);sourceHeight=p.optInt("sourceHeight",h);fit=w<=h?"contain":"cover";}
+  String dimensions(){return width+" × "+height;}
+  String warning(Context c){int[] target=WallpaperImages.size(c,WallpaperImages.usable(c,c.getSharedPreferences("panel",0).getString("wallpaper_quality","auto")));return WallpaperImages.insufficient(width,height,target[0],target[1])?"Puede verse borrosa: resolución insuficiente":"";}
+  JSONObject json()throws JSONException{return new JSONObject().put("id",id).put("name",name).put("bytes",file.length()).put("width",width).put("height",height).put("fit",fit);}
  }
- private JSONArray readLibrary(){try(FileInputStream in=new AtomicFile(new File(dir,"library.json")).openRead()){return new JSONArray(new String(readLimited(in,262144),"UTF-8"));}catch(FileNotFoundException missing){return new JSONArray();}catch(Exception e){throw new IllegalStateException("No se pudo leer la biblioteca; no se modificó",e);}}
- private void writeLibrary(JSONArray a)throws IOException {writeJson(new File(dir,"library.json"),a.toString());}
- static void writeJson(File file,String text)throws IOException {AtomicFile atom=new AtomicFile(file);FileOutputStream out=null;try{out=atom.startWrite();out.write(text.getBytes("UTF-8"));atom.finishWrite(out);}catch(IOException e){if(out!=null)atom.failWrite(out);throw e;}}
- List<Photo> photos(){synchronized(LOCK){JSONArray a=readLibrary();ArrayList<Photo> out=new ArrayList<>();for(int i=0;i<a.length();i++){JSONObject p=a.optJSONObject(i);if(p==null)continue;String id=p.optString("id");if(!id.matches("[a-f0-9]{32}"))continue;File f=new File(dir,id+".jpg");if(f.isFile())out.add(new Photo(id,p.optString("name","Imagen"),f));}return out;}}
+ private JSONArray readLibrary(){try(FileInputStream in=new AtomicFile(new File(dir,"library.json")).openRead()){return new JSONArray(new String(readLimited(in,262144),"UTF-8"));}catch(FileNotFoundException e){return new JSONArray();}catch(Exception e){throw new IllegalStateException("No se pudo leer la biblioteca; no se modificó",e);}}
+ private void writeLibrary(JSONArray a)throws IOException{writeJson(new File(dir,"library.json"),a.toString());}
+ static void writeJson(File f,String text)throws IOException{AtomicFile atom=new AtomicFile(f);FileOutputStream out=null;try{out=atom.startWrite();out.write(text.getBytes("UTF-8"));atom.finishWrite(out);}catch(IOException e){if(out!=null)atom.failWrite(out);throw e;}}
+ List<Photo> photos(){synchronized(LOCK){JSONArray a=readLibrary();ArrayList<Photo> out=new ArrayList<>();for(int i=0;i<a.length();i++){JSONObject p=a.optJSONObject(i);if(p==null)continue;String id=p.optString("id");if(!id.matches("[a-f0-9]{32}"))continue;File f=new File(dir,id+".jpg");if(f.isFile())out.add(new Photo(p,f));}return out;}}
  Photo find(String id){for(Photo p:photos())if(p.id.equals(id))return p;return null;}
- Photo importImage(File source,String label)throws Exception {
-  if(source.length()==0||source.length()>MAX_INPUT)throw new IOException("La imagen debe ocupar como máximo 20 MB");
-  if(photos().size()>=MAX_IMAGES)throw new IOException("Biblioteca completa: máximo 50 imágenes");
-  if(dir.getUsableSpace()<MAX_INPUT+5*1024*1024)throw new IOException("Falta espacio para importar la imagen");
-  String id=UUID.randomUUID().toString().replace("-","");File output=new File(dir,id+".jpg");
-  Bitmap image=null;boolean committed=false;
-  try{image=decode(source,1920,1080);try(FileOutputStream out=new FileOutputStream(output)){if(!image.compress(Bitmap.CompressFormat.JPEG,88,out))throw new IOException("No se pudo guardar la imagen");}
+ Photo importImage(File source,String label)throws Exception{
+  if(source.length()==0||source.length()>MAX_INPUT)throw new IOException("La imagen debe ocupar como máximo 20 MB");if(photos().size()>=MAX_IMAGES)throw new IOException("Biblioteca completa: máximo 50 imágenes");if(dir.getUsableSpace()<MAX_INPUT+5*1024*1024)throw new IOException("Falta espacio para importar la imagen");
+  WallpaperImages.HEAVY.lock();String id=UUID.randomUUID().toString().replace("-","");File output=new File(dir,id+".jpg");Bitmap image=null;boolean committed=false;
+  try{WallpaperImages.Header header=WallpaperImages.header(source);int cap=WallpaperImages.maximum(context);IOException failure=null;int used=1280;
+   for(int level:new int[]{3840,1920,1280}){if(level>cap)continue;int[] target=WallpaperImages.size(context,level);try{image=WallpaperImages.frame(source,target[0],target[1]);used=level;break;}catch(IOException e){failure=e;}}
+   if(image==null)throw failure==null?new IOException("No se pudo preparar la imagen"):failure;
+   long limit=(used>=3840?4:used>=1920?2:1)*WallpaperImages.MB;boolean fits=false;for(int quality:new int[]{85,80,75}){try(FileOutputStream out=new FileOutputStream(output)){if(!image.compress(Bitmap.CompressFormat.JPEG,quality,out))throw new IOException("No se pudo guardar la imagen");}if(output.length()<=limit){fits=true;break;}}
+   if(!fits)throw new IOException("La copia optimizada supera "+WallpaperImages.bytes(limit)+"; usa una foto menos pesada");
    String name=label==null?"Imagen":label.replaceAll("[\\p{Cntrl}]"," ").trim();if(name.length()>100)name=name.substring(0,100);if(name.isEmpty())name="Imagen";
-   synchronized(LOCK){JSONArray all=readLibrary();long bytes=output.length();for(Photo p:photos())bytes+=p.file.length();if(all.length()>=MAX_IMAGES||bytes>MAX_LIBRARY)throw new IOException("Biblioteca completa: 50 imágenes o 100 MB");JSONObject p=new JSONObject();p.put("id",id);p.put("name",name);all.put(p);writeLibrary(all);committed=true;}
-   return new Photo(id,name,output);
-  }finally{if(image!=null)image.recycle();if(!committed)output.delete();}
+   JSONObject p=new JSONObject().put("id",id).put("name",name).put("width",image.getWidth()).put("height",image.getHeight()).put("sourceWidth",header.width).put("sourceHeight",header.height).put("fit",header.contain()?"contain":"cover").put("optimization",1);
+   synchronized(LOCK){JSONArray all=readLibrary();long bytes=output.length();for(Photo photo:photos())bytes+=photo.file.length();if(all.length()>=MAX_IMAGES||bytes>MAX_LIBRARY)throw new IOException("Biblioteca completa: 50 imágenes o 100 MB");all.put(p);writeLibrary(all);committed=true;}
+   return new Photo(p,output);
+  }finally{if(image!=null)image.recycle();if(!committed)output.delete();WallpaperImages.HEAVY.unlock();}
  }
- void remove(String id)throws Exception {synchronized(LOCK){JSONArray old=readLibrary(),next=new JSONArray();for(int i=0;i<old.length();i++)if(!id.equals(old.getJSONObject(i).optString("id")))next.put(old.get(i));writeLibrary(next);if(id.matches("[a-f0-9]{32}"))new File(dir,id+".jpg").delete();}}
- void move(String id,int delta)throws Exception {synchronized(LOCK){JSONArray old=readLibrary();ArrayList<JSONObject> list=new ArrayList<>();int at=-1;for(int i=0;i<old.length();i++){JSONObject p=old.getJSONObject(i);list.add(p);if(id.equals(p.optString("id")))at=i;}int to=at+delta;if(at<0||to<0||to>=list.size())return;Collections.swap(list,at,to);JSONArray next=new JSONArray();for(JSONObject p:list)next.put(p);writeLibrary(next);}}
- static Bitmap decode(File f,int width,int height)throws IOException {
-  try{return ImageDecoder.decodeBitmap(ImageDecoder.createSource(f),(decoder,info,source)->{
-   String mime=info.getMimeType();if(info.isAnimated()||!("image/jpeg".equals(mime)||"image/png".equals(mime)||"image/webp".equals(mime)||"image/heif".equals(mime)||"image/heic".equals(mime)))throw new IllegalArgumentException("Usa JPG, PNG o WebP estático; HEIC depende del equipo");
-   int w=info.getSize().getWidth(),h=info.getSize().getHeight();if(w<=0||h<=0)throw new IllegalArgumentException("Imagen inválida");double scale=Math.min(1,Math.min((double)width/w,(double)height/h));decoder.setTargetSize(Math.max(1,(int)(w*scale)),Math.max(1,(int)(h*scale)));decoder.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);
-  });}catch(IllegalArgumentException e){throw new IOException(e.getMessage(),e);}catch(IOException e){throw new IOException("No se pudo leer la imagen. Usa JPG, PNG o WebP estático; HEIC depende del equipo",e);}catch(OutOfMemoryError e){throw new IOException("Memoria insuficiente; usa una imagen más pequeña",e);}
- }
- static byte[] readLimited(InputStream in,int max)throws IOException {ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1){if(out.size()+n>max)throw new IOException("Archivo demasiado grande");out.write(b,0,n);}return out.toByteArray();}
- File receive(InputStream in,long length)throws IOException {if(length<=0||length>MAX_INPUT)throw new IOException("Máximo 20 MB por imagen");if(dir.getUsableSpace()<length+5*1024*1024)throw new IOException("Falta espacio disponible");File temp=File.createTempFile("incoming-",".tmp",context.getCacheDir());boolean ok=false;try(FileOutputStream out=new FileOutputStream(temp)){byte[] b=new byte[16384];long remaining=length;while(remaining>0){if(Thread.currentThread().isInterrupted())throw new InterruptedIOException();int n=in.read(b,0,(int)Math.min(b.length,remaining));if(n<0)throw new EOFException("Envío incompleto");out.write(b,0,n);remaining-=n;}ok=true;return temp;}finally{if(!ok)temp.delete();}}
- File copyUri(android.net.Uri uri)throws IOException {File temp=File.createTempFile("import-",".tmp",context.getCacheDir());boolean ok=false;try(InputStream in=context.getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(temp)){if(in==null)throw new IOException("No se pudo abrir el archivo");byte[] b=new byte[16384];long size=0;int n;while((n=in.read(b))!=-1){size+=n;if(size>MAX_INPUT)throw new IOException("Máximo 20 MB por imagen");if(Thread.currentThread().isInterrupted())throw new InterruptedIOException();out.write(b,0,n);}ok=true;return temp;}finally{if(!ok)temp.delete();}}
+ static final class Removed {final int count;final List<String> failed;Removed(int n,List<String> f){count=n;failed=f;}String message(){return "Eliminadas: "+count+(failed.isEmpty()?"":" · No se pudieron eliminar: "+failed.size());}}
+ Removed removeMany(Collection<String> ids)throws Exception{synchronized(LOCK){Set<String> requested=new HashSet<>(ids),removed=new HashSet<>();List<String> failed=new ArrayList<>();JSONArray old=readLibrary(),next=new JSONArray();for(int i=0;i<old.length();i++){JSONObject p=old.getJSONObject(i);String id=p.optString("id");if(!requested.contains(id)){next.put(p);continue;}if(!id.matches("[a-f0-9]{32}")){next.put(p);failed.add(id);continue;}File f=new File(dir,id+".jpg");if(f.exists()&&!f.delete()){next.put(p);failed.add(id);continue;}removed.add(id);new File(context.getCacheDir(),"thumb-"+id+".jpg").delete();LEGACY.remove(id);}writeLibrary(next);
+   SharedPreferences prefs=context.getSharedPreferences("panel",0);SharedPreferences.Editor edit=prefs.edit();String mode=prefs.getString("wallpaper_mode","original");if(removed.contains(prefs.getString("wallpaper_photo",""))){edit.remove("wallpaper_photo");if(mode.equals("photo"))edit.putString("wallpaper_mode","original");}List<Photo> remaining=photos();if(removed.contains(prefs.getString("wallpaper_slide_id",""))){if(remaining.isEmpty())edit.remove("wallpaper_slide_id");else edit.putString("wallpaper_slide_id",remaining.get(0).id);}if(remaining.isEmpty()&&mode.equals("slideshow"))edit.putString("wallpaper_mode","original");edit.apply();return new Removed(removed.size(),failed);}}
+ void remove(String id)throws Exception{Removed result=removeMany(Collections.singleton(id));if(!result.failed.isEmpty())throw new IOException(result.message());}
+ void move(String id,int delta)throws Exception{synchronized(LOCK){JSONArray old=readLibrary();ArrayList<JSONObject> a=new ArrayList<>();int at=-1;for(int i=0;i<old.length();i++){JSONObject p=old.getJSONObject(i);a.add(p);if(id.equals(p.optString("id")))at=i;}int to=at+delta;if(at<0||to<0||to>=a.size())return;Collections.swap(a,at,to);JSONArray next=new JSONArray();for(JSONObject p:a)next.put(p);writeLibrary(next);}}
+ Bitmap thumbnail(Photo photo)throws IOException{File cache=new File(context.getCacheDir(),"thumb-"+photo.id+".jpg");if(cache.isFile()){Bitmap b=BitmapFactory.decodeFile(cache.getPath());if(b!=null)return b;cache.delete();}Bitmap b=WallpaperImages.frame(photo.file,320,180);try(FileOutputStream out=new FileOutputStream(cache)){b.compress(Bitmap.CompressFormat.JPEG,80,out);}catch(IOException ignored){}return b;}
+ static Bitmap decode(File f,int width,int height)throws IOException{WallpaperImages.HEAVY.lock();try{WallpaperImages.Header h=WallpaperImages.header(f);return ImageDecoder.decodeBitmap(ImageDecoder.createSource(f),(d,info,s)->{int w=info.getSize().getWidth(),v=info.getSize().getHeight();double scale=Math.min(1,Math.min((double)width/w,(double)height/v));d.setTargetSize(Math.max(1,(int)(w*scale)),Math.max(1,(int)(v*scale)));d.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);});}catch(OutOfMemoryError e){throw new IOException("Memoria insuficiente; usa una imagen más pequeña",e);}finally{WallpaperImages.HEAVY.unlock();}}
+ static byte[] readLimited(InputStream in,int max)throws IOException{ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1){if(out.size()+n>max)throw new IOException("Archivo demasiado grande");out.write(b,0,n);}return out.toByteArray();}
+ File receive(InputStream in,long length)throws IOException{if(length<=0||length>MAX_INPUT)throw new IOException("Máximo 20 MB por imagen");if(dir.getUsableSpace()<length+5*1024*1024)throw new IOException("Falta espacio disponible");File temp=File.createTempFile("incoming-",".tmp",context.getCacheDir());boolean ok=false;try(FileOutputStream out=new FileOutputStream(temp)){byte[] b=new byte[16384];long remaining=length;while(remaining>0){if(Thread.currentThread().isInterrupted())throw new InterruptedIOException();int n=in.read(b,0,(int)Math.min(b.length,remaining));if(n<0)throw new EOFException("Envío incompleto");out.write(b,0,n);remaining-=n;}ok=true;return temp;}finally{if(!ok)temp.delete();}}
+ File copyUri(android.net.Uri uri)throws IOException{File temp=File.createTempFile("import-",".tmp",context.getCacheDir());boolean ok=false;try(InputStream in=context.getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(temp)){if(in==null)throw new IOException("No se pudo abrir el archivo");byte[] b=new byte[16384];long size=0;int n;while((n=in.read(b))!=-1){size+=n;if(size>MAX_INPUT)throw new IOException("Máximo 20 MB por imagen");out.write(b,0,n);}ok=true;return temp;}finally{if(!ok)temp.delete();}}
 }

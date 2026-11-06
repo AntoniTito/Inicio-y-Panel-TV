@@ -1,0 +1,64 @@
+{
+  "version": "0.13.0",
+  "code": 32,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T15:37:08.223Z",
+  "checks": [
+    {
+      "name": "Mobile browser uploads multiple photos with stored resolution and size",
+      "passed": true,
+      "evidence": [
+        " · recibida · Guardada en el TV · 1280 × 720 · 11 KB",
+        " · recibida · Guardada en el TV · 450 × 720 · 3 KB"
+      ]
+    },
+    {
+      "name": "Both browser-uploaded photos are stored",
+      "passed": true
+    },
+    {
+      "name": "Portrait HOME keeps dark side space and shows complete centered photo",
+      "passed": true,
+      "evidence": [
+        [
+          10,
+          13,
+          18
+        ],
+        [
+          131,
+          43,
+          33
+        ],
+        [
+          10,
+          13,
+          18
+        ]
+      ]
+    },
+    {
+      "name": "Horizontal background reaches screen corner without padded margin",
+      "passed": true,
+      "evidence": [
+        [
+          116,
+          79,
+          23
+        ],
+        [
+          116,
+          79,
+          23
+        ],
+        [
+          116,
+          79,
+          23
+        ]
+      ]
+    }
+  ],
+  "screenshots": "Synthetic photos only, stored in .local/validacion-0130-api31"
+}

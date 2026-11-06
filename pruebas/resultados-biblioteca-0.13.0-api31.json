@@ -1,0 +1,251 @@
+{
+  "version": "0.13.0",
+  "code": 32,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T15:31:51.721Z",
+  "checks": [
+    {
+      "name": "Phone page opens through local ADB test forwarding",
+      "passed": true
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: horizontal",
+      "passed": true,
+      "evidence": {
+        "width": 1280,
+        "height": 720,
+        "bytes": 7260,
+        "fit": "cover"
+      }
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: vertical",
+      "passed": true,
+      "evidence": {
+        "width": 450,
+        "height": 720,
+        "bytes": 4621,
+        "fit": "contain"
+      }
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: cuadrada",
+      "passed": true,
+      "evidence": {
+        "width": 720,
+        "height": 720,
+        "bytes": 5199,
+        "fit": "contain"
+      }
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: panoramica",
+      "passed": true,
+      "evidence": {
+        "width": 1280,
+        "height": 720,
+        "bytes": 7291,
+        "fit": "cover"
+      }
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: pequena",
+      "passed": true,
+      "evidence": {
+        "width": 320,
+        "height": 180,
+        "bytes": 1961,
+        "fit": "cover"
+      }
+    },
+    {
+      "name": "720p optimized file stays within 1 MB: exif",
+      "passed": true,
+      "evidence": {
+        "width": 480,
+        "height": 720,
+        "bytes": 3434,
+        "fit": "contain"
+      }
+    },
+    {
+      "name": "Horizontal and panoramic masters are cropped before reduction",
+      "passed": true
+    },
+    {
+      "name": "Portrait remains complete at display height",
+      "passed": true
+    },
+    {
+      "name": "Square remains complete",
+      "passed": true
+    },
+    {
+      "name": "EXIF rotation is normalized before orientation and sizing",
+      "passed": true,
+      "evidence": {
+        "id": "a49fb9469a4a4334b78d2f46e2aa6a6e",
+        "name": "Z6-exif.jpg",
+        "bytes": 3434,
+        "width": 480,
+        "height": 720,
+        "fit": "contain",
+        "ok": true,
+        "warning": ""
+      }
+    },
+    {
+      "name": "Small photo is not enlarged on disk and reports insufficient resolution",
+      "passed": true
+    },
+    {
+      "name": "TV confirms stored dimensions and file size",
+      "passed": true
+    },
+    {
+      "name": "Invalid image leaves saved library unchanged",
+      "passed": true
+    },
+    {
+      "name": "Eight visible thumbnails fit within 4 MB memory cache",
+      "passed": true,
+      "evidence": {
+        "page": 1,
+        "visibleIds": [
+          "69b1e8ddb646462983feb0c0a87240cf",
+          "db12ac4332fc4be0afa9db8fa9ef9b06",
+          "2edd5cfecf834b48b07b921c7f65d64a",
+          "275cc68e03dc4b758b18af19b5fb43ba",
+          "52c0d3026ca24cf1a5b7d9331cfac487",
+          "a49fb9469a4a4334b78d2f46e2aa6a6e",
+          "49c9f4e8e1504f2dae561faca9263d49",
+          "b92cb7491d7947c69a1b09e26da5890f"
+        ],
+        "selectionCount": 0,
+        "selecting": false,
+        "thumbnailBytes": 1449360,
+        "dialog": false,
+        "busy": false
+      }
+    },
+    {
+      "name": "Library exposes visual management controls",
+      "passed": true
+    },
+    {
+      "name": "Second page loads only remaining photos",
+      "passed": true
+    },
+    {
+      "name": "Returning from preview preserves library page",
+      "passed": true
+    },
+    {
+      "name": "Cancelling batch deletion preserves all photos",
+      "passed": true
+    },
+    {
+      "name": "Confirmed batch deletion removes exactly the selected photos",
+      "passed": true
+    },
+    {
+      "name": "Full-screen quality test warns for low resolution",
+      "passed": true
+    },
+    {
+      "name": "Back cancels quality comparison without modifying preferences",
+      "passed": true
+    },
+    {
+      "name": "Low-resolution warning permits explicit Apply",
+      "passed": true
+    },
+    {
+      "name": "1080p master matches effective display and 2 MB limit",
+      "passed": true,
+      "evidence": {
+        "id": "3288187a30434ecea2cb882af44cad9a",
+        "name": "Z6-1080.jpg",
+        "bytes": 15946,
+        "width": 1920,
+        "height": 1080,
+        "fit": "cover",
+        "ok": true,
+        "warning": ""
+      }
+    },
+    {
+      "name": "Full-screen comparison decodes actual 1080p",
+      "passed": true
+    },
+    {
+      "name": "4K available only when effective resolution and memory guards allow it",
+      "passed": true,
+      "evidence": {
+        "maximum": 3840,
+        "options": [
+          "auto",
+          "light",
+          "balanced",
+          "ultra"
+        ]
+      }
+    },
+    {
+      "name": "One optimized 4K master stays within 4 MB",
+      "passed": true,
+      "evidence": {
+        "id": "21217a9b60894db6b24bfa8b09d4a805",
+        "name": "Z6-4K.jpg",
+        "bytes": 54206,
+        "width": 3840,
+        "height": 2160,
+        "fit": "cover",
+        "ok": true,
+        "warning": ""
+      }
+    },
+    {
+      "name": "Comparing 1080p and 4K reuses the same stored master",
+      "passed": true
+    },
+    {
+      "name": "HOME renders chosen 4K background",
+      "passed": true
+    },
+    {
+      "name": "Memory pressure reduces display quality without changing stored 4K master",
+      "passed": true
+    },
+    {
+      "name": "Memory fallback preserves master bytes",
+      "passed": true
+    },
+    {
+      "name": "50-image library rejects the next upload without altering existing photos",
+      "passed": true
+    },
+    {
+      "name": "Uploads leave no incomplete temporary files",
+      "passed": true
+    },
+    {
+      "name": "Delete-all cancellation preserves the library",
+      "passed": true
+    },
+    {
+      "name": "Confirmed Delete all empties the optimized library",
+      "passed": true
+    },
+    {
+      "name": "Deleting the active photo returns to the original background",
+      "passed": true
+    }
+  ],
+  "photosOnly": false,
+  "pending": [
+    "Physical 1080p and 4K hardware",
+    "Real USB firmware and codecs"
+  ]
+}
