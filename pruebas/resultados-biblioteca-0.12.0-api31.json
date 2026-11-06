@@ -1,0 +1,53 @@
+{
+  "version": "0.12.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T12:56:32.161Z",
+  "checks": [
+    {
+      "name": "EXIF JPEG imported",
+      "passed": true
+    },
+    {
+      "name": "EXIF orientation normalized before private copy",
+      "passed": true,
+      "evidence": {
+        "width": 607,
+        "height": 1080
+      }
+    },
+    {
+      "name": "All library masters bounded to 1080p",
+      "passed": true
+    },
+    {
+      "name": "GIF rejected rather than animated in background",
+      "passed": true
+    },
+    {
+      "name": "Library accepts exactly fifty valid photos",
+      "passed": true
+    },
+    {
+      "name": "Fifty-first photo rejected without false success",
+      "passed": true
+    },
+    {
+      "name": "Imported photo renders without original transfer source",
+      "passed": true
+    },
+    {
+      "name": "Removing selected photo falls back to original background",
+      "passed": true
+    },
+    {
+      "name": "Last valid daily image survives Wi-Fi disable and HOME recreation",
+      "passed": true
+    },
+    {
+      "name": "Network loss closes receiver",
+      "passed": true
+    }
+  ],
+  "physicalBoxModified": false
+}

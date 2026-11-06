@@ -10,3 +10,5 @@
 - 0.11.0/código 24: adaptación en emulador Android TV 12, permisos Bluetooth y alarmas, auxiliar compatible, Home sobre tarea existente y navegación nativa. Se mantienen reloj gris, altura compacta y optimizaciones. Recuperación histórica 0.10.4/código 25 solo para API 29. El TV físico permanece en 0.10.4.
 
 Los datos de auditoría advierten que los valores declarados por un firmware genérico no certifican por sí solos el fabricante ni la memoria física. Tampoco se consideran malware o publicidad los paquetes solo por sus nombres. Por eso no se traslada automáticamente la limpieza histórica a otro modelo.
+
+- 0.12.0/código 26: acceso a añadir apps sin elementos visibles, biblioteca privada de fondos, presentación, paisajes Wikimedia y recepción temporal por QR. Recuperaciones específicas código 27 y evidencia separada por API.

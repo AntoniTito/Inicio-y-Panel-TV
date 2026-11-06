@@ -25,6 +25,11 @@ public final class BridgeProvider extends ContentProvider {
    new Handler(Looper.getMainLooper()).post(()->{try{
     if("prefs_restore".equals(method)){service.prepareForRestore();PanelBackup.restore(getContext(),arg);HomeActivity.refreshPreferences();result.putString("status","OK");}
     else if("inspect".equals(method))result.putString("json",service.inspectForShell());
+    else if("home_inspect".equals(method))result.putString("json",HomeActivity.inspectHome());
+    else if("wallpaper_inspect".equals(method))result.putString("json",WallpaperActivity.inspect());
+    else if("wallpaper_open".equals(method)){getContext().startActivity(new Intent(getContext(),WallpaperActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));result.putString("status","OK");}
+    else if("wallpaper_action".equals(method))result.putString("status",WallpaperActivity.shellAction(arg));
+    else if("wallpaper_next".equals(method)){HomeActivity.advanceWallpaperForShell();result.putString("status","OK");}
     else if("open".equals(method)){service.openForShell(arg);result.putString("status","OK");}
     else if("action".equals(method))result.putString("status",service.actionForShell(arg));
     else if("key".equals(method)){service.keyForShell(Integer.parseInt(arg));result.putString("status","OK");}

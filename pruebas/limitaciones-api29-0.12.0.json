@@ -1,0 +1,18 @@
+﻿{
+    "version":  "0.12.0",
+    "api":  29,
+    "emulator":  true,
+    "image":  "Android TV x86 API29 revision 3",
+    "status":  "Photo suite passed; native overlay validation limited by stock image",
+    "photoChecks":  17,
+    "originalPhysicalBoxModified":  false,
+    "baselineReproducedWith":  "0.10.4 recovery code 27, original source behavior",
+    "failure":  "SurfaceFlinger abort ubsan:add-overflow in android::Rect::inset / android::Layer::fillInputInfo",
+    "helper":  "PC bootstrap used for integration; autonomous local ADB not available in this stock image",
+    "pending":  [
+                    "Native Home and overlay input on physical Android10",
+                    "USB visibility and phone QR on physical hardware",
+                    "Bluetooth and playback"
+                ],
+    "utc":  "2026-11-06T12:53:44.0889334Z"
+}

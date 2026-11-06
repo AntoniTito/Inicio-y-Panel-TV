@@ -31,3 +31,17 @@ Una autorización local no persistía por un fallo de escritura del almacén ADB
 Las aplicaciones externas se instalarán después por decisión del usuario. Su reproducción, Bluetooth físico/JBL, HDMI-CEC y control físico siguen pendientes aquí. Las métricas históricas de fluidez no se volvieron a medir ni se extrapolan a este emulador. El TV Box físico no fue modificado.
 
 La comprobación final adicional de arranque completo y reinicio conservó America/Lima, HOME Z6 y conexión autónoma. Se registró en `pruebas/resultados-emulador-final.json`. El lanzador del AVD incluye zona explícita para evitar que esta imagen vuelva a GMT; consulta EMULADOR-TV12.md.
+
+## 0.12.0: aplicaciones vacías y fondos
+
+Las comprobaciones nuevas separan API 31 y API 29. Los informes versionados están en pruebas/resultados-*-0.12.0-*.json y pruebas/resultados-rendimiento-0.12.0.json. La regresión conserva la evidencia histórica de 0.11.0 en su archivo original.
+
+- API 31: acceso con fila vacía, navegación nativa, edición con OK sostenido real de 850 ms, eventos de instalación/retiro, biblioteca, receptor en navegador de PC y regresión de controles, temporizador, suspensión y reinicio.
+- Biblioteca: orientación EXIF, originales limitados a 1080p, rechazo de GIF, límite de 50 fotos y rechazo de la siguiente, recuperación del fondo actual tras quitar la foto seleccionada, paisaje sin Wi-Fi y cierre de recepción al perder la red.
+- API 29: 17 comprobaciones de fotos/recepción aprobadas en Android TV x86 r3. Las ventanas superpuestas de esta imagen pueden abortar SurfaceFlinger con ubsan:add-overflow; el fallo se reprodujo con la base 0.10.4/código 27. Se utilizó inicio auxiliar desde PC; no se certifica autonomía ni control físico de esa imagen.
+
+La comparación de rendimiento usa tres rondas por modo y el mismo comando ADB que la referencia 0.11.0. Incluye el transporte ADB: no representa latencia aislada de entrada a imagen. Se acepta el p95 mediano dentro del mayor margen entre 10 % y 8 ms, y se comprueba memoria tras 20 ciclos. No se extrapolan estas cifras a otros TV Box.
+
+Pendientes físicos: envío QR desde celular al TV, USB y sus permisos específicos, HDMI-CEC, Bluetooth real y reproducción de las aplicaciones externas. No se instaló esta versión en el TV Box original. El emulador no dispone del puente de red para celular, por decisión del usuario.
+
+Se mantuvo el ZIP verificado de la imagen de pruebas API 29 en la caché del SDK: la revisión automática bloqueó su eliminación fuera del proyecto. El SDK y sus imágenes no forman parte de Git ni de la entrega trasladable.

@@ -85,10 +85,12 @@ function Set-Z6PanelPreferences([string]$Encoded){
   }elseif(($p.Value.value|ConvertTo-Json -Depth 15 -Compress) -ne ($found.Value.value|ConvertTo-Json -Depth 15 -Compress)){throw "Preference verification failed: $($p.Name)"}
  }
 }
-function Get-Z6Artifact([switch]$Recovery){
+function Get-Z6Artifact([switch]$Recovery,[int]$Api=29){
  $manifest=Read-Z6Json (Join-Path $script:Z6Root 'entregas\manifest.json')
  $name=if($Recovery -and $manifest.PSObject.Properties['recovery']){$manifest.recovery}elseif(!$Recovery -and $manifest.PSObject.Properties['current']){$manifest.current}elseif($Recovery){'Z6-Panel-recuperacion-0.10.3.apk'}else{'Z6-Panel-0.10.4.apk'}
- $entry=@($manifest.artifacts|Where-Object {$_.file -eq $name})[0]
+ if($Recovery -and $manifest.PSObject.Properties['recoveryByApi']){ $choice=$manifest.recoveryByApi.PSObject.Properties[[string]$Api];if(!$choice){throw "No signed recovery for API $Api"};$name=[string]$choice.Value }
+ $entries=@($manifest.artifacts|Where-Object {$_.file -eq $name});if($entries.Count -ne 1){throw "Unknown release artifact: $name"};$entry=$entries[0]
+ if($Recovery -and $entry.PSObject.Properties['validatedApi'] -and $Api -notin @($entry.validatedApi)){throw "Recovery is not compatible with API $Api"}
  $path=Join-Path $script:Z6Root ('entregas\'+$name)
  if(!(Test-Path -LiteralPath $path)){throw "Missing signed APK: $name. Download the private release into entregas."}
  if((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $entry.sha256){throw "APK hash mismatch: $name"}

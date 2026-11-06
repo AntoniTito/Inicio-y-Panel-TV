@@ -1,0 +1,132 @@
+{
+  "version": "0.12.0",
+  "code": 26,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T13:05:28.142Z",
+  "checks": [
+    {
+      "name": "Launchable catalogue available",
+      "passed": true,
+      "evidence": 5
+    },
+    {
+      "name": "Empty HOME focuses Add without long press",
+      "passed": true,
+      "evidence": "add_application"
+    },
+    {
+      "name": "Short OK opens available installed apps",
+      "passed": true
+    },
+    {
+      "name": "Empty bottom overlay contains Add",
+      "passed": true,
+      "evidence": 0
+    },
+    {
+      "name": "Down and short OK reach Add in empty overlay",
+      "passed": true,
+      "evidence": "panelAddApp"
+    },
+    {
+      "name": "Hidden installed apps offered in selector",
+      "passed": true
+    },
+    {
+      "name": "Adding first app focuses populated row and removes empty Add",
+      "passed": true,
+      "evidence": 5
+    },
+    {
+      "name": "HOME reflects app selected in overlay",
+      "passed": true
+    },
+    {
+      "name": "Authenticated receiver web page served",
+      "passed": true
+    },
+    {
+      "name": "Invalid session rejected",
+      "passed": true
+    },
+    {
+      "name": "PC browser uploads multiple images with per-file results",
+      "passed": true,
+      "evidence": [
+        "recibida",
+        "recibida"
+      ]
+    },
+    {
+      "name": "Invalid image rejected",
+      "passed": true
+    },
+    {
+      "name": "Rejected upload leaves library unchanged",
+      "passed": true
+    },
+    {
+      "name": "Cross-origin upload rejected",
+      "passed": true
+    },
+    {
+      "name": "Oversized file rejected before reading its body",
+      "passed": true
+    },
+    {
+      "name": "Interrupted upload removes temporary file",
+      "passed": true
+    },
+    {
+      "name": "Expiry callback closes port and session",
+      "passed": true
+    },
+    {
+      "name": "Photo is decoded within light/display bounds",
+      "passed": true,
+      "evidence": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "Slideshow advances and schedules only on visible HOME",
+      "passed": true
+    },
+    {
+      "name": "Leaving HOME stops rotation and releases bitmap",
+      "passed": true,
+      "evidence": {
+        "active": false,
+        "loaded": false,
+        "bytes": 0,
+        "width": 0,
+        "height": 0,
+        "key": "",
+        "scheduled": false
+      }
+    },
+    {
+      "name": "Balanced quality never exceeds effective display",
+      "passed": true,
+      "evidence": 1280
+    },
+    {
+      "name": "Missing document picker has native TV album alternative",
+      "passed": true
+    },
+    {
+      "name": "Back closes receiver immediately",
+      "passed": true
+    }
+  ],
+  "photosOnly": false,
+  "overlayInput": "Native injected DPAD",
+  "physicalBoxModified": false,
+  "pending": [
+    "Physical phone QR on TV Box",
+    "Physical USB/firmware visibility",
+    "Real Bluetooth output and video apps"
+  ]
+}

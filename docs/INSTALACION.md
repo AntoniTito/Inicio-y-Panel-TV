@@ -20,9 +20,11 @@ El auxiliar autónomo requiere la autorización propia del destino y un transpor
 
 `z6.ps1 restaurar -Dispositivo IP:PUERTO` usa el respaldo inicial del destino. También puedes indicar `-Respaldo ARCHIVO`. Rechaza identidades diferentes, restaura el HOME y las animaciones, recupera los permisos que modificó y conserva otros servicios de accesibilidad activados posteriormente. Z6 Panel permanece instalado para evitar perder sus datos.
 
-`-RecuperarVersion` utiliza 0.10.4/código 25 y solo se permite en API 29. No funciona encima de códigos superiores; tras recuperarlo, una actualización debe tener código 26 o mayor y la misma firma. En API 31 usa restauración del HOME y ajustes originales, conservando la app moderna. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
+`-RecuperarVersion` selecciona una recuperación con código 27 y la misma firma: comportamiento 0.10.4 para API 29 o 0.11.0 para API 31. No funciona encima de códigos superiores. Tras recuperarlo, una actualización debe tener código 28 o mayor. Sin esa opción solo se restauran HOME y ajustes originales, conservando el APK instalado. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
 
 Los estados originales de la limpieza antigua se conservan en `privado/referencia/original`. No son una receta para otros modelos. El restaurador específico se niega a ejecutarlos sin una identidad comprobada del TV original. Los respaldos del instalador nuevo sí incluyen su identidad desde el principio.
+
+Las imágenes de fondos están en datos privados de la app, no en el exportador de preferencias. Permanecen al actualizar sin desinstalar. El perfil de réplica no copia fotos, sesiones QR, caché diaria ni IDs de otro TV. Lee FONDOS.md antes de trasladarlas.
 
 ## Git y entregas
 

@@ -1,12 +1,12 @@
-﻿{
+{
   "schema": 1,
   "name": "replica",
-  "reference": "0.11.0",
+  "reference": "0.12.0",
   "validatedApi": [
     29,
     31
   ],
-  "description": "Android 10 heredado y Android TV 12: verificar firmware y pruebas fisicas.",
+  "description": "Android 10/12: revisar evidencia por firmware; fondos opcionales con valores locales.",
   "panel": {
     "compact": {
       "type": "boolean",

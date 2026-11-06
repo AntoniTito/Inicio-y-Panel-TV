@@ -25,6 +25,7 @@ public class PersonalizeActivity extends Activity {
   CheckBox date=check("Mostrar fecha", "show_date", true);list.addView(date);
   CheckBox controls=check("Mostrar Wi‑Fi, Bluetooth y Ajustes", "show_controls", true);list.addView(controls);
   CheckBox time24=check("Usar formato de 24 horas", "time_24", false);list.addView(time24);
+  Button wallpapers=new Button(this);wallpapers.setText("Fondos del inicio");wallpapers.setOnClickListener(v->startActivity(new android.content.Intent(this,WallpaperActivity.class)));list.addView(wallpapers);
   Button close=new Button(this);close.setText("Volver");close.setOnClickListener(v->finish());list.addView(close);
  }
 

@@ -3,4 +3,5 @@
 *.md text eol=lf
 *.json text eol=lf
 app/** -text whitespace=cr-at-eol
+app/src/io/nayuki/qrcodegen/** -text -whitespace
 *.png binary

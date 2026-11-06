@@ -1,0 +1,71 @@
+﻿{
+    "version":  "0.12.0",
+    "code":  26,
+    "utc":  "2026-11-06T13:21:05.184Z",
+    "apkSha256":  "979B6CE387C6D33F535C4BCDA53AE14011CD9B10900EB6FCB1E2716C1B3D8D5C",
+    "groups":  {
+                   "fondos31":  {
+                                    "checks":  23,
+                                    "passed":  true,
+                                    "report":  "resultados-fondos-0.12.0-api31.json"
+                                },
+                   "fondos29":  {
+                                    "checks":  17,
+                                    "passed":  true,
+                                    "report":  "resultados-fondos-0.12.0-api29.json"
+                                },
+                   "edicion31":  {
+                                     "checks":  11,
+                                     "passed":  true,
+                                     "report":  "resultados-edicion-0.12.0-api31.json"
+                                 },
+                   "biblioteca31":  {
+                                        "checks":  10,
+                                        "passed":  true,
+                                        "report":  "resultados-biblioteca-0.12.0-api31.json"
+                                    },
+                   "galeria31":  {
+                                     "checks":  8,
+                                     "passed":  true,
+                                     "report":  "resultados-galeria-0.12.0-api31.json"
+                                 },
+                   "regresion31":  {
+                                       "checks":  27,
+                                       "passed":  true,
+                                       "report":  "resultados-regresion-0.12.0-api31.json"
+                                   },
+                   "instalador":  {
+                                      "checks":  40,
+                                      "passed":  true
+                                  }
+               },
+    "performance":  {
+                        "passed":  true,
+                        "method":  "ADB shell key response, same transport and sequence",
+                        "baselineP95":  982.5063,
+                        "modes":  [
+                                      {
+                                          "mode":  "original",
+                                          "p95":  948.0546
+                                      },
+                                      {
+                                          "mode":  "photo",
+                                          "p95":  947.657
+                                      },
+                                      {
+                                          "mode":  "slideshow",
+                                          "p95":  953.1517
+                                      }
+                                  ],
+                        "memoryGrowthKb":  -3683
+                    },
+    "originalPreferencesRestored":  true,
+    "syntheticPhotosRemoved":  0,
+    "physicalBoxModified":  false,
+    "pending":  [
+                    "Physical phone QR and USB",
+                    "Android10 physical overlay/remote/helper regression",
+                    "Bluetooth output, HDMI-CEC and external video apps"
+                ],
+    "sdkDownloadCleanup":  "Automatic approval review rejected deleting verified API29 SDK download ZIP; retained in SDK cache outside project."
+}

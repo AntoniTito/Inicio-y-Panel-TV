@@ -1,0 +1,53 @@
+{
+  "version": "0.12.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T13:06:01.774Z",
+  "checks": [
+    {
+      "name": "Real 850ms OK enters HOME edit",
+      "passed": true
+    },
+    {
+      "name": "Hiding final HOME app leaves Add selectable",
+      "passed": true
+    },
+    {
+      "name": "Back restores visibility from edit snapshot",
+      "passed": true
+    },
+    {
+      "name": "OK saves an empty HOME safely",
+      "passed": true
+    },
+    {
+      "name": "Empty HOME remains editable after saving",
+      "passed": true
+    },
+    {
+      "name": "Real held OK enters overlay edit",
+      "passed": true
+    },
+    {
+      "name": "Hiding final overlay app leaves Add",
+      "passed": true
+    },
+    {
+      "name": "Back restores overlay edit state",
+      "passed": true
+    },
+    {
+      "name": "Empty before package-event test",
+      "passed": true
+    },
+    {
+      "name": "Package-added event refreshes empty catalogue",
+      "passed": true
+    },
+    {
+      "name": "Package-removed event restores empty Add",
+      "passed": true
+    }
+  ],
+  "physicalBoxModified": false
+}

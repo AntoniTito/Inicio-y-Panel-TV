@@ -35,7 +35,8 @@ try{
  OverSettings
  $p=Panel inspect ''
  Check ($p.panelClockVisible -and $p.panelClockTextColor -eq '#B8BFC5') 'Top clock visible with subtle gray text' $p.panelClockText
- # The lower bar starts on Audio; three Right presses reach Ajustes.
+ # Normalize the retained bottom selection using native keys before reaching Ajustes.
+ while((Panel inspect '').bottomSelection -gt 0){Key 21}
  Key 22;Key 22;Key 22;Key 23
  $p=Panel inspect ''
  Check ($p.page -eq 'settings' -and $p.actions.Count -eq 10) 'Native arrows and OK open all eight settings plus footer' $p.actions.Count
@@ -87,7 +88,7 @@ try{
  }
  $null=Panel timer_cancel ''
  Set-Z6PanelPreferences $before
- Write-Z6Json ([ordered]@{version='0.11.0';code=24;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-api31.json')
+ Write-Z6Json ([ordered]@{version='0.12.0';code=26;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-regresion-0.12.0-api31.json')
  Write-Output ('Passed '+$checks.Count+' emulator checks.')
 }finally{
  Invoke-Z6Shell @('input','keyevent','224') -AllowFailure|Out-Null

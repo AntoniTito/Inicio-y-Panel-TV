@@ -19,6 +19,8 @@ public class HomeActivity extends Activity {
  private static HomeActivity current;
  private final Handler ui=new Handler(Looper.getMainLooper());
  private final ExecutorService worker=Executors.newSingleThreadExecutor();
+ private HomeWallpaper wallpaper;
+ private final BroadcastReceiver screenChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){if(wallpaper==null)return;if(Intent.ACTION_SCREEN_OFF.equals(i.getAction()))wallpaper.pause();else if(resumed)wallpaper.resume();}};
  private SharedPreferences prefs;private AppCatalog catalog;private FrameLayout root;private LinearLayout content,appsRow,controlsView;private TextView clockHour,clockMeridiem,date,greeting,wifiState,bluetoothState,notice;private Dialog applicationDialog;private boolean resumed,editMode,addSlot,longCenterHandled,scanInProgress;private String editOrderSnapshot;private Set<String> editHiddenSnapshot,editShownSnapshot;private String editFocusPackage;private final Handler editUi=new Handler(Looper.getMainLooper());private final Runnable clearNotice=()->{if(notice==null)return;if(editMode)setEditHelp();else{notice.setText("");notice.setVisibility(View.GONE);}};private final Runnable longCenter=()->{if(isAppCard(getCurrentFocus())){beginEditMode();}};
  private final BroadcastReceiver networkChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){updateStatus();}};
  private int category=0;private boolean catalogLoaded=false;
@@ -26,12 +28,13 @@ public class HomeActivity extends Activity {
  private final Runnable tick=new Runnable(){public void run(){updateStatus();if(resumed)ui.postDelayed(this,30000);}};
  public void onCreate(Bundle b){super.onCreate(b);current=this;getWindow().setFlags(1024,1024);prefs=getSharedPreferences("panel",0);catalog=new AppCatalog(this);catalogLoaded=catalog.restoreSnapshot();
   IntentFilter net=new IntentFilter(android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION);net.addAction(ConnectivityManager.CONNECTIVITY_ACTION);net.addAction(android.net.wifi.WifiManager.NETWORK_STATE_CHANGED_ACTION);if(Build.VERSION.SDK_INT>=33)registerReceiver(networkChanges,net,Context.RECEIVER_EXPORTED);else registerReceiver(networkChanges,net);
+  IntentFilter power=new IntentFilter();power.addAction(Intent.ACTION_SCREEN_OFF);power.addAction(Intent.ACTION_SCREEN_ON);registerReceiver(screenChanges,power);
   render();
  }
- protected void onResume(){super.onResume();boolean redirected=!visible&&PanelService.active!=null&&PanelService.active.restoreOverlayAfterHome(getIntent());visible=true;resumed=true;if(PanelService.active!=null&&!redirected)PanelService.active.onHomeVisible();if(greeting!=null){greeting.setVisibility(prefs.getBoolean("show_greeting",true)?View.VISIBLE:View.GONE);date.setVisibility(prefs.getBoolean("show_date",true)?View.VISIBLE:View.GONE);controlsView.setVisibility(prefs.getBoolean("show_controls",true)?View.VISIBLE:View.GONE);}ui.removeCallbacks(tick);ui.post(tick);if(catalogLoaded){renderApps();return;}if(scanInProgress)return;scanInProgress=true;worker.execute(()->{try{java.util.List<AppCatalog.Entry> list=catalog.scan();ui.post(()->{if(!isDestroyed()){catalog.accept(list);catalogLoaded=true;renderApps();}scanInProgress=false;});}catch(Exception ignored){ui.post(()->scanInProgress=false);}});
+ protected void onResume(){super.onResume();boolean redirected=!visible&&PanelService.active!=null&&PanelService.active.restoreOverlayAfterHome(getIntent());visible=true;resumed=true;if(wallpaper!=null&&!redirected)wallpaper.resume();if(PanelService.active!=null&&!redirected)PanelService.active.onHomeVisible();if(greeting!=null){greeting.setVisibility(prefs.getBoolean("show_greeting",true)?View.VISIBLE:View.GONE);date.setVisibility(prefs.getBoolean("show_date",true)?View.VISIBLE:View.GONE);controlsView.setVisibility(prefs.getBoolean("show_controls",true)?View.VISIBLE:View.GONE);}ui.removeCallbacks(tick);ui.post(tick);if(catalogLoaded){renderApps();return;}if(scanInProgress)return;scanInProgress=true;worker.execute(()->{try{java.util.List<AppCatalog.Entry> list=catalog.scan();ui.post(()->{if(!isDestroyed()){catalog.accept(list);catalogLoaded=true;renderApps();}scanInProgress=false;});}catch(Exception ignored){ui.post(()->scanInProgress=false);}});
  }
- protected void onPause(){visible=false;resumed=false;ui.removeCallbacks(tick);super.onPause();}
- protected void onDestroy(){if(applicationDialog!=null&&applicationDialog.isShowing())applicationDialog.dismiss();if(current==this)current=null;unregisterReceiver(networkChanges);ui.removeCallbacksAndMessages(null);worker.shutdownNow();super.onDestroy();}
+ protected void onPause(){if(wallpaper!=null)wallpaper.pause();editUi.removeCallbacks(longCenter);visible=false;resumed=false;ui.removeCallbacks(tick);super.onPause();}
+ protected void onDestroy(){if(applicationDialog!=null&&applicationDialog.isShowing())applicationDialog.dismiss();if(current==this)current=null;unregisterReceiver(networkChanges);unregisterReceiver(screenChanges);if(wallpaper!=null)wallpaper.destroy();editUi.removeCallbacksAndMessages(null);ui.removeCallbacksAndMessages(null);worker.shutdownNow();super.onDestroy();}
  protected void onNewIntent(Intent i){super.onNewIntent(i);setIntent(i);}
  @Override public void onBackPressed(){if(applicationDialog!=null&&applicationDialog.isShowing()){applicationDialog.cancel();return;}if(editMode){cancelEdit();showNotice("EDICIÓN CANCELADA");return;}if(PanelService.active!=null)PanelService.active.onHomeVisible();}
  public static void enterEditMode(){if(current!=null)current.beginEditMode();}
@@ -71,7 +74,7 @@ public class HomeActivity extends Activity {
   return false;
  }
  @Override public boolean dispatchKeyEvent(KeyEvent e){if(isApplicationDialogOpen())return super.dispatchKeyEvent(e);int k=e.getKeyCode();if(k==KeyEvent.KEYCODE_DPAD_CENTER||k==KeyEvent.KEYCODE_ENTER){if(e.getAction()==KeyEvent.ACTION_DOWN&&e.getRepeatCount()==0){longCenterHandled=false;editUi.postDelayed(longCenter,650);return true;}if(e.getAction()==KeyEvent.ACTION_UP){editUi.removeCallbacks(longCenter);if(editMode){if(longCenterHandled){longCenterHandled=false;return true;}if(addSlot){addApplication();return true;}saveEdit();showNotice("ORDEN GUARDADO");return true;}if(!longCenterHandled)activateFocused();longCenterHandled=false;return true;}}if(e.getAction()==KeyEvent.ACTION_DOWN&&e.getRepeatCount()==0){if(editMode){if(k==KeyEvent.KEYCODE_DPAD_LEFT||k==KeyEvent.KEYCODE_DPAD_RIGHT){moveFocused(k==KeyEvent.KEYCODE_DPAD_LEFT?-1:1);return true;}if(k==KeyEvent.KEYCODE_DPAD_UP){hideFocused();return true;}if(k==KeyEvent.KEYCODE_BACK){cancelEdit();showNotice("EDICIÓN CANCELADA");return true;}}else if(handleNormalNavigation(k))return true;}return super.dispatchKeyEvent(e);}
- private boolean handleNormalNavigation(int key){View focused=getCurrentFocus();if(focused==null)return false;if(isAppCard(focused)){java.util.List<AppCatalog.Entry> visible=catalog.visible(0);int index=appIndex(focused,visible);if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT){if(index<0||visible.isEmpty())return false;int next=index+(key==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1);if(next<0)next=visible.size()-1;if(next>=visible.size())next=0;focusPackage(visible.get(next).pkg);return true;}if(key==KeyEvent.KEYCODE_DPAD_UP){return focusControl(controlsView.getChildCount()-1);}if(key==KeyEvent.KEYCODE_DPAD_DOWN)return true;}if(isControl(focused)){int index=controlsView.indexOfChild(focused);if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT){int next=index+(key==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1);if(next<0)next=controlsView.getChildCount()-1;if(next>=controlsView.getChildCount())next=0;return focusControl(next);}if(key==KeyEvent.KEYCODE_DPAD_DOWN){java.util.List<AppCatalog.Entry> visible=catalog.visible(0);if(!visible.isEmpty()){focusPackage(visible.get(0).pkg);return true;}}if(key==KeyEvent.KEYCODE_DPAD_UP)return true;}return false;}
+ private boolean handleNormalNavigation(int key){View focused=getCurrentFocus();if(focused==null)return false;if("add_application".equals(focused.getTag())&&!editMode){if(key==KeyEvent.KEYCODE_DPAD_UP&&controlsView.getVisibility()==View.VISIBLE)return focusControl(controlsView.getChildCount()-1);return key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT||key==KeyEvent.KEYCODE_DPAD_DOWN;}if(isAppCard(focused)){java.util.List<AppCatalog.Entry> visible=catalog.visible(0);int index=appIndex(focused,visible);if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT){if(index<0||visible.isEmpty())return false;int next=index+(key==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1);if(next<0)next=visible.size()-1;if(next>=visible.size())next=0;focusPackage(visible.get(next).pkg);return true;}if(key==KeyEvent.KEYCODE_DPAD_UP){return focusControl(controlsView.getChildCount()-1);}if(key==KeyEvent.KEYCODE_DPAD_DOWN)return true;}if(isControl(focused)){int index=controlsView.indexOfChild(focused);if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT){int next=index+(key==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1);if(next<0)next=controlsView.getChildCount()-1;if(next>=controlsView.getChildCount())next=0;return focusControl(next);}if(key==KeyEvent.KEYCODE_DPAD_DOWN){java.util.List<AppCatalog.Entry> visible=catalog.visible(0);if(!visible.isEmpty()){focusPackage(visible.get(0).pkg);return true;}if(catalogLoaded){focusAdd();return true;}}if(key==KeyEvent.KEYCODE_DPAD_UP)return true;}return false;}
  private boolean isAppCard(View v){return v!=null&&v.getTag() instanceof AppCatalog.Entry;}
  private boolean isControl(View v){return controlsView!=null&&v!=null&&v.getParent()==controlsView;}
  private int appIndex(View v,java.util.List<AppCatalog.Entry> visible){if(!(v.getTag() instanceof AppCatalog.Entry))return -1;String pkg=((AppCatalog.Entry)v.getTag()).pkg;for(int i=0;i<visible.size();i++)if(pkg.equals(visible.get(i).pkg))return i;return -1;}
@@ -97,7 +100,7 @@ public class HomeActivity extends Activity {
   java.util.List<AppCatalog.Entry> all= catalog.all();java.util.List<AppCatalog.Entry> visibleNow=catalog.visible(0);java.util.Set<String> visiblePackages=new HashSet<>();for(AppCatalog.Entry e:visibleNow)visiblePackages.add(e.pkg);
   java.util.List<AppCatalog.Entry> choices=new java.util.ArrayList<>();
   for(AppCatalog.Entry e:all)if(!visiblePackages.contains(e.pkg))choices.add(e);
-  if(choices.isEmpty()){showNotice("NO HAY MÁS APLICACIONES DISPONIBLES");return;}
+  if(choices.isEmpty()&&PanelService.active!=null){openPanel("install");return;}
   final Dialog dialog=new Dialog(this);
   applicationDialog=dialog;
   dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -147,6 +150,8 @@ public class HomeActivity extends Activity {
    rowParams.bottomMargin=dp(5);
    list.addView(row,rowParams);
   }
+  if(choices.isEmpty())hint.setText("No hay apps para añadir. Instala una aplicación y vuelve aquí.");
+  Button install=new Button(this);install.setText("Instalar aplicaciones");install.setOnClickListener(v->{dialog.dismiss();if(PanelService.active!=null)openPanel("install");else showNotice("Activa Z6 en Accesibilidad para abrir Instalación");});panel.addView(install);
   panel.addView(scroll,new LinearLayout.LayoutParams(-1,dp(250)));
   TextView cancel=text("ATRÁS · CANCELAR",11);
   cancel.setGravity(Gravity.CENTER);
@@ -156,28 +161,21 @@ public class HomeActivity extends Activity {
   dialog.setContentView(panel);
   dialog.setOnCancelListener(d->{addSlot=false;renderApps();if(applicationDialog==dialog)applicationDialog=null;});
   dialog.setOnDismissListener(d->{if(applicationDialog==dialog)applicationDialog=null;});
-  dialog.setOnShowListener(d->{
-   Window window=dialog.getWindow();
-   if(window!=null){
-    window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-    window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    WindowManager.LayoutParams lp=window.getAttributes();
-    lp.dimAmount=.58f;
-    window.setAttributes(lp);
-    window.setLayout(dp(520),WindowManager.LayoutParams.WRAP_CONTENT);
-   }
-   if(list.getChildCount()>0)list.getChildAt(0).requestFocus();
-  });
-  dialog.show();
+  dialog.setOnShowListener(d->{if(list.getChildCount()>0)list.getChildAt(0).requestFocus();});
   Window window=dialog.getWindow();
-  if(window!=null)window.setLayout(dp(520),WindowManager.LayoutParams.WRAP_CONTENT);
+  if(window!=null){window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));window.getDecorView().setElevation(0);WindowManager.LayoutParams lp=window.getAttributes();lp.width=dp(520);lp.height=WindowManager.LayoutParams.WRAP_CONTENT;lp.dimAmount=.58f;lp.flags|=WindowManager.LayoutParams.FLAG_DIM_BEHIND;window.setAttributes(lp);}
+  dialog.show();
  }
+ public void onTrimMemory(int level){super.onTrimMemory(level);if(wallpaper!=null&&level>=TRIM_MEMORY_RUNNING_LOW)wallpaper.trim();}
+ static void advanceWallpaperForShell(){if(current!=null&&current.wallpaper!=null)current.wallpaper.nextForShell();}
+ static String inspectHome()throws org.json.JSONException{org.json.JSONObject o=new org.json.JSONObject();HomeActivity a=current;o.put("visible",visible);if(a!=null){org.json.JSONArray entries=new org.json.JSONArray();for(AppCatalog.Entry e:a.catalog.all())entries.put(new org.json.JSONObject().put("package",e.pkg).put("visible",a.catalog.visible(e)).put("title",e.title));o.put("apps",entries);o.put("appCount",a.catalog.visible(0).size());o.put("editMode",a.editMode);o.put("dialog",a.applicationDialog!=null&&a.applicationDialog.isShowing());boolean add=false;for(int i=0;a.appsRow!=null&&i<a.appsRow.getChildCount();i++)if("add_application".equals(a.appsRow.getChildAt(i).getTag()))add=true;o.put("addVisible",add);View f=a.getCurrentFocus();o.put("focus",f==null?"":f.getTag() instanceof AppCatalog.Entry?((AppCatalog.Entry)f.getTag()).pkg:String.valueOf(f.getTag()));o.put("wallpaper",a.wallpaper==null?new org.json.JSONObject():new org.json.JSONObject(a.wallpaper.inspect()));}return o.toString();}
  private int dp(int v){return Math.round(v*getResources().getDisplayMetrics().density);}
  private TextView text(String s,int size){TextView t=new PanelService.StableText(this);t.setText(s);t.setTextColor(Color.WHITE);t.setTextSize(size);return t;}
  private GradientDrawable bg(int c){GradientDrawable d=new GradientDrawable();d.setColor(c);d.setCornerRadius(dp(8));return d;}
  private void focus(View v){v.setFocusable(true);v.setFocusableInTouchMode(true);v.setOnTouchListener((view,event)->{if(event.getAction()==MotionEvent.ACTION_DOWN)view.requestFocus();return false;});v.setBackground(bg(0x55202020));v.setOnFocusChangeListener((x,f)->{GradientDrawable d=bg(f?0xFF3A3A3A:0x55202020);if(f)d.setStroke(dp(2),0xFFB8B8B8);x.setBackground(d);});}
  private void render(){
   root=new FrameLayout(this);root.setPadding(dp(58),dp(28),dp(58),dp(24));root.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{0xFF102E3A,0xFF121722,0xFF07090D}));setContentView(root);
+  ImageView background=new ImageView(this);background.setScaleType(ImageView.ScaleType.CENTER_CROP);FrameLayout.LayoutParams bgp=new FrameLayout.LayoutParams(-1,-1);bgp.setMargins(-dp(58),-dp(28),-dp(58),-dp(24));root.addView(background,bgp);View shade=new View(this);shade.setBackgroundColor(0x65000000);shade.setVisibility(View.GONE);FrameLayout.LayoutParams sp=new FrameLayout.LayoutParams(-1,-1);sp.setMargins(-dp(58),-dp(28),-dp(58),-dp(24));root.addView(shade,sp);wallpaper=new HomeWallpaper(this,background,shade);
   LinearLayout header=new LinearLayout(this);header.setGravity(Gravity.TOP);root.addView(header,new FrameLayout.LayoutParams(-1,dp(52)));
   LinearLayout identity=new LinearLayout(this);identity.setOrientation(1);header.addView(identity,new LinearLayout.LayoutParams(0,-1,1));
   String name=prefs.getString("display_name","").trim();greeting=text("",12);greeting.setTypeface(android.graphics.Typeface.create("sans-serif-light",android.graphics.Typeface.NORMAL));greeting.setLetterSpacing(.18f);greeting.setTextColor(0xFF707574);greeting.setVisibility(prefs.getBoolean("show_greeting",true)?View.VISIBLE:View.GONE);identity.addView(greeting);
@@ -196,10 +194,10 @@ public class HomeActivity extends Activity {
   LinearLayout clockRow=new LinearLayout(this);clockRow.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams crp=new LinearLayout.LayoutParams(-1,-2);crp.topMargin=0;hero.addView(clockRow,crp);clockHour=text("",90);clockHour.setTypeface(android.graphics.Typeface.create("sans-serif-thin",android.graphics.Typeface.NORMAL));clockHour.setTextColor(0xFFB7BBB8);clockRow.addView(clockHour);clockMeridiem=text("",24);clockMeridiem.setTypeface(android.graphics.Typeface.create("sans-serif-light",android.graphics.Typeface.NORMAL));clockMeridiem.setTextColor(0xFF707574);LinearLayout.LayoutParams mp=new LinearLayout.LayoutParams(-2,-2);mp.leftMargin=dp(7);clockRow.addView(clockMeridiem,mp);
   HorizontalScrollView scroll=new HorizontalScrollView(this);scroll.setHorizontalScrollBarEnabled(false);scroll.setClipToPadding(false);scroll.setPadding(dp(3),0,dp(3),0);appsRow=new LinearLayout(this);appsRow.setGravity(Gravity.CENTER_HORIZONTAL);appsRow.setClipChildren(false);appsRow.setClipToPadding(false);appsRow.setMinimumWidth(Math.max(0,getResources().getDisplayMetrics().widthPixels-dp(122)));scroll.addView(appsRow,new HorizontalScrollView.LayoutParams(-1,-1));LinearLayout.LayoutParams sl=new LinearLayout.LayoutParams(-1,dp(142));sl.topMargin=dp(8);content.addView(scroll,sl);
   if(notice!=null){if(editMode)setEditHelp();else if(notice.getText().length()==0)notice.setVisibility(View.GONE);}
-  View first=null;if(catalog.visible(0).isEmpty()){TextView empty=text(!catalogLoaded?"…":"Sin aplicaciones",15);empty.setPadding(dp(12),dp(24),0,0);appsRow.addView(empty);}
+  View first=null;if(catalog.visible(0).isEmpty()&&!catalogLoaded){TextView empty=text("Cargando…",15);empty.setPadding(dp(12),dp(24),0,0);appsRow.addView(empty);}
   for(AppCatalog.Entry e:catalog.visible(0)){LinearLayout card=new LinearLayout(this);card.setOrientation(1);card.setGravity(Gravity.CENTER);card.setTag(e);focus(card);LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(160),dp(108));cp.rightMargin=dp(8);appsRow.addView(card,cp);ImageView icon=new ImageView(this);icon.setImageDrawable(catalog.icon(e));card.addView(icon,new LinearLayout.LayoutParams(dp(52),dp(52)));TextView label=text(e.title,13);label.setGravity(Gravity.CENTER);label.setMaxLines(2);card.addView(label);card.setOnClickListener(v->{if(editMode)return;try{startActivity(new Intent(Intent.ACTION_MAIN).setComponent(e.component));}catch(Exception ex){showNotice("APLICACIÓN NO DISPONIBLE");}});if(first==null)first=card;}
-  if(editMode){LinearLayout add=new LinearLayout(this);add.setOrientation(1);add.setGravity(Gravity.CENTER);add.setTag("add_application");focus(add);LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(160),dp(108));cp.rightMargin=dp(8);appsRow.addView(add,cp);TextView plus=text("+",42);plus.setGravity(Gravity.CENTER);add.addView(plus,new LinearLayout.LayoutParams(-1,dp(58)));TextView label=text("Añadir aplicación",13);label.setGravity(Gravity.CENTER);add.addView(label);add.setOnClickListener(v->{addSlot=true;addApplication();});}
-  if(focusedPackage!=null){focusPackage(focusedPackage);}else if(first!=null)first.requestFocus();
+  if(editMode||(catalogLoaded&&catalog.visible(0).isEmpty())){LinearLayout add=new LinearLayout(this);add.setOrientation(1);add.setGravity(Gravity.CENTER);add.setTag("add_application");focus(add);LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(160),dp(108));cp.rightMargin=dp(8);appsRow.addView(add,cp);TextView plus=text("+",42);plus.setGravity(Gravity.CENTER);add.addView(plus,new LinearLayout.LayoutParams(-1,dp(58)));TextView label=text("Añadir aplicación",13);label.setGravity(Gravity.CENTER);add.addView(label);add.setOnClickListener(v->{addSlot=editMode;addApplication();});if(first==null)first=add;}
+  if(catalogLoaded&&catalog.visible(0).isEmpty()){focusAdd();}else if(focusedPackage!=null){focusPackage(focusedPackage);}else if(first!=null)first.requestFocus();
   if(clockHour.getText().length()==0)updateStatus();
  }
   private void setEditHelp(){if(notice==null)return;notice.removeCallbacks(clearNotice);notice.setText("← →  MOVER    ·    ↑  OCULTAR    ·    OK  GUARDAR    ·    ATRÁS  CANCELAR");notice.setVisibility(View.VISIBLE);}

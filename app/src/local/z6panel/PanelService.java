@@ -246,7 +246,7 @@ public class PanelService extends AccessibilityService {
    appScroll.setVisibility(View.VISIBLE);
    paintBottom();
   });
-  if(visible.isEmpty()){TextView empty=text(loading?"Cargando…":"Sin aplicaciones",14,Color.LTGRAY);appRow.addView(empty,new LinearLayout.LayoutParams(-2,dp(64)));}
+  if(visible.isEmpty()&&loading){TextView empty=text("Cargando…",14,Color.LTGRAY);appRow.addView(empty,new LinearLayout.LayoutParams(-2,dp(64)));}
   for(int i=0;i<visible.size();i++){
    final int n=i;AppCatalog.Entry e=visible.get(i);LinearLayout card=new LinearLayout(this);card.setOrientation(1);card.setGravity(Gravity.CENTER);card.setPadding(dp(8),dp(3),dp(8),dp(3));card.setClipChildren(false);card.setClipToPadding(false);
    LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(120),dp(compact?62:88));cp.setMargins(0,dp(2),dp(8),0);appRow.addView(card,cp);
@@ -254,11 +254,12 @@ public class PanelService extends AccessibilityService {
    TextView label=text(e.title,10,Color.WHITE);label.setGravity(Gravity.CENTER);label.setMaxLines(2);card.addView(label,new LinearLayout.LayoutParams(-1,-2));
    card.setContentDescription(e.title);card.setOnClickListener(v->{selected=quickActions.size()+n;if(!editMode)launch(e);});cards.add(card);
   }
-  LinearLayout add=new LinearLayout(this);add.setGravity(Gravity.CENTER);add.setPadding(dp(8),dp(3),dp(8),dp(3));add.setContentDescription("Añadir aplicación");add.setVisibility(editMode?View.VISIBLE:View.GONE);
+  boolean showAdd=editMode||(!loading&&visible.isEmpty());
+  LinearLayout add=new LinearLayout(this);add.setGravity(Gravity.CENTER);add.setPadding(dp(8),dp(3),dp(8),dp(3));add.setContentDescription("Añadir aplicación");add.setVisibility(showAdd?View.VISIBLE:View.GONE);
   TextView addLabel=text("+ Añadir",10,Color.WHITE);addLabel.setGravity(Gravity.CENTER);add.addView(addLabel,new LinearLayout.LayoutParams(-1,-1));
   LinearLayout.LayoutParams addParams=new LinearLayout.LayoutParams(dp(120),dp(62));addParams.setMargins(0,dp(2),dp(8),0);appRow.addView(add,addParams);addCard=add;
   add.setOnClickListener(v->{selected=cards.size()-1;push(new Page("panelAddApp",null));});
-  if(editMode)cards.add(add);
+  if(showAdd)cards.add(add);
   if(selected<0||selected>=cards.size())selected=quickActions.size()<cards.size()?quickActions.size():0;
   paintBottom();
   showClockPanel();
@@ -343,6 +344,7 @@ public class PanelService extends AccessibilityService {
   suppressAutoScroll=false;
   if(horizontal instanceof AppScroll)((AppScroll)horizontal).releasePosition();
   editMode=false;addSlot=false;
+  if(visible.isEmpty()){renderBottom();return;}
   if(editHint!=null)editHint.setVisibility(View.GONE);
   if(addCard!=null){addCard.setVisibility(View.INVISIBLE);}
   if(selected>=cards.size())selected=Math.max(0,cards.size()-1);
@@ -351,7 +353,7 @@ public class PanelService extends AccessibilityService {
   if(horizontal!=null)horizontal.scrollTo(horizontal.getScrollX(),0);
  }
  private void saveEditMode(){editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;endEditMode();}
- private void cancelEditMode(){if(!editMode)return;catalog.restoreEditState(editOrderSnapshot,editHiddenSnapshot,editShownSnapshot);editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;endEditMode();}
+ private void cancelEditMode(){if(!editMode)return;catalog.restoreEditState(editOrderSnapshot,editHiddenSnapshot,editShownSnapshot);editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;endEditMode();renderBottom();}
  private void moveEdit(int delta){
   if(!editMode)return;
   if(horizontal instanceof AppScroll)((AppScroll)horizontal).frozen=false;
@@ -625,6 +627,7 @@ public class PanelService extends AccessibilityService {
     addKey("nativeSound","Sonido avanzado en Android","Abre otra pantalla",()->nativeSettings("Sonido avanzado",Settings.ACTION_SOUND_SETTINGS));return true;
    }
    case "appearance":
+    addKey("wallpapers","Fondos del inicio","Fotos, presentación y paisajes diarios opcionales",()->nativePage("Fondos del inicio",new Intent(this,WallpaperActivity.class)));
     title.setText("Panel e inicio");subtitle.setText("Personalización guardada en este TV Box");
     addKey("overlayClock","Hora y fecha en el panel: "+(prefs.getBoolean("overlay_clock",true)?"sí":"no"),"Al pulsar Home · incluye el día de la semana",()->togglePreference("overlay_clock",true));
     adjustable("opacity","Opacidad: "+Math.min(90,prefs.getInt("opacity",80))+"%","← → ajustar · 70 a 90%",()->setOpacity(10),()->setOpacity(-10),()->setOpacity(10));
@@ -657,7 +660,7 @@ public class PanelService extends AccessibilityService {
     addKey("allAndroid","Todas las apps en Android","Incluye servicios y aplicaciones sin icono",()->nativeSettings("Aplicaciones",Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
     addKey("resetOrder","Restaurar orden original","Solicita confirmación",()->push(new Page("resetOrder",null)));return true;
    case "install":
-    title.setText("Instalar aplicaciones");subtitle.setText("Se abrirá la aplicación elegida");for(String pkg:new String[]{"com.android.vending","com.esaba.downloader"}){final AppCatalog.Entry e=catalog.find(pkg);addKey(pkg,pkg.equals("com.android.vending")?"Google Play":"Downloader",e==null?"No disponible":"",e==null?null:()->launch(e));}return true;
+    title.setText("Instalar aplicaciones");subtitle.setText("Se abrirá la aplicación elegida");for(String pkg:new String[]{"com.android.vending","com.esaba.downloader"}){final AppCatalog.Entry e=catalog.find(pkg);if(e!=null)addKey(pkg,pkg.equals("com.android.vending")?"Google Play":"Downloader","",()->launch(e));}return true;
    case "resetOrder":
     title.setText("Restaurar orden");subtitle.setText("Se restablecerá el orden de las apps del panel.");addKey("confirmReset","Restaurar","",()->{catalog.resetOrder();pages.pop();renderSide();});addKey("cancel","Cancelar","",this::back);p.selectedId=p.selectedId==null?"cancel":p.selectedId;return true;
    case "app":{
@@ -688,13 +691,13 @@ public class PanelService extends AccessibilityService {
  private void moveApp(AppCatalog.Entry e,int direction){if(catalog.moveVisible(e,direction)){renderSide();message("Orden guardado");}else message(direction<0?"Ya es la primera aplicación":"Ya es la última aplicación");}
  String inspectForShell()throws org.json.JSONException{
   boolean clockVisible=panel!=null&&pages.isEmpty()&&clockPanel!=null&&panelClock!=null&&panelDate!=null&&clockPanel.isShown();
-  org.json.JSONObject result=new org.json.JSONObject();result.put("visible",panel!=null);result.put("page",pages.isEmpty()?"bottom":pages.peek().name);result.put("title",title==null?"":title.getText());result.put("subtitle",subtitle==null?"":subtitle.getText());result.put("bridgeReady",ready());result.put("foreground",foregroundPackage);result.put("homeVisible",HomeActivity.visible);result.put("timer",SleepTimer.summary(this));result.put("timerRemaining",SleepTimer.remainingMillis(this));
+  org.json.JSONObject result=new org.json.JSONObject();result.put("visible",panel!=null);result.put("bottomAppCount",visible.size());result.put("bottomAddVisible",addCard!=null&&addCard.getVisibility()==View.VISIBLE);result.put("bottomSelection",selected);result.put("editMode",editMode);result.put("page",pages.isEmpty()?"bottom":pages.peek().name);result.put("title",title==null?"":title.getText());result.put("subtitle",subtitle==null?"":subtitle.getText());result.put("bridgeReady",ready());result.put("foreground",foregroundPackage);result.put("homeVisible",HomeActivity.visible);result.put("timer",SleepTimer.summary(this));result.put("timerRemaining",SleepTimer.remainingMillis(this));
   result.put("panelClockEnabled",prefs.getBoolean("overlay_clock",true));result.put("panelClockVisible",clockVisible);result.put("panelClockText",clockVisible?panelClock.getText()+" · "+panelDate.getText():"");
   if(clockVisible){int[] xy=new int[2];clockPanel.getLocationOnScreen(xy);org.json.JSONObject bounds=new org.json.JSONObject();bounds.put("x",xy[0]);bounds.put("y",xy[1]);bounds.put("width",clockPanel.getWidth());bounds.put("height",clockPanel.getHeight());result.put("panelClockBounds",bounds);result.put("panelClockTextColor",String.format(Locale.ROOT,"#%06X",panelClock.getCurrentTextColor()&0xFFFFFF));result.put("panelDateTextColor",String.format(Locale.ROOT,"#%06X",panelDate.getCurrentTextColor()&0xFFFFFF));}
   org.json.JSONArray rows=new org.json.JSONArray();for(int i=0;i<actions.size();i++){Action a=actions.get(i);org.json.JSONObject row=new org.json.JSONObject();row.put("id",a.id);row.put("label",a.label);row.put("detail",a.detail);row.put("enabled",a.run!=null);row.put("selected",!pages.isEmpty()&&pages.peek().selected==i);if(i<sideViews.size()){View v=sideViews.get(i);int[] xy=new int[2];v.getLocationOnScreen(xy);row.put("x",xy[0]);row.put("y",xy[1]);row.put("width",v.getWidth());row.put("height",v.getHeight());}rows.put(row);}result.put("actions",rows);return result.toString();
  }
  void openForShell(String name){
-  if(name==null)name="settings";if(!Arrays.asList("settings","sound","network","bluetooth","appearance","manage","system","timer","diagnostics","regional","storage","status","animations","timezone","display").contains(name))throw new IllegalArgumentException("Unknown page");
+  if(name==null)name="settings";if(!Arrays.asList("settings","sound","network","bluetooth","appearance","manage","system","timer","diagnostics","regional","storage","status","animations","timezone","display","install").contains(name))throw new IllegalArgumentException("Unknown page");
   if(panel!=null)hide();openPage(name);
  }
  String actionForShell(String id){for(int i=0;i<actions.size();i++)if(actions.get(i).id.equals(id)){if(actions.get(i).run==null)return "DISABLED";if(!pages.isEmpty()){pages.peek().selected=i;pages.peek().selectedId=id;pages.peek().interacted=true;}runAction(i);return "OK";}return "NOT_FOUND";}
@@ -919,6 +922,7 @@ public class PanelService extends AccessibilityService {
    }
 
   }else if(page.name.equals("panelAddApp")){
+   addKey("installApps","Instalar aplicaciones","Abre una tienda disponible",()->push(new Page("install",null)));
    title.setText("Añadir aplicación");subtitle.setText("Selecciona una aplicación para mostrarla en Apps");
    for(AppCatalog.Entry e:catalog.all())if(!catalog.visible(e)){final AppCatalog.Entry entry=e;add(e.title,"",()->addAppToPanel(entry));}
 
@@ -1000,7 +1004,7 @@ public class PanelService extends AccessibilityService {
   }
   if(key==KeyEvent.KEYCODE_DPAD_UP||key==KeyEvent.KEYCODE_DPAD_DOWN){
    if(key==KeyEvent.KEYCODE_DPAD_DOWN){
-    if(selected<quickActions.size()&&!visible.isEmpty()){selected=quickActions.size()+Math.min(selected,visible.size()-1);paintBottom();return;}
+    if(selected<quickActions.size()&&(!visible.isEmpty()||(!loading&&addCard!=null&&cards.contains(addCard)))){selected=quickActions.size()+Math.max(0,Math.min(selected,visible.size()-1));paintBottom();return;}
     return;
    }
    if(selected>=quickActions.size()){selected=Math.min(quickActions.size()-1,selected-quickActions.size());paintBottom();return;}
@@ -1019,6 +1023,7 @@ public class PanelService extends AccessibilityService {
    saveEditMode();return;
   }
   if(selected>=0&&selected<quickActions.size()){quickActions.get(selected).run();return;}
+  if(!loading&&visible.isEmpty()&&selected==quickActions.size()){push(new Page("panelAddApp",null));return;}
   int appIndex=selected-quickActions.size();if(appIndex<0||appIndex>=visible.size())return;
   AppCatalog.Entry e=visible.get(appIndex);if(longer)beginEditMode();else launch(e);
  }

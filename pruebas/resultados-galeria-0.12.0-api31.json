@@ -1,0 +1,41 @@
+{
+  "version": "0.12.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T13:20:52.517Z",
+  "checks": [
+    {
+      "name": "Gallery asks before accessing shared images",
+      "passed": true
+    },
+    {
+      "name": "Android runtime permission dialog opens",
+      "passed": true
+    },
+    {
+      "name": "TV image folder appears through MediaStore",
+      "passed": true
+    },
+    {
+      "name": "Image import action is remote-focusable",
+      "passed": true
+    },
+    {
+      "name": "MediaStore import saves optimized private copy",
+      "passed": true
+    },
+    {
+      "name": "Photo preview exposes ordering control",
+      "passed": true
+    },
+    {
+      "name": "Ordering control preserves first-item boundary",
+      "passed": true
+    },
+    {
+      "name": "Removing original source does not remove imported wallpaper",
+      "passed": true
+    }
+  ],
+  "physicalUsbTested": false
+}
