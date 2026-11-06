@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "name": "replica",
-  "reference": "0.12.0",
+  "reference": "0.12.1",
   "validatedApi": [
     29,
     31

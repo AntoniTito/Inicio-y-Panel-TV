@@ -12,3 +12,5 @@
 Los datos de auditoría advierten que los valores declarados por un firmware genérico no certifican por sí solos el fabricante ni la memoria física. Tampoco se consideran malware o publicidad los paquetes solo por sus nombres. Por eso no se traslada automáticamente la limpieza histórica a otro modelo.
 
 - 0.12.0/código 26: acceso a añadir apps sin elementos visibles, biblioteca privada de fondos, presentación, paisajes Wikimedia y recepción temporal por QR. Recuperaciones específicas código 27 y evidencia separada por API.
+
+- 0.12.1/código 28: fondo de borde a borde en una capa independiente; controles con los mismos márgenes. Recuperaciones código 29 y prueba de píxeles en las cuatro esquinas.

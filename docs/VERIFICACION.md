@@ -45,3 +45,11 @@ La comparación de rendimiento usa tres rondas por modo y el mismo comando ADB q
 Pendientes físicos: envío QR desde celular al TV, USB y sus permisos específicos, HDMI-CEC, Bluetooth real y reproducción de las aplicaciones externas. No se instaló esta versión en el TV Box original. El emulador no dispone del puente de red para celular, por decisión del usuario.
 
 Se mantuvo el ZIP verificado de la imagen de pruebas API 29 en la caché del SDK: la revisión automática bloqueó su eliminación fuera del proyecto. El SDK y sus imágenes no forman parte de Git ni de la entrega trasladable.
+
+## 0.12.1: fondo de borde a borde
+
+Se separó la capa de imagen de los márgenes del contenido del inicio. Se comprobaron fotografías sintéticas verticales y panorámicas con captura de pantalla: las cuatro esquinas muestran la foto, sin franjas del degradado. La resolución decodificada sigue limitada por la calidad elegida.
+
+Los informes resultados-fondo-completo-0.12.1-api29.json y resultados-fondo-completo-0.12.1-api31.json registran límites reales de la vista y píxeles de las cuatro esquinas. API 29 se probó a 1280×720; API 31 a 1280×720, 1920×1080 y 3840×2160. La cobertura del fondo queda comprobada en ambos emuladores, sin certificar todos los controles de cada firmware físico.
+
+La imagen stock API 29 mantiene sus limitaciones anteriores de superposición y control auxiliar; no se modificó el TV Box original. Se conservan preferencias e imágenes propias y se restauran los valores de pantalla del emulador al acabar. Las recuperaciones de esta entrega usan código 29; una actualización posterior a recuperarlas requiere código 30 o superior.

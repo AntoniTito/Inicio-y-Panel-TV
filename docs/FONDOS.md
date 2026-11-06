@@ -1,4 +1,4 @@
-# Aplicaciones y fondos en 0.12.0
+# Aplicaciones y fondos
 
 ## Añadir aplicaciones
 
@@ -55,3 +55,7 @@ Por decisión del usuario, no se incluye puente de red para enviar desde un celu
 Las imágenes y los índices están en el almacenamiento privado de la app y permanecen al actualizar sin desinstalar. El exportador existente de preferencias no incorpora los archivos de la biblioteca: no transfieras sus identificadores como si fueran fotos. Otro TV debe importar sus propias imágenes. No desinstales para forzar una versión anterior, porque Android elimina datos privados.
 
 Las recuperaciones con código 27 no muestran esta biblioteca, pero una actualización sin desinstalar conserva sus archivos privados. En la copia local se preservaron preferencias, APK anterior y snapshot del emulador antes de actualizar. Las fotos, claves, sesiones QR y respaldos nunca forman parte de Git ni del ZIP público del proyecto.
+
+## Corrección 0.12.1
+
+El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones actuales son código 29, específicas por API; no desinstales para bajar una versión.

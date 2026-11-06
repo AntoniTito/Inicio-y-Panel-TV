@@ -35,7 +35,7 @@ switch -Regex ($command){
  }
  '^pm (default-state|enable|disable|disable-user|disable-until-used) --user 0 (.+)$' {$value=switch($Matches[1]){'default-state'{0}'enable'{1}'disable'{2}'disable-user'{3}'disable-until-used'{4}};Set-Field $state.packages $Matches[2] $value;Save-State;Emit 'Success';break}
  '^pm (grant|revoke) local.z6panel (.+)$' {Set-Field $state.permissions $Matches[2] ($Matches[1] -eq 'grant');Save-State;Emit '';break}
- '^install -r (.+)$' {$state.code=if($Matches[1] -like '*-c27.apk'){27}elseif($Matches[1] -like '*0.12.0*'){26}elseif($Matches[1] -like '*recuperacion-0.10.4*'){25}elseif($Matches[1] -like '*recuperacion*'){23}elseif($Matches[1] -like '*0.11.0*'){24}else{22};Save-State;Emit 'Success';break}
+ '^install -r (.+)$' {$state.code=if($Matches[1] -like '*-c29.apk'){29}elseif($Matches[1] -like '*0.12.1*'){28}elseif($Matches[1] -like '*-c27.apk'){27}elseif($Matches[1] -like '*0.12.0*'){26}elseif($Matches[1] -like '*recuperacion-0.10.4*'){25}elseif($Matches[1] -like '*recuperacion*'){23}elseif($Matches[1] -like '*0.11.0*'){24}else{22};Save-State;Emit 'Success';break}
  '^cmd appops set local.z6panel SCHEDULE_EXACT_ALARM (allow|default|deny|ignore)$' {Set-Field $state 'alarmMode' $Matches[1];Save-State;Emit '';break}
  '^cmd appops get local.z6panel SCHEDULE_EXACT_ALARM$' {Emit $(if($state.PSObject.Properties['alarmMode']){'SCHEDULE_EXACT_ALARM: '+$state.alarmMode}else{'No operations.'});break}
  '^pull \S+ (.+)$' {[IO.File]::WriteAllText($Matches[1],'FAKE APK');Emit 'pulled';break}

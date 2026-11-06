@@ -2,9 +2,9 @@
 
 Lee README.md y docs/COMPATIBILIDAD.md. Usa z6.ps1 como interfaz común; no reconstruyas instrucciones de memoria ni ejecutes scripts históricos del equipo original sobre otro TV.
 
-Consulta docs/VERSIONES.md: v0.10.4/android10 es la base anterior y v0.11.0 conserva la adaptación anterior y v0.12.0/main incorpora fondos y acceso desde filas vacías. Selecciona la linea conforme al encargo; no muevas etiquetas existentes ni cambies la rama con trabajo pendiente. Cambiar de version en Git no actualiza ni restaura un dispositivo.
+Consulta docs/VERSIONES.md: v0.10.4/android10 es la base anterior y v0.11.0 conserva la adaptación anterior y v0.12.0 conserva los fondos iniciales y v0.12.1/main corrige su cobertura de borde a borde. Selecciona la linea conforme al encargo; no muevas etiquetas existentes ni cambies la rama con trabajo pendiente. Cambiar de version en Git no actualiza ni restaura un dispositivo.
 
-- La base vigente es 0.12.0/código 26. Fotos/recepción probadas en emuladores API 29/31; la superposición nativa de la imagen stock API 29 tiene una limitación registrada. La base histórica 0.10.4 y su firma están preservadas privadamente. No actualices el TV físico sin un encargo específico y validación de regresión.
+- La base vigente es 0.12.1/código 28. Fotos/recepción probadas en emuladores API 29/31; la superposición nativa de la imagen stock API 29 tiene una limitación registrada. La base histórica 0.10.4 y su firma están preservadas privadamente. No actualices el TV físico sin un encargo específico y validación de regresión.
 - Para instalar, pide o descubre el identificador del destino y pásalo explícitamente. Empieza por `instalar -Simular` y `diagnosticar`. Ejecuta los cambios solo dentro del encargo del usuario.
 - Conserva los respaldos iniciales e identidades; no restaures un respaldo de otro TV. No copies redes, autorizaciones ADB, cuentas ni temporizadores.
 - No publiques privado/, .local/, claves, contraseñas ni datos personales. La firma original es necesaria para actualizar conservando datos; no la sustituyas.

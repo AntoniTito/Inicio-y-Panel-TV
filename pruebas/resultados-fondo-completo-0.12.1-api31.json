@@ -1,0 +1,313 @@
+{
+  "version": "0.12.1",
+  "code": 28,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T13:45:44.974Z",
+  "checks": [
+    {
+      "name": "Synthetic portrait imported",
+      "passed": true
+    },
+    {
+      "name": "Synthetic wide imported",
+      "passed": true
+    },
+    {
+      "name": "Full-screen layer 1280x720 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 1280x720",
+      "passed": true,
+      "evidence": {
+        "width": 200,
+        "height": 400,
+        "bytes": 320000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 1280x720 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    },
+    {
+      "name": "Full-screen layer 1280x720 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 1280x720",
+      "passed": true,
+      "evidence": {
+        "width": 800,
+        "height": 200,
+        "bytes": 640000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 1280x720 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    },
+    {
+      "name": "Full-screen layer 1920x1080 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 1920x1080",
+      "passed": true,
+      "evidence": {
+        "width": 200,
+        "height": 400,
+        "bytes": 320000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 1920x1080 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    },
+    {
+      "name": "Full-screen layer 1920x1080 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 1920x1080",
+      "passed": true,
+      "evidence": {
+        "width": 800,
+        "height": 200,
+        "bytes": 640000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 1920x1080 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    },
+    {
+      "name": "Full-screen layer 3840x2160 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 3840,
+        "height": 2160
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 3840x2160",
+      "passed": true,
+      "evidence": {
+        "width": 200,
+        "height": 400,
+        "bytes": 320000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 3840x2160 Z6-cover-portrait.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    },
+    {
+      "name": "Full-screen layer 3840x2160 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 3840,
+        "height": 2160
+      }
+    },
+    {
+      "name": "Light bitmap remains bounded at 3840x2160",
+      "passed": true,
+      "evidence": {
+        "width": 800,
+        "height": 200,
+        "bytes": 640000
+      }
+    },
+    {
+      "name": "Photo reaches all four edges 3840x2160 Z6-cover-wide.png",
+      "passed": true,
+      "evidence": [
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ],
+        [
+          154,
+          0,
+          153,
+          255
+        ]
+      ]
+    }
+  ],
+  "physicalBoxModified": false,
+  "physicalFirmwarePending": true
+}
