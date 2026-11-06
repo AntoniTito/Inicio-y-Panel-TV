@@ -1,0 +1,106 @@
+{
+  "version": "0.15.0",
+  "code": 36,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T20:34:38.689Z",
+  "checks": [
+    {
+      "name": "Four modes occupy one horizontal row",
+      "passed": true
+    },
+    {
+      "name": "Photo management is embedded in main screen",
+      "passed": true
+    },
+    {
+      "name": "Inline photo focus previews without applying",
+      "passed": true
+    },
+    {
+      "name": "Moving to resolution keeps preview",
+      "passed": true
+    },
+    {
+      "name": "Returning to Photo recovers preview without entering My photos",
+      "passed": true
+    },
+    {
+      "name": "Photo OK applies directly without leaving main screen",
+      "passed": true
+    },
+    {
+      "name": "Inline photo actions and thumbnails fit 720p",
+      "passed": true,
+      "evidence": 11
+    },
+    {
+      "name": "Cancel deletion keeps stored image",
+      "passed": true
+    },
+    {
+      "name": "Confirmed deletion removes masters, thumbnails and import references",
+      "passed": true
+    },
+    {
+      "name": "Pending thumbnail work does not resurrect deleted files",
+      "passed": true
+    },
+    {
+      "name": "Deleting active photo restores original background",
+      "passed": true
+    },
+    {
+      "name": "Inline presentation applies only checked photos",
+      "passed": true
+    },
+    {
+      "name": "Custom presentation excludes future imports",
+      "passed": true
+    },
+    {
+      "name": "Inline presentation ordering opens participant ordering",
+      "passed": true
+    },
+    {
+      "name": "Browsing landscape thumbnails does not change current background",
+      "passed": true
+    },
+    {
+      "name": "Choosing another landscape downloads, applies and clears temporary browser files",
+      "passed": true
+    },
+    {
+      "name": "Chosen landscape is retained for today",
+      "passed": true
+    },
+    {
+      "name": "Native Back closes landscape browser one level",
+      "passed": true
+    },
+    {
+      "name": "Repeated cancelled landscape browsing leaves no cached thumbnail files",
+      "passed": true
+    },
+    {
+      "name": "Offline landscape browser explains failure and preserves cached background",
+      "passed": true
+    },
+    {
+      "name": "Cached landscape remains usable offline",
+      "passed": true
+    },
+    {
+      "name": "Delete all frees every personal image and thumbnail without a trash folder",
+      "passed": true
+    },
+    {
+      "name": "New screen recreates at 1080p",
+      "passed": true
+    }
+  ],
+  "pending": [
+    "Physical 1080p/4K and USB",
+    "Physical control confirmation"
+  ]
+}

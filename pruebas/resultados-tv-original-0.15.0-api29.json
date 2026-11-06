@@ -1,0 +1,99 @@
+{
+  "version": "0.15.0",
+  "code": 36,
+  "api": 29,
+  "emulator": false,
+  "utc": "2026-11-06T20:36:10.134Z",
+  "checks": [
+    {
+      "name": "Helper reconnects after signed update",
+      "passed": true
+    },
+    {
+      "name": "Every preference preserved on update",
+      "passed": true
+    },
+    {
+      "name": "All original photos and order preserved",
+      "passed": true
+    },
+    {
+      "name": "Physical 720p shows all four modes in one row",
+      "passed": true
+    },
+    {
+      "name": "Using a received photo immediately restores its preview and thumbnail focus",
+      "passed": true
+    },
+    {
+      "name": "Gallery OK uses photo and returns directly to embedded management",
+      "passed": true
+    },
+    {
+      "name": "Focus and return preserve preview without applying it",
+      "passed": true
+    },
+    {
+      "name": "Cancelling inline deletion retains files",
+      "passed": true
+    },
+    {
+      "name": "Confirmed inline deletion removes only test masters and thumbnails, with no trash",
+      "passed": true
+    },
+    {
+      "name": "Deleting applied test photo restores original background",
+      "passed": true
+    },
+    {
+      "name": "Physical landscape catalog and thumbnails load without changing background",
+      "passed": true
+    },
+    {
+      "name": "Physical Back closes landscape browser and frees temporary files",
+      "passed": true
+    },
+    {
+      "name": "All personal photos and original order remain after tests",
+      "passed": true
+    },
+    {
+      "name": "Original background choice and all preferences restored",
+      "passed": true
+    },
+    {
+      "name": "Physical presentation marking previews without applying",
+      "passed": true
+    },
+    {
+      "name": "Physical inline presentation saves only checked test photos",
+      "passed": true
+    },
+    {
+      "name": "Physical HOME rotates only chosen photos",
+      "passed": true
+    },
+    {
+      "name": "Deleting last chosen photos restores original background",
+      "passed": true
+    },
+    {
+      "name": "Original photos preserved after presentation test",
+      "passed": true
+    },
+    {
+      "name": "All user preferences restored after presentation test",
+      "passed": true
+    }
+  ],
+  "originalPhotoCount": 3,
+  "temporaryImagesRemoved": true,
+  "pending": [
+    "Physical 1080p/4K and USB",
+    "Video/JBL/HDMI-CEC and full hardware reboot not repeated"
+  ],
+  "userFeedback": {
+    "appliedOtherLandscape": true,
+    "answer": "Sí, ahora se aplica"
+  }
+}

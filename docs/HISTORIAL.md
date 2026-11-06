@@ -22,3 +22,7 @@ Los datos de auditoría advierten que los valores declarados por un firmware gen
 ## 0.14.0
 
 Fondos del inicio pasa de una lista a vista previa y controles, con foco independiente del modo aplicado. OK aplica una elección preparada; Mis fotos usa la foto directamente. Presentación permite Todas o Elegidas y orden reversible sin alterar posiciones ajenas. Recepción muestra miniatura y aplicación explícita. La importación alternativa usa miniaturas, selección múltiple y resultados por archivo que sobreviven a recreaciones. Resolución del fondo distingue el inicio del archivo y de la capacidad del televisor. Se conserva un solo código para API 29/31, las fotos y la firma. Recuperación 0.13.0/código 35 con protección de selección parcial. Evidencia y límites en VERIFICACION-0.14.0.md.
+
+## 0.15.0
+
+Modos en una sola fila y gestión de fotos junto a la vista previa. Foto fija aplica con OK; Presentación permite marcar sin salir. El borrado verifica archivo y miniatura, impide regenerarlas tras eliminar y comunica el espacio liberado. Elegir otro paisaje consulta hasta 30 opciones de Wikimedia con seis miniaturas visibles; solo descarga la imagen completa elegida. Sin nuevas dependencias ni procesos periódicos. Recuperación 0.14.0/código 37.

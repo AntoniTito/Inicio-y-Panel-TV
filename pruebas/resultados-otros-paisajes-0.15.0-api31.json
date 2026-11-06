@@ -1,0 +1,26 @@
+{
+  "version": "0.15.0",
+  "code": 36,
+  "api": 31,
+  "emulator": true,
+  "apkSha256": "D014EDF2FA1464AC3B74D165C71213A3470E45A498B4EE0B82F6357317621662",
+  "method": "Three distinct catalog choices on the final signed build; elapsed includes full download, preparation and apply",
+  "checks": [
+    {
+      "name": "Landscape index 0 applies",
+      "passed": true,
+      "elapsedMs": 2453
+    },
+    {
+      "name": "Landscape index 2 applies",
+      "passed": true,
+      "elapsedMs": 2503
+    },
+    {
+      "name": "Landscape index 4 applies",
+      "passed": true,
+      "elapsedMs": 4191
+    }
+  ],
+  "note": "Historical last-error diagnostics can remain after a later success; success is checked from the applied background state."
+}

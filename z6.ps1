@@ -173,7 +173,7 @@ try{
    $original=Read-Z6Json $snapshotPath
    if($original.device.id -ne $device.id){throw 'Backup belongs to a different TV Box; restoration refused'}
    $partialRecovery=$null
-   if($RecuperarVersion -and (Get-PanelPath)){
+   if($RecuperarVersion -and (Get-PanelPath) -and ((Get-Z6Artifact -Recovery -Api $device.api).code -le 35)){
     $existing=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json
     $flag=$existing.PSObject.Properties['wallpaper_slideshow_use_all']
     if($flag -and !$flag.Value.value){$partialRecovery=[ordered]@{wallpaper_slideshow_use_all=[ordered]@{type='boolean';value=$false};wallpaper_slideshow_ids=[ordered]@{type='set';value=@()};wallpaper_mode=[ordered]@{type='string';value='original'}};if($existing.PSObject.Properties['wallpaper_slideshow_ids']){$partialRecovery.wallpaper_slideshow_ids=$existing.wallpaper_slideshow_ids}}

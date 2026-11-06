@@ -1,0 +1,28 @@
+{
+  "version": "0.15.0",
+  "code": 36,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T20:53:25.185Z",
+  "sourceAspectRatio": 4.798561151079137,
+  "saved": {
+    "width": 1280,
+    "height": 720
+  },
+  "rendered": {
+    "width": 1280,
+    "height": 720,
+    "bytes": 3686400,
+    "warning": ""
+  },
+  "checks": [
+    {
+      "name": "Panoramic landscape downloads enough crop-height pixels and renders at 1280x720",
+      "passed": true
+    },
+    {
+      "name": "Only one optimized full-screen JPEG is retained; no artificial enlargement",
+      "passed": true
+    }
+  ]
+}

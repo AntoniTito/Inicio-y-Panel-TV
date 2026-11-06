@@ -35,4 +35,8 @@ No se comprobaron reproducción en YouTube/Xuper, audio Bluetooth físico, contr
 
 ## Actualización 0.14.0
 
-El emulador tiene 0.14.0/código 34, la pantalla Fondos rediseñada y un solo APK compartido con API 29. Se mantuvieron configuración y preferencias. La biblioteca de pruebas queda sin fotos temporales. Se repitieron las 27 comprobaciones de controles, suspensión y reinicio; evidencia y límites en VERIFICACION-0.14.0.md.
+En esa entrega el emulador quedó con 0.14.0/código 34, la pantalla Fondos rediseñada y un solo APK compartido con API 29. Se mantuvieron configuración y preferencias. La biblioteca de pruebas queda sin fotos temporales. Se repitieron las 27 comprobaciones de controles, suspensión y reinicio; evidencia y límites en VERIFICACION-0.14.0.md.
+
+## Actualización 0.15.0
+
+Instalado 0.15.0/código 36 con la misma firma y APK del TV original. Incluye modos en fila, gestión integrada, borrado sin papelera y elección de otros paisajes con encuadre nítido. Veintitrés comprobaciones de Fondos y 27 de controles/reinicio aprobadas; las pruebas eliminaron sus propias fotos sintéticas. La comparación de navegación y los 20 ciclos de memoria están en [VERIFICACION-0.15.0.md](VERIFICACION-0.15.0.md). La prueba final de tres paisajes distintos aplicó los tres. No se añadió un puente del celular al emulador.

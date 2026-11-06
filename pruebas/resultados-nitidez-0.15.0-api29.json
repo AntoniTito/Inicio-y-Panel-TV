@@ -1,0 +1,32 @@
+{
+  "version": "0.15.0",
+  "code": 36,
+  "api": 29,
+  "emulator": false,
+  "utc": "2026-11-06T20:55:18.920Z",
+  "before": {
+    "width": 484,
+    "height": 272
+  },
+  "after": {
+    "width": 1280,
+    "height": 720,
+    "bytes": 3686400,
+    "warning": ""
+  },
+  "storageMessage": "Paisaje listo · 1280 × 720 · 159 KB",
+  "checks": [
+    {
+      "name": "Same user-chosen panoramic landscape repaired without changing the photograph",
+      "passed": true
+    },
+    {
+      "name": "Physical HOME now renders a real 1280x720 image without enlargement warning",
+      "passed": true
+    },
+    {
+      "name": "Personal photo count preserved",
+      "passed": true
+    }
+  ]
+}

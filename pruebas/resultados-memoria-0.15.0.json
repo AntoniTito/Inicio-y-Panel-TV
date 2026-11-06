@@ -1,0 +1,31 @@
+{
+  "version": "0.15.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T20:20:55.293Z",
+  "method": "Native DPAD dispatch over ADB on wallpaper screen; includes transport, not input-to-frame latency",
+  "results": [],
+  "memory": [
+    {
+      "cycle": 5,
+      "pssKb": 53020
+    },
+    {
+      "cycle": 10,
+      "pssKb": 45912
+    },
+    {
+      "cycle": 15,
+      "pssKb": 49141
+    },
+    {
+      "cycle": 20,
+      "pssKb": 49089
+    }
+  ],
+  "timingOnly": false,
+  "memoryOnly": true,
+  "memoryGrowthAfterWarmupKb": 3177,
+  "memoryPassed": true,
+  "passed": true
+}

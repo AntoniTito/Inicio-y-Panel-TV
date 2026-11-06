@@ -1,0 +1,159 @@
+﻿{
+    "version":  "0.15.0",
+    "code":  36,
+    "api":  31,
+    "emulator":  true,
+    "startedUtc":  "2026-11-06T20:21:05.8852031Z",
+    "completedUtc":  "2026-11-06T20:23:10.3338601Z",
+    "checks":  [
+                   {
+                       "name":  "Helper is connected",
+                       "passed":  true,
+                       "evidence":  "PING OK"
+                   },
+                   {
+                       "name":  "Effective display matches reference",
+                       "passed":  true,
+                       "evidence":  "1280x720"
+                   },
+                   {
+                       "name":  "Native HOME restores existing task and opens overlay",
+                       "passed":  true,
+                       "evidence":  "com.android.tv.settings"
+                   },
+                   {
+                       "name":  "Top clock visible with subtle gray text",
+                       "passed":  true,
+                       "evidence":  "3:21 p. m. · viernes 6 de noviembre de 2026"
+                   },
+                   {
+                       "name":  "Native arrows and OK open all eight settings plus footer",
+                       "passed":  true,
+                       "evidence":  10
+                   },
+                   {
+                       "name":  "Settings entries fit within 720 pixels",
+                       "passed":  true,
+                       "evidence":  "all rows inside display"
+                   },
+                   {
+                       "name":  "Focus updates without rebuilding whole panel",
+                       "passed":  true,
+                       "evidence":  {
+                                        "before":  30,
+                                        "after":  30
+                                    }
+                   },
+                   {
+                       "name":  "Native Back returns one level",
+                       "passed":  true,
+                       "evidence":  "bottom"
+                   },
+                   {
+                       "name":  "Clock can be disabled in settings",
+                       "passed":  true,
+                       "evidence":  "hidden"
+                   },
+                   {
+                       "name":  "Clock can be enabled again",
+                       "passed":  true,
+                       "evidence":  "visible"
+                   },
+                   {
+                       "name":  "24-hour clock format applies to overlay",
+                       "passed":  true,
+                       "evidence":  "15:21 · viernes 6 de noviembre de 2026"
+                   },
+                   {
+                       "name":  "Native volume adjustment and restoration",
+                       "passed":  true,
+                       "evidence":  {
+                                        "higher":  12,
+                                        "before":  11,
+                                        "restored":  11
+                                    }
+                   },
+                   {
+                       "name":  "Mute toggles and original state is restored",
+                       "passed":  true,
+                       "evidence":  "Silenciar"
+                   },
+                   {
+                       "name":  "Bluetooth provides supported native configuration route",
+                       "passed":  true,
+                       "evidence":  "btNative"
+                   },
+                   {
+                       "name":  "Bluetooth native destination opens",
+                       "passed":  true,
+                       "evidence":  "TV settings"
+                   },
+                   {
+                       "name":  "Native HOME restores existing task and opens overlay",
+                       "passed":  true,
+                       "evidence":  "com.android.tv.settings"
+                   },
+                   {
+                       "name":  "Timer 30 minutes replaces previous deadline",
+                       "passed":  true,
+                       "evidence":  1798856
+                   },
+                   {
+                       "name":  "Timer 60 minutes replaces previous deadline",
+                       "passed":  true,
+                       "evidence":  3598790
+                   },
+                   {
+                       "name":  "Timer 90 minutes replaces previous deadline",
+                       "passed":  true,
+                       "evidence":  5398828
+                   },
+                   {
+                       "name":  "Timer cancellation verified",
+                       "passed":  true,
+                       "evidence":  0
+                   },
+                   {
+                       "name":  "Short timer actually suspends emulator",
+                       "passed":  true,
+                       "evidence":  "Asleep"
+                   },
+                   {
+                       "name":  "Explicit wake restores emulator",
+                       "passed":  true,
+                       "evidence":  "Awake"
+                   },
+                   {
+                       "name":  "Expired timer is consumed",
+                       "passed":  true,
+                       "evidence":  0
+                   },
+                   {
+                       "name":  "Helper recovers after full reboot without PC bootstrap",
+                       "passed":  true,
+                       "evidence":  "PING OK within 180 seconds"
+                   },
+                   {
+                       "name":  "Actual reboot identity changed",
+                       "passed":  true,
+                       "evidence":  "new boot_id"
+                   },
+                   {
+                       "name":  "Z6 remains default HOME after reboot",
+                       "passed":  true,
+                       "evidence":  "local.z6panel"
+                   },
+                   {
+                       "name":  "Reboot cancels pending timer",
+                       "passed":  true,
+                       "evidence":  0
+                   }
+               ],
+    "externalAppsInstalled":  false,
+    "physicalBoxModified":  false,
+    "pending":  [
+                    "Video continuity with YouTube FOR and Xuper: user will install later",
+                    "Real JBL Bluetooth output",
+                    "HDMI-CEC and physical remote"
+                ]
+}

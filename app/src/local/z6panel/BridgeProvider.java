@@ -17,6 +17,7 @@ public final class BridgeProvider extends ContentProvider {
     result.putBoolean("attached",true);return result;
    }
    if("prefs_export".equals(method)||"prefs_original".equals(method)){result.putString("base64",PanelBackup.encoded(getContext(),"prefs_original".equals(method)));return result;}
+   if("wallpaper_network_status".equals(method)){result.putString("json",WallpaperOnline.lastFailure(getContext()).toString());return result;}
    if("metrics".equals(method)){org.json.JSONObject m=PerfStats.snapshot();String bridge=SystemBridge.read("STATS",1200);try{m.put("helper",new org.json.JSONObject(bridge));}catch(Exception unavailable){m.put("helperStatus",bridge);}result.putString("json",m.toString());return result;}
    if("prefs_restore".equals(method)&&PanelService.active==null){PanelBackup.restore(getContext(),arg);result.putString("status","OK");return result;}
    if("bridge".equals(method)){if(!"PING".equals(arg)&&!"VERSION".equals(arg)&&!"FOREGROUND_APP".equals(arg))throw new IllegalArgumentException("Read-only bridge query required");result.putString("status",SystemBridge.call(arg));return result;}

@@ -54,3 +54,9 @@ Los scripts restauran las preferencias guardadas y retiran conexiones temporales
 `node pruebas/galeria-0140.cjs emulator-5554` cubre nueve fotos, páginas de ocho, Organizar, movimiento a otra página, cancelación, OK sostenido real y Eliminar todas. Requiere el helper ControlHold y biblioteca de pruebas vacía. `--timing-only` repite los tiempos sin sobrescribir el informe de memoria.
 
 `node pruebas/paisaje-0140.cjs emulator-5554` prueba fallo de descarga y paisaje conservado sin conexión. Desactiva únicamente el Wi-Fi del emulador, confirma que no hay red activa y lo restaura al terminar. Requiere un paisaje guardado previamente. No ejecutarlo en hardware del usuario.
+
+## 0.15.0
+
+`node pruebas/fondos-0150.cjs emulator-5554` comprueba la fila, gestión integrada, vista previa persistente, aplicación, selección de presentación, eliminación real de archivo/miniatura/referencias, páginas y elección de paisajes. Solo admite emulador sin fotos personales y elimina sus propios archivos de prueba.
+
+`node pruebas/rendimiento-0150.cjs emulator-5554 before --timing-only` toma referencia en 0.14.0. Copiar esa referencia a `.local/rendimiento-antes-0150.json` antes de `after` con 20 ciclos, o comparar solo tiempos con `after --timing-only`. `pruebas/emulador-0150-api31.ps1 -Dispositivo emulator-5554 -Reiniciar` verifica el resto del panel. No ejecutar otras pruebas sobre el mismo emulador durante rendimiento.
