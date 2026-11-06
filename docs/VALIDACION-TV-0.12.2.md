@@ -15,7 +15,7 @@ El 6 de noviembre de 2026 se actualizó el TV Box original, modelo TV GRATIS, An
 
 ## Alcance y pendientes
 
-La confirmación del nuevo flujo 0.12.2 desde el celular y el control físico está pendiente de respuesta del usuario. No se aplicó una foto en su nombre. Tampoco se repitieron en esta sesión la medición de rendimiento, reproducción continua, salida JBL, USB, suspensión, HDMI-CEC ni recuperación tras un reinicio completo. Los resultados históricos de esas funciones siguen separados de esta actualización.
+El usuario confirmó en el TV físico que, tras enviar otra foto desde el celular, aparece la confirmación y puede abrir la vista previa con el control. Esto valida ese recorrido en 0.12.2. No confirmó que la aplicara como fondo; no se aplicó una foto en su nombre. Tampoco se repitieron en esta sesión la medición de rendimiento, reproducción continua, salida JBL, USB, suspensión, HDMI-CEC ni recuperación tras un reinicio completo. Los resultados históricos de esas funciones siguen separados de esta actualización.
 
 La conexión ADB se perdió una vez después de la primera recepción, aunque el TV seguía respondiendo en la red. El usuario reactivó Depuración USB y se recuperó el acceso. No se atribuye ese incidente a los fondos sin evidencia; no se cambiaron Wi-Fi, Bluetooth ni las opciones de depuración desde el proyecto.
 

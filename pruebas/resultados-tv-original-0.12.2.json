@@ -19,7 +19,8 @@
     { "name": "Receiver responds HTTP 200 over direct LAN without ADB forwarding", "passed": true, "testedVersion": "0.12.1" },
     { "name": "User confirmed phone page opened and photo was received", "passed": true, "testedVersion": "0.12.1" },
     { "name": "Received photo metadata and optimized file size preserved after 0.12.2 update", "passed": true },
-    { "name": "Current Home wallpaper view covers 1280x720", "passed": true }
+    { "name": "Current Home wallpaper view covers 1280x720", "passed": true },
+    { "name": "User confirmed receipt is visible on TV and photo preview opens with physical remote", "passed": true, "testedVersion": "0.12.2", "evidence": "User report: Veo la confirmación y puedo abrir la foto" }
   ],
   "changedExistingPreferenceKeys": [],
   "photoCountBefore0122": 1,
@@ -27,7 +28,6 @@
   "helperVersion": "0.11.0",
   "incident": "ADB access was lost once while the TV remained on the LAN. User reactivated USB debugging and the connection recovered. Cause not determined.",
   "pending": [
-    "Phone confirmation and physical remote interaction with the new 0.12.2 receiver UI",
     "Full reboot recovery on this release",
     "Physical performance, sustained video playback and JBL audio regression",
     "USB import, sleep and HDMI-CEC regression"
