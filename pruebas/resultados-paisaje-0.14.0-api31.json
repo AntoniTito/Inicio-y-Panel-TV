@@ -1,0 +1,30 @@
+{
+  "version": "0.14.0",
+  "code": 34,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T19:05:19.605Z",
+  "failureMethod": "Emulator Wi-Fi temporarily disabled, no active Android network; restored",
+  "checks": [
+    {
+      "name": "Emulator has no active network for offline test",
+      "passed": true
+    },
+    {
+      "name": "Failed daily update preserves applied original mode and cached landscape",
+      "passed": true
+    },
+    {
+      "name": "Retry remains available after download failure",
+      "passed": true
+    },
+    {
+      "name": "OK uses cached landscape offline without another download",
+      "passed": true
+    },
+    {
+      "name": "HOME displays retained landscape while offline",
+      "passed": true
+    }
+  ]
+}

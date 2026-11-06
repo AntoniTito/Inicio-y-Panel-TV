@@ -1,0 +1,101 @@
+{
+  "version": "0.14.0",
+  "code": 34,
+  "api": 29,
+  "emulator": false,
+  "utc": "2026-11-06T18:55:35.280Z",
+  "checks": [
+    {
+      "name": "Auxiliary control reconnects after signed update",
+      "passed": true
+    },
+    {
+      "name": "All preferences preserved on update",
+      "passed": true
+    },
+    {
+      "name": "Three personal photos preserve IDs, sizes, dimensions and order",
+      "passed": true
+    },
+    {
+      "name": "All main controls fit physical 1280x720",
+      "passed": true
+    },
+    {
+      "name": "Physical focus and preview do not apply modes or start downloads",
+      "passed": true
+    },
+    {
+      "name": "Physical resolution information separates 720p HOME from file and TV capabilities",
+      "passed": true
+    },
+    {
+      "name": "Receiver serves over direct physical LAN without PC forwarding",
+      "passed": true
+    },
+    {
+      "name": "Reception confirms storage with thumbnail and preserves applied background",
+      "passed": true
+    },
+    {
+      "name": "Use received photo applies in one action",
+      "passed": true
+    },
+    {
+      "name": "Applying received photo closes physical receiver port",
+      "passed": true
+    },
+    {
+      "name": "Gallery focuses new photo and stays within 4MB thumbnail cache",
+      "passed": true
+    },
+    {
+      "name": "Physical short OK applies gallery photo and returns to overview",
+      "passed": true
+    },
+    {
+      "name": "Physical presentation saves only selected temporary photos",
+      "passed": true
+    },
+    {
+      "name": "Physical order remains a draft until confirmed",
+      "passed": true
+    },
+    {
+      "name": "Physical Back cancels movement without changing library",
+      "passed": true
+    },
+    {
+      "name": "Physical HOME rotation excludes personal photos outside test selection",
+      "passed": true
+    },
+    {
+      "name": "Physical batch-delete cancellation keeps photos",
+      "passed": true
+    },
+    {
+      "name": "Deleting last chosen photos stops slideshow and preserves excluded originals",
+      "passed": true
+    },
+    {
+      "name": "Original photo files and order remain after all physical tests",
+      "passed": true
+    },
+    {
+      "name": "Original daily mode and all preferences restored",
+      "passed": true
+    }
+  ],
+  "originalPhotoCount": 3,
+  "temporaryFixturesRemoved": true,
+  "pending": [
+    "Physical 1080p/4K hardware",
+    "Physical USB firmware/denied grants",
+    "Video/audio continuity and full reboot not repeated on physical TV in this suite"
+  ],
+  "userFeedback": {
+    "confirmed": true,
+    "scope": "Physical remote, four-mode focus, gallery, Back, complete layout and fluency",
+    "answer": "Sí, se ve completo y responde bien"
+  }
+}

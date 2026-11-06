@@ -44,3 +44,13 @@ La app de prueba no solicita permisos y se desinstala al terminar. Su compilaci�
 `pruebas/rendimiento-fondos.ps1` mide tres rondas por modo y 20 ciclos de memoria. Necesita fotos sintéticas importadas y una referencia tomada en el mismo equipo y configuración. No ejecutes otros emuladores ni cargas intensivas simultáneamente. referencia-emulador-api31-0.11.0.json conserva la referencia de esta entrega; no la uses para afirmar mejoras en otro hardware. El informe incluye transporte ADB y no mide latencia aislada de entrada a imagen.
 
 Los scripts restauran las preferencias guardadas y retiran conexiones temporales. Fondos conserva copias sintéticas para las pruebas posteriores; usa el snapshot para limpiar un AVD de pruebas al terminar. En esta entrega se eliminaron esas copias y se restauraron las preferencias originales antes de dejar el emulador al usuario.
+
+## Rediseño 0.14.0
+
+`node pruebas/fondos-0140.cjs emulator-5554` prueba foco/aplicación, navegación, selección y orden parcial, borrado, recepción, importación parcial, permiso denegado, caché diaria y recreación 1080p/4K. Exige una biblioteca sin fotos personales; elimina solo las imágenes sintéticas creadas y restaura preferencias, tamaño y permiso de lectura.
+
+`node pruebas/rendimiento-0140.cjs emulator-5554 before|after` repite tres rondas nativas por modo y 20 ciclos. Guarda preferencias privadamente antes de empezar. Una comparación necesita la versión anterior y la nueva bajo las mismas condiciones: repetir si cambian la carga del PC o la configuración del emulador. Incluye proceso ADB y transporte; no equivale a medir pulsación a imagen. No compilar ni instalar durante una ronda.
+
+`node pruebas/galeria-0140.cjs emulator-5554` cubre nueve fotos, páginas de ocho, Organizar, movimiento a otra página, cancelación, OK sostenido real y Eliminar todas. Requiere el helper ControlHold y biblioteca de pruebas vacía. `--timing-only` repite los tiempos sin sobrescribir el informe de memoria.
+
+`node pruebas/paisaje-0140.cjs emulator-5554` prueba fallo de descarga y paisaje conservado sin conexión. Desactiva únicamente el Wi-Fi del emulador, confirma que no hay red activa y lo restaura al terminar. Requiere un paisaje guardado previamente. No ejecutarlo en hardware del usuario.

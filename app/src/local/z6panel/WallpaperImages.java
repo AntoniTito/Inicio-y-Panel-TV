@@ -26,7 +26,7 @@ final class WallpaperImages {
    String mime=info.getMimeType();if(info.isAnimated()||!("image/jpeg".equals(mime)||"image/png".equals(mime)||"image/webp".equals(mime)||"image/heif".equals(mime)||"image/heic".equals(mime)))throw new IllegalArgumentException("Usa JPG, PNG o WebP estático; HEIC depende del equipo");
    int w=info.getSize().getWidth(),h=info.getSize().getHeight();if(w<=0||h<=0)throw new IllegalArgumentException("Imagen inválida");throw new Found(new Header(w,h,exif,mime));
   });if(unexpected!=null)unexpected.recycle();throw new IOException("Imagen inválida");
-  }catch(Found ready){return ready.header;}catch(RuntimeException e){throw new IOException(e.getMessage()==null?"Imagen no compatible":e.getMessage(),e);}
+  }catch(Found ready){return ready.header;}catch(RuntimeException e){throw new IOException(e.getMessage()==null?"Imagen no compatible":e.getMessage(),e);}catch(IOException e){throw new IOException("No se pudo leer la imagen. Usa JPG, PNG o WebP estático; HEIC depende del equipo",e);}
  }
  static long available(){Runtime r=Runtime.getRuntime();return r.maxMemory()-(r.totalMemory()-r.freeMemory());}
  static boolean lowRam(Context c){ActivityManager am=(ActivityManager)c.getSystemService(Context.ACTIVITY_SERVICE);ActivityManager.MemoryInfo info=new ActivityManager.MemoryInfo();am.getMemoryInfo(info);return am.isLowRamDevice()||info.lowMemory||am.getMemoryClass()<128;}

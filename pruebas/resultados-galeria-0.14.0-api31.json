@@ -1,0 +1,49 @@
+{
+  "version": "0.14.0",
+  "code": 34,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T18:59:00.166Z",
+  "checks": [
+    {
+      "name": "Nine-photo import focuses new last photo on second page",
+      "passed": true
+    },
+    {
+      "name": "First page loads only eight thumbnails within 4MB",
+      "passed": true
+    },
+    {
+      "name": "Organize exposes ordering and both deletion routes",
+      "passed": true
+    },
+    {
+      "name": "Native move crosses page boundary without writing order",
+      "passed": true
+    },
+    {
+      "name": "Back cancels cross-page movement",
+      "passed": true
+    },
+    {
+      "name": "Real long OK opens photo options instead of applying",
+      "passed": true
+    },
+    {
+      "name": "Back returns from full-screen photo to options",
+      "passed": true
+    },
+    {
+      "name": "Delete all opens confirmation",
+      "passed": true
+    },
+    {
+      "name": "Cancelling delete all keeps every photo",
+      "passed": true
+    },
+    {
+      "name": "Confirmed delete all returns a usable empty library",
+      "passed": true
+    }
+  ]
+}

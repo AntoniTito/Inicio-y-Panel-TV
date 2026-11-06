@@ -13,9 +13,11 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 
 | `v0.12.2` | Etiqueta histórica | Recepción confirmada en el TV, vista previa directa y regreso a biblioteca. APK código 30, recuperación 0.12.1/código 31 para ambas API. |
 
-| `v0.13.0` | `main` | Biblioteca con miniaturas y borrado múltiple, fotos adaptadas y comparación 720p/1080p/4K según el equipo. APK código 32, recuperación 0.12.2/código 33. |
+| `v0.13.0` | Etiqueta histórica | Biblioteca con miniaturas y borrado múltiple, fotos adaptadas y comparación 720p/1080p/4K según el equipo. APK código 32, recuperación 0.12.2/código 33. |
 
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el TV Box original está actualizado a 0.13.0; su evidencia está en VERIFICACION-0.13.0.md. La recuperación vigente conserva 0.12.2 con código 33 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 34 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
+| `v0.14.0` | `main` | Fondos con vista previa y OK directo, galería y presentación seleccionable, importación visual. APK código 34; recuperación 0.13.0/código 35 con protección de selección parcial. |
+
+Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.14.0.md. La recuperación vigente conserva el comportamiento 0.13.0 con código 35 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 36 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 

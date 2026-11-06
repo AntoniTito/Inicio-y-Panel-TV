@@ -1,0 +1,122 @@
+{
+  "version": "0.14.0",
+  "code": 34,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T18:48:46.337Z",
+  "checks": [
+    {
+      "name": "Mode focus and previews do not write preferences or trigger a daily request",
+      "passed": true
+    },
+    {
+      "name": "All overview actions fit in 1280x720 without vertical scrolling",
+      "passed": true,
+      "evidence": 11
+    },
+    {
+      "name": "Overview preview allocation stays bounded",
+      "passed": true
+    },
+    {
+      "name": "Empty Photo mode opens a usable gallery without applying anything",
+      "passed": true
+    },
+    {
+      "name": "Receiving stores and previews a photo without applying it",
+      "passed": true
+    },
+    {
+      "name": "Use received photo applies in one explicit action",
+      "passed": true
+    },
+    {
+      "name": "Using a received photo closes the temporary receiver port",
+      "passed": true
+    },
+    {
+      "name": "Short OK in gallery applies the focused photo and returns to overview",
+      "passed": true
+    },
+    {
+      "name": "Interval arrows change only the presentation interval, without applying its mode",
+      "passed": true
+    },
+    {
+      "name": "Presentation saves only explicitly selected photo IDs",
+      "passed": true
+    },
+    {
+      "name": "New imports are excluded from an existing custom presentation",
+      "passed": true
+    },
+    {
+      "name": "HOME rotation never shows photos outside the selected subset",
+      "passed": true,
+      "evidence": 4
+    },
+    {
+      "name": "Moving a tile keeps a draft and does not write the library order",
+      "passed": true
+    },
+    {
+      "name": "Cancelling a movement preserves the stored order",
+      "passed": true
+    },
+    {
+      "name": "Participant ordering preserves positions of unselected photos",
+      "passed": true
+    },
+    {
+      "name": "Cancelling deletion keeps selected presentation photos",
+      "passed": true
+    },
+    {
+      "name": "Deleting last chosen photos stops presentation instead of using unselected images",
+      "passed": true
+    },
+    {
+      "name": "720p information separates Android area and file dimensions without a redundant selector",
+      "passed": true
+    },
+    {
+      "name": "Source picker explains missing image permission instead of failing",
+      "passed": true
+    },
+    {
+      "name": "Source multiple selection survives Activity recreation",
+      "passed": true,
+      "evidence": 2
+    },
+    {
+      "name": "Partial import preserves the valid photo and reports the missing file",
+      "passed": true,
+      "evidence": 1
+    },
+    {
+      "name": "Import completion does not change the applied background",
+      "passed": true
+    },
+    {
+      "name": "Already-current daily wallpaper is not downloaded again",
+      "passed": true
+    },
+    {
+      "name": "Overview remains navigable after memory pressure",
+      "passed": true
+    },
+    {
+      "name": "Resolution choices adapt after Activity recreation at 1080p",
+      "passed": true
+    },
+    {
+      "name": "Overview recreates at 4K without changing wallpaper preferences",
+      "passed": true
+    }
+  ],
+  "pending": [
+    "Physical hardware above 720p",
+    "Real removable USB firmware",
+    "Physical remote confirmation"
+  ]
+}

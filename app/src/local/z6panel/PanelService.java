@@ -517,7 +517,7 @@ public class PanelService extends AccessibilityService {
   try{startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));hide();}
   catch(RuntimeException e){message("Android no permite abrir esta opción o ya no está instalada.");refreshCatalog();}
  }
- private void goHome(){
+ void goHome(){
   explicitHomeRequested=true;lastExternalPackage=null;
   pages.clear();
   hide();

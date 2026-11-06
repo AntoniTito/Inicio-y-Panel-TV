@@ -32,3 +32,7 @@ También se guardó el snapshot `z6_antes_0120`, con 0.11.0, antes de incorporar
 `pruebas/resultados-api31.json` registra 27 comprobaciones aprobadas: Home, foco, ocho secciones, reloj, volumen, ruta Bluetooth nativa, temporizadores, suspensión y recuperación tras reinicio. `pruebas/emulador-api31.ps1 -Dispositivo emulator-5554 -Reiniciar` reproduce la prueba e interrumpe temporalmente el emulador.
 
 No se comprobaron reproducción en YouTube/Xuper, audio Bluetooth físico, control remoto físico ni HDMI-CEC. Las cifras históricas de rendimiento pertenecen al TV original y no se atribuyen al emulador.
+
+## Actualización 0.14.0
+
+El emulador tiene 0.14.0/código 34, la pantalla Fondos rediseñada y un solo APK compartido con API 29. Se mantuvieron configuración y preferencias. La biblioteca de pruebas queda sin fotos temporales. Se repitieron las 27 comprobaciones de controles, suspensión y reinicio; evidencia y límites en VERIFICACION-0.14.0.md.

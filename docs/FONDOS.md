@@ -1,75 +1,76 @@
-# Aplicaciones y fondos
+﻿# Fondos del inicio
 
-## Añadir aplicaciones
+Abre **Ajustes → Panel e inicio → Fondos del inicio**, o el acceso de Personalización. Los fondos solo se muestran en Inicio; el panel superpuesto y el video conservan su comportamiento.
 
-Si no hay aplicaciones visibles, el inicio y el panel inferior muestran **＋ Añadir aplicación**. Pulsa OK, elige una app instalada y se mostrará en la fila. Las apps ocultas también aparecen en esa lista. Con aplicaciones visibles, se conserva la pulsación larga para editar y el acceso desde Ajustes → Aplicaciones.
+## Elegir sin pasos innecesarios
 
-Añadir un icono no instala una app. **Instalar aplicaciones** abre Google Play o Downloader cuando existen en el destino. Si ninguno está disponible, vuelve a Android para instalar una aplicación por un medio de confianza. No se incluyen APK de terceros ni cuentas.
+La vista previa está a la izquierda y los cuatro modos a la derecha. Las flechas cambian la vista previa; **OK aplica** una elección válida. La marca **En uso** identifica lo que está guardado, independientemente del foco. Aplicar mantiene abierta la configuración. **Ver inicio** permite comprobarla y **Volver** sale.
 
-## Elegir un fondo
+| Modo | Qué hace OK |
+|---|---|
+| Fondo original | Aplica el color de Z6, sin imágenes ni descargas. |
+| Foto fija | Usa la última foto elegida. Si falta, abre Mis fotos. |
+| Presentación | Activa las fotos participantes; si no hay, abre su selección. |
+| Paisaje diario | Utiliza la última imagen disponible de Wikimedia o descarga y aplica la primera. Un fallo conserva el fondo anterior. |
 
-Abre **Ajustes → Panel e inicio → Fondos del inicio**. También hay un acceso en Personalización.
+Al enfocar Presentación aparecen **Fotos: Todas/Elegidas**, el intervalo y **Ordenar las fotos participantes**. Sobre el intervalo, izquierda/derecha eligen 5, 15, 30 o 60 minutos. **Todas** incluye importaciones futuras; **Elegir fotos** conserva solo las marcadas. Se usa el orden de la biblioteca. Al ordenar participantes, las fotos ajenas a la presentación mantienen sus posiciones. Si eliminas la última participante, se recupera Fondo original.
 
-- **Actual:** conserva el degradado original. Es la configuración inicial y no carga fotos ni consulta Internet.
-- **Una foto:** abre Mi biblioteca, previsualiza y pulsa Usar esta foto.
-- **Mis fotos:** cambia entre las fotos de la biblioteca, en su orden. Puedes mover cada foto antes o después. Intervalos: 5, 15, 30 o 60 minutos; inicialmente 30.
-- **Paisaje del día:** obtiene un paisaje destacado de Wikimedia Commons. Actualiza al volver al inicio cuando corresponde y mantiene la última copia sin conexión. Actualizar ahora respeta una espera corta entre intentos; un fallo conserva el paisaje anterior.
+Al enfocar Paisaje diario aparecen su estado, actualizar/reintentar cuando corresponde y los créditos. No se vuelve a descargar un paisaje ya actualizado hoy. El último paisaje válido permanece sin Internet. Mover el foco no hace descargas.
 
-Las fotos solo aparecen en la pantalla de inicio. No se colocan detrás del panel sobre YouTube u otra aplicación. No se modifica el fondo de Android de otras apps ni se usan fondos animados.
+## Mis fotos
 
-Calidad ofrece **Automático, 720p, 1080p y 4K** según la resolución efectiva y la memoria. Automático usa hasta 1080p y baja a 720p en equipos con pocos recursos; 4K es manual. Se conservan las preferencias anteriores: light equivale a 720p y balanced a 1080p. La presentación y las consultas automáticas se detienen al salir del inicio; sus imágenes se liberan de memoria.
+El pie mantiene visibles **Desde el celular**, **Desde TV o USB** y **Mis fotos (N)**. La galería muestra ocho miniaturas por página, con nombre, dimensiones y tamaño.
 
-## Enviar desde el celular
+- **OK** usa la foto y vuelve a Fondos del inicio.
+- **Opciones de la foto** o OK sostenido abre la vista previa, pantalla completa, información y eliminación individual.
+- **Organizar** reúne orden, selección para borrar y Eliminar todas. Se pide confirmación antes de eliminar; se borran únicamente las copias de Z6.
+- Para ordenar, elige una foto, pulsa OK para moverla, usa flechas y confirma con OK. Atrás cancela el movimiento pendiente.
 
-1. En Fondos, selecciona **Recibir del celular**.
-2. Conecta el celular a la misma red local que el TV y escanea el QR con su cámara. También puedes escribir la dirección mostrada.
-3. Selecciona fotos y pulsa Enviar fotos en el navegador. Revisa el resultado de cada archivo.
-4. En el TV aparece **Foto recibida**, un contador y **Guardada en el TV · resolución · tamaño**. Pulsa **Ver foto recibida** para previsualizar y luego **Usar esta foto** para aplicarla; o **Terminar y abrir biblioteca** para ver todas. Puedes seguir enviando mientras el QR esté abierto. Atrás regresa a la biblioteca si recibiste fotos.
+Eliminar el fondo activo recupera Fondo original. Los archivos e identificadores existentes se conservan sin reconvertirlos durante la actualización.
 
-No se necesita instalar una app adicional. El TV puede estar conectado por Ethernet si pertenece a la misma red que el celular. Esta versión requiere una dirección IPv4 local. Las redes de invitados o con aislamiento entre equipos pueden impedir la conexión.
+## Resolución del fondo
 
-La recepción existe únicamente con esa pantalla abierta y dura como máximo 15 minutos. Salir, perder la red o caducar cierra el puerto e invalida el enlace. Abre otra recepción para generar un QR nuevo. No abras puertos del router ni publiques el enlace: la transferencia utiliza HTTP local con una sesión aleatoria, sin cifrado de extremo a extremo.
+Es la cantidad de píxeles que Z6 utiliza para mostrar el fondo según el área efectiva del inicio y los recursos disponibles. **No indica la resolución máxima del TV Box ni la resolución nativa del televisor.** Android distingue el área disponible para la app de otros datos de la pantalla: [Display](https://developer.android.com/reference/android/view/Display).
 
-Los archivos se guardan en el TV y no se envían a Internet. Recibir no cambia el fondo automáticamente. Límites: 20 MB por archivo, 50 imágenes y 100 MB de biblioteca optimizada. Se admiten JPG, PNG y WebP estáticos; HEIC/HEIF depende del decodificador del TV. Si no se admite, exporta desde el celular como JPG o PNG.
+En el TV original se muestra **Automática · hasta 720p para este inicio**, porque su inicio efectivo es 1280 × 720. Z6 no modifica HDMI ni deduce las capacidades del televisor. Información separa inicio de Android, límite utilizado por el fondo y dimensiones del archivo guardado.
 
-## Archivos del TV o USB
+Automática usa hasta 1080p; en equipos con poca RAM, hasta 720p. 4K es manual y requiere inicio efectivo de al menos 3840 × 2160, equipo sin clasificación de poca RAM, heap de al menos 192 MB y 96 MB de margen al cargar. Solo se ofrecen alternativas útiles. Con una sola resolución aparece información y **Ver a pantalla completa**, sin un selector redundante. Con alternativas, **Comparar resoluciones** usa izquierda/derecha; OK aplica y Atrás cancela conservando la elección anterior.
 
-**Elegir imágenes del TV o USB** utiliza el selector de documentos cuando hay uno funcional. En equipos sin él, se muestran las imágenes y carpetas consultables de Android, solicitando permiso únicamente al entrar. La alternativa ligera consulta hasta 500 imágenes por volumen y presenta listas en páginas de 50; para otras fotos puedes usar el selector del sistema o enviarlas por QR.
+**Puede verse borrosa** indica que faltan píxeles para el encuadre. Más resolución no recupera detalle perdido: hay que reenviar el original si una copia anterior ya se redujo.
 
-Si un USB no aparece, Android puede no exponer ese volumen o sus imágenes. Copia las fotos a Imágenes del TV o utiliza recepción por QR. Los permisos y selectores varían según el firmware; no se solicita acceso completo al almacenamiento ni root.
+## Desde el celular
 
-Z6 guarda una sola copia optimizada, normaliza la orientación y no conserva el original pesado. Puedes retirar el USB después de importar. Quitar una foto elimina solo su copia en la biblioteca, sin borrar el archivo original. Al quitar la foto seleccionada y volver al inicio, se recupera el fondo original si esa selección ya no existe.
+1. Selecciona **Desde el celular** y conecta ambos equipos a la misma red local.
+2. Escanea el QR o escribe la dirección mostrada. En el navegador selecciona y envía fotos.
+3. El TV muestra miniatura, confirmación, resolución, tamaño y cantidad recibida.
+4. **Usar esta foto** aplica explícitamente la última y cierra la recepción. **Ver recibidas** abre la galería enfocando la nueva foto. **Seguir recibiendo** mantiene el mismo QR.
 
-## Internet y recursos
+Recibir nunca cambia el fondo automáticamente. El puerto solo existe con la recepción abierta; salir, perder la red o caducar a los 15 minutos lo cierra. No se requieren aplicaciones adicionales. El TV puede usar Ethernet si pertenece a la misma LAN. Redes de invitados o aislamiento entre equipos pueden impedirlo.
 
-Wikimedia proporciona las fotografías, sus autores, licencias y páginas de origen. Consulta **Información del fondo** para ver los créditos. Se solicitan miniaturas reducidas mediante su API; no se suben fotos personales. La fuente es la colección de [paisajes destacados de Commons](https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_landscapes), no la imagen editorial diaria de Bing.
+Se usa HTTP local con una sesión aleatoria; no publiques el enlace ni abras puertos del router. En el emulador no se incluye un puente al celular: las pruebas usan el navegador del PC con reenvío ADB temporal. El QR directo se comprueba aparte en hardware real.
 
-El receptor, la biblioteca y el cliente de Internet no requieren el auxiliar ADB. Las operaciones lentas se realizan en trabajadores separados, con colas y tamaños limitados. No se crean trabajos periódicos, servicios de recepción permanentes ni procesos al arrancar para los fondos.
+## Desde TV o USB
 
-Si Android informa presión de memoria, se liberan las imágenes y se limita la calidad. Puedes volver a Actual en cualquier momento. Los valores del firmware no sustituyen una prueba de fluidez en el equipo real.
+Se usa el selector de documentos cuando es funcional. La alternativa de Z6 muestra carpetas/volúmenes de MediaStore y páginas de ocho miniaturas con selección múltiple. Solicita permiso únicamente al entrar; consulta hasta 500 imágenes por volumen y permite importar hasta 50. Si Android no expone un USB, copia las fotos a Imágenes o envíalas desde el celular. No solicita acceso completo al almacenamiento ni root.
 
-## Emulador y respaldos
+La importación no aplica un fondo. Al terminar muestra cuántas fotos se guardaron y los errores por archivo; las nuevas fotos quedan enfocadas. Una recreación de pantalla conserva el trabajo en curso. Los permisos temporales del selector se liberan al terminar; no se retiran permisos que ya existían.
 
-Por decisión del usuario, no se incluye puente de red para enviar desde un celular al emulador. Sus pruebas de recepción se hacen desde un navegador del PC mediante reenvío ADB local y se retira ese reenvío al terminar. El QR directo se comprobó desde un celular al TV original; consulta VALIDACION-TV-0.12.2.md. Otro firmware necesita su propia prueba.
+## Guardado y fluidez
 
-Las imágenes y los índices están en el almacenamiento privado de la app y permanecen al actualizar sin desinstalar. El exportador existente de preferencias no incorpora los archivos de la biblioteca: no transfieras sus identificadores como si fueran fotos. Otro TV debe importar sus propias imágenes. No desinstales para forzar una versión anterior, porque Android elimina datos privados.
+Las fotos se guardan **en el almacenamiento privado de Z6 en el TV Box**, en una sola copia JPEG optimizada. No se conserva el original pesado ni se envían fotos personales a Internet. Puedes retirar el USB después de importar.
 
-Las recuperaciones con código 27 no muestran esta biblioteca, pero una actualización sin desinstalar conserva sus archivos privados. En la copia local se preservaron preferencias, APK anterior y snapshot del emulador antes de actualizar. Las fotos, claves, sesiones QR y respaldos nunca forman parte de Git ni del ZIP público del proyecto.
+Límites: entrada de 20 MB, 50 fotos y 100 MB de biblioteca optimizada. JPG, PNG y WebP estáticos; HEIC/HEIF depende del decodificador del firmware. Orientación corregida antes de reducir; verticales y cuadradas completas con espacio oscuro, horizontales con recorte central. No se agrandan fotos pequeñas. Límites por copia: 720p/1 MB, 1080p/2 MB o 4K/4 MB, JPEG de 85 a 75.
 
-## Corrección 0.12.1
+Una sola vista previa hasta 960 × 540; miniaturas de la página visible y cachés limitadas a 4 MB. Importación, reducción y descargas fuera del hilo de interfaz, con colas acotadas y respuestas antiguas descartadas. No se reconstruye la pantalla al mover el foco. Presentación y consultas automáticas solo con Inicio visible; sin videos, animaciones ni servicios de recepción permanentes. Ante presión de memoria se reduce la imagen mostrada, conservando el archivo guardado.
 
-El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones de 0.12.1 usan código 29. La recuperación vigente para 0.13.0 vuelve a 0.12.2 con código 33 en ambas API; no desinstales para bajar una versión.
+## Internet, respaldo y recuperación
 
-## Recepción más clara en 0.12.2
+Wikimedia proporciona paisajes, autor, licencia y origen; **Créditos** muestra esos datos. Se descargan versiones reducidas desde la [colección de paisajes destacados](https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_landscapes). No es una integración con Bing.
 
-Cada foto guardada produce una confirmación visible y actualiza el contador sin reconstruir la pantalla ni generar otro QR. El primer éxito enfoca Ver foto recibida. Abrir la vista previa o terminar cierra el receptor. Los archivos inválidos muestran el fallo sin incrementar el contador. Una foto ya guardada sigue disponible aunque caduque la sesión. No se añaden consultas periódicas, servicios ni animaciones.
+Actualizar sin desinstalar conserva fotos y preferencias. Exportar preferencias no incluye los archivos de la biblioteca: otro TV debe importar sus propias imágenes. Las fotos, sesiones y respaldos quedan fuera de Git y del paquete portable.
 
-## Biblioteca visual y calidad en 0.13.0
+La recuperación de 0.14.0 usa el comportamiento 0.13.0 con código 35 y la firma original. Si había una presentación con selección parcial, utiliza Fondo original para no mostrar imágenes excluidas; conserva la selección para una actualización futura. Después de la recuperación se necesita código 36 o superior. No desinstales para bajar una versión.
 
-Mi biblioteca muestra ocho miniaturas por página, nombre, resolución y tamaño. OK abre la vista previa. Seleccionar permite marcar varias fotos; Eliminar (N) y Eliminar todas piden confirmación. Cancelar conserva las imágenes. Solo se eliminan copias de Z6. Al quitar la foto activa se vuelve al fondo actual; la presentación continúa con las restantes.
+## Aplicaciones sin iconos visibles
 
-Las fotos verticales y cuadradas se centran completas con espacio oscuro alrededor. Las horizontales se recortan al centro para llenar el inicio, antes de reducir su resolución. Las nuevas copias se guardan hasta la mayor calidad útil del equipo: 720p/1 MB, 1080p/2 MB o 4K/4 MB. La compresión JPEG va de 85 a 75; no se agranda una foto pequeña ni se inventa detalle. Las fotos existentes conservan sus archivos; para recuperar detalle perdido hay que reenviar el original.
-
-Probar calidad abre una vista a pantalla completa: izquierda/derecha cambia la resolución, OK aplica la foto y la calidad, Atrás cancela sin cambiar preferencias. El aviso Puede verse borrosa permite continuar. La misma copia de máxima resolución sirve para las comparaciones; no se guardan versiones duplicadas. El límite depende del inicio real, no de la capacidad anunciada para reproducir video 4K.
-
-La carga grande se serializa y las solicitudes antiguas se descartan. La caché de miniaturas está limitada a 4 MB y solo carga la página visible. Ante presión de memoria se reduce la calidad mostrada, conservando el archivo; al volver al inicio se reevalúan los recursos. No hay fondos animados ni servicios periódicos nuevos.
+Si una fila está vacía, **＋ Añadir aplicación** permite incorporar una app instalada u oculta con OK, sin depender de la pulsación larga. Con apps visibles se conserva la edición con OK sostenido y Ajustes → Aplicaciones. Añadir un icono no instala aplicaciones: Instalar aplicaciones abre Play o Downloader únicamente cuando existen en el equipo. No se incluyen APK ni cuentas de terceros.

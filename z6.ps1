@@ -172,12 +172,19 @@ try{
    if(!(Test-Path -LiteralPath $snapshotPath)){throw 'No original snapshot. Provide -Respaldo from this device.'}
    $original=Read-Z6Json $snapshotPath
    if($original.device.id -ne $device.id){throw 'Backup belongs to a different TV Box; restoration refused'}
+   $partialRecovery=$null
+   if($RecuperarVersion -and (Get-PanelPath)){
+    $existing=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json
+    $flag=$existing.PSObject.Properties['wallpaper_slideshow_use_all']
+    if($flag -and !$flag.Value.value){$partialRecovery=[ordered]@{wallpaper_slideshow_use_all=[ordered]@{type='boolean';value=$false};wallpaper_slideshow_ids=[ordered]@{type='set';value=@()};wallpaper_mode=[ordered]@{type='string';value='original'}};if($existing.PSObject.Properties['wallpaper_slideshow_ids']){$partialRecovery.wallpaper_slideshow_ids=$existing.wallpaper_slideshow_ids}}
+   }
    if(Get-PanelPath){$cancel=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','timer_cancel');if($cancel -notmatch 'status=OK'){throw 'Cannot verify timer cancellation; restore aborted before changing HOME'}}
    if($RecuperarVersion){$artifact=Get-Z6Artifact -Recovery -Api $device.api;if((Get-PanelCode) -gt $artifact.code){throw 'Recovery APK is older than installed version. A higher signed recovery code is required.'};Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'install','-r',$artifact.path)|Out-Null;if((Get-PanelCode) -ne $artifact.code){throw 'Recovery APK version verification failed'};$steps.Add(('Recovery code '+$artifact.code+' installed; future updates require a higher code'))}
    Set-Z6PackageState $original.homePackage $original.homeEnabled
    Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0',$original.home)|Out-Null
    if((Normalize-Component (Get-Z6Home)) -ne (Normalize-Component $original.home)){throw 'Original HOME restoration failed'}
    if($original.preferences){Set-Z6PanelPreferences $original.preferences}
+   if($partialRecovery){$restored=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json;foreach($entry in $partialRecovery.GetEnumerator()){$restored|Add-Member -NotePropertyName $entry.Key -NotePropertyValue $entry.Value -Force};$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($restored|ConvertTo-Json -Depth 20 -Compress)));Set-Z6PanelPreferences $encoded;$steps.Add('Partial slideshow preserved; original background selected for older APK compatibility')}
    $current=@((Get-Z6Setting 'secure' 'enabled_accessibility_services') -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/'})
    $prior=@($original.settings.secure.enabled_accessibility_services -split ':'|Where-Object {$_ -and $_ -ne 'null'})
    $services=@(($current+$prior)|Select-Object -Unique)

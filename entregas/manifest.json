@@ -107,13 +107,29 @@
         29,
         31
       ]
+    },
+    {
+      "file": "Z6-Panel-0.14.0.apk",
+      "version": "0.14.0",
+      "code": 34,
+      "sha256": "7C982CC6AE41538E68DF4480473BEDE594E65EB912BF216E97D7546D2A35E23C"
+    },
+    {
+      "file": "Z6-Panel-recuperacion-0.13.0-c35.apk",
+      "version": "0.13.0",
+      "code": 35,
+      "sha256": "D1E8A652BE6E2F75517D716FA1F062362F3E2F42B2D4AB82AA8865B6C707AF20",
+      "validatedApi": [
+        29,
+        31
+      ]
     }
   ],
   "certificateSha256": "1446d3adb55774747cadf9c8f7c814652fb2d0a97e0368094d1c251572dfe2d5",
-  "current": "Z6-Panel-0.13.0.apk",
-  "recovery": "Z6-Panel-recuperacion-0.12.2-c33.apk",
+  "current": "Z6-Panel-0.14.0.apk",
+  "recovery": "Z6-Panel-recuperacion-0.13.0-c35.apk",
   "recoveryByApi": {
-    "29": "Z6-Panel-recuperacion-0.12.2-c33.apk",
-    "31": "Z6-Panel-recuperacion-0.12.2-c33.apk"
+    "29": "Z6-Panel-recuperacion-0.13.0-c35.apk",
+    "31": "Z6-Panel-recuperacion-0.13.0-c35.apk"
   }
 }

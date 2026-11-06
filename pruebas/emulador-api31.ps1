@@ -90,7 +90,7 @@ try{
  }
  $null=Panel timer_cancel ''
  Set-Z6PanelPreferences $before
- Write-Z6Json ([ordered]@{version='0.13.0';code=32;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-regresion-0.13.0-api31.json')
+ Write-Z6Json ([ordered]@{version='0.14.0';code=34;api=31;emulator=$true;startedUtc=$testStarted;completedUtc=[DateTime]::UtcNow.ToString('o');checks=@($checks.ToArray());externalAppsInstalled=$false;physicalBoxModified=$false;pending=@('Video continuity with YouTube FOR and Xuper: user will install later','Real JBL Bluetooth output','HDMI-CEC and physical remote')}) (Join-Path $root 'pruebas\resultados-regresion-0.14.0-api31.json')
  Write-Output ('Passed '+$checks.Count+' emulator checks.')
 }finally{
  Invoke-Z6Shell @('input','keyevent','224') -AllowFailure|Out-Null

@@ -18,3 +18,7 @@ Los datos de auditoría advierten que los valores declarados por un firmware gen
 - 0.12.2/código 30: confirmación de recepción y contador en el TV, vista previa directa, terminar en biblioteca y navegación Atrás por nivel. Recuperación común 0.12.1/código 31 para API 29/31.
 
 - 0.13.0/código 32: biblioteca visual, borrado múltiple confirmado y fotos privadas adaptadas a 720p/1080p/4K, con comparación a pantalla completa y protección de memoria. Recuperación 0.12.2/código 33.
+
+## 0.14.0
+
+Fondos del inicio pasa de una lista a vista previa y controles, con foco independiente del modo aplicado. OK aplica una elección preparada; Mis fotos usa la foto directamente. Presentación permite Todas o Elegidas y orden reversible sin alterar posiciones ajenas. Recepción muestra miniatura y aplicación explícita. La importación alternativa usa miniaturas, selección múltiple y resultados por archivo que sobreviven a recreaciones. Resolución del fondo distingue el inicio del archivo y de la capacidad del televisor. Se conserva un solo código para API 29/31, las fotos y la firma. Recuperación 0.13.0/código 35 con protección de selección parcial. Evidencia y límites en VERIFICACION-0.14.0.md.

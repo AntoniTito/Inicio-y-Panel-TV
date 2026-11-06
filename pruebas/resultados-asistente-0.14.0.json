@@ -1,0 +1,174 @@
+﻿{
+    "timestampUtc":  "2026-11-06T18:44:40.8587280Z",
+    "physicalDeviceContacted":  false,
+    "checks":  [
+                   {
+                       "name":  "Parse z6.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse capturar.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse compilar.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse comun.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse empaquetar.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse iniciar-emulador.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse preparar-herramientas.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse reparar-autorizacion-emulador.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse restaurar-referencia-original.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse adb-falso.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse emulador-api31.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse rendimiento-fondos.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Parse verificar.ps1",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Release and recovery hashes and codes",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Reference includes overlay clock",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Profile excludes device and lifecycle state",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Dry run executes no ADB",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "WhatIf executes no ADB",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Install version and select HOME",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Disable old HOME only after selection",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Keep destination personalization and apply clock",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Repeated installation preserves first backup",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Restore original HOME and enabled state",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Restore original animation values",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Keep unrelated accessibility services during rollback",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Stop newly introduced helper during restoration",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Signed recovery selection is supported",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "API29 recovery preserves subset IDs and safely uses original background",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Reject backup belonging to another TV Box",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Reject newer installed version without uninstalling",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Failed HOME selection never disables previous launcher",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Unknown Android version blocked before install/configuration",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Reject a corrupted signed release",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Vendor HOME priority handled with replacement foreground proof",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Android 12 nearby-device permissions granted",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Android 12 exact-alarm access configured",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Rollback cancels timer and restores previous exact-alarm mode",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Rollback restores previous nearby-device grants",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Android 12 signed recovery selection is supported",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "API31 recovery preserves subset IDs and safely uses original background",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "API 31 selects the adapted recovery",
+                       "passed":  true
+                   },
+                   {
+                       "name":  "Unknown API recovery is refused",
+                       "passed":  true
+                   }
+               ]
+}
