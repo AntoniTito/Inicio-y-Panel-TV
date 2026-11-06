@@ -1,0 +1,92 @@
+﻿{
+    "schema":  1,
+    "name":  "replica",
+    "reference":  "0.10.4",
+    "validatedApi":  [
+                         29
+                     ],
+    "description":  "Aspecto y comportamiento verificados. No incluye identidades ni conexiones.",
+    "panel":  {
+                  "compact":  {
+                                  "type":  "boolean",
+                                  "value":  false
+                              },
+                  "app_order":  {
+                                    "type":  "string",
+                                    "value":  "io.gh.reisxd.tizentube.fortaleza|com.xuper.netxxus|com.esaba.downloader|gov.nasa|com.softwinner.update|org.cyanogenmod.appdrawer|com.softwinner.TvdFileManager|com.android.vending"
+                                },
+                  "hidden_apps":  {
+                                      "type":  "set",
+                                      "value":  [
+                                                    "com.esaba.downloader",
+                                                    "gov.nasa",
+                                                    "com.android.vending",
+                                                    "com.softwinner.update",
+                                                    "org.cyanogenmod.appdrawer",
+                                                    "com.softwinner.TvdFileManager"
+                                                ]
+                                  },
+                  "show_greeting":  {
+                                        "type":  "boolean",
+                                        "value":  true
+                                    },
+                  "show_date":  {
+                                    "type":  "boolean",
+                                    "value":  true
+                                },
+                  "time_24":  {
+                                  "type":  "boolean",
+                                  "value":  false
+                              },
+                  "opacity":  {
+                                  "type":  "int",
+                                  "value":  70
+                              },
+                  "animate":  {
+                                  "type":  "boolean",
+                                  "value":  false
+                              },
+                  "custom_volume":  {
+                                        "type":  "boolean",
+                                        "value":  true
+                                    },
+                  "home":  {
+                               "type":  "boolean",
+                               "value":  true
+                           },
+                  "overlay_clock":  {
+                                        "type":  "boolean",
+                                        "value":  true
+                                    }
+              },
+    "global":  {
+                   "window_animation_scale":  "0.0",
+                   "transition_animation_scale":  "0.0",
+                   "animator_duration_scale":  "0.0"
+               },
+    "apps":  [
+                 {
+                     "package":  "com.xuper.netxxus",
+                     "name":  "Xuper",
+                     "source":  "provided-apk"
+                 },
+                 {
+                     "package":  "io.gh.reisxd.tizentube.fortaleza",
+                     "name":  "YouTube FOR",
+                     "source":  "provided-apk"
+                 },
+                 {
+                     "package":  "com.esaba.downloader",
+                     "name":  "Downloader",
+                     "source":  "provided-apk"
+                 },
+                 {
+                     "package":  "com.android.vending",
+                     "name":  "Google Play",
+                     "source":  "system"
+                 }
+             ],
+    "cleanup":  [
+
+                ]
+}

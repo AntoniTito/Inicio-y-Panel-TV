@@ -1,0 +1,1 @@
+<resources><string name="service_description">Muestra un panel inferior sobre el video y recibe las teclas del control para navegar. No lee el contenido de la pantalla ni usa Internet. Home depende del firmware. Desactiva este servicio para volver al comportamiento original.</string></resources>

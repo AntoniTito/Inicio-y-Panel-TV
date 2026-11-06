@@ -1,0 +1,18 @@
+﻿{
+    "package":  "local.z6panel",
+    "artifacts":  [
+                      {
+                          "file":  "Z6-Panel-0.10.4.apk",
+                          "version":  "0.10.4",
+                          "code":  22,
+                          "sha256":  "778F59A635F9013F4491FF8EEFD3BF985C21E9E898A1DA931DB435096322744C"
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.10.3.apk",
+                          "version":  "0.10.3",
+                          "code":  23,
+                          "sha256":  "6946CC77B912F2B5EFD5AFD8D15C416B71DCC929EFC338E98CA6B26010BB588D"
+                      }
+                  ],
+    "certificateSha256":  "1446d3adb55774747cadf9c8f7c814652fb2d0a97e0368094d1c251572dfe2d5"
+}

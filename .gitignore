@@ -1,0 +1,12 @@
+# Datos privados y herramientas locales: nunca publicar.
+/privado/
+/.local/
+/entregas/*.apk
+/entregas/*.idsig
+*.p12
+*.jks
+*.keystore
+*.env
+local.properties
+Thumbs.db
+Desktop.ini
