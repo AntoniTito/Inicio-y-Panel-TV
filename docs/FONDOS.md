@@ -24,7 +24,7 @@ Calidad **Ligera** limita la imagen a 720p; **Equilibrada** permite hasta 1080p.
 1. En Fondos, selecciona **Recibir del celular**.
 2. Conecta el celular a la misma red local que el TV y escanea el QR con su cámara. También puedes escribir la dirección mostrada.
 3. Selecciona fotos y pulsa Enviar fotos en el navegador. Revisa el resultado de cada archivo.
-4. Vuelve a Mi biblioteca en el TV y elige su uso.
+4. En el TV aparece **Foto recibida** y un contador. Pulsa **Ver foto recibida** para previsualizar y luego **Usar esta foto** para aplicarla; o **Terminar y abrir biblioteca** para ver todas. Puedes seguir enviando mientras el QR esté abierto. Atrás regresa a la biblioteca si recibiste fotos.
 
 No se necesita instalar una app adicional. El TV puede estar conectado por Ethernet si pertenece a la misma red que el celular. Esta versión requiere una dirección IPv4 local. Las redes de invitados o con aislamiento entre equipos pueden impedir la conexión.
 
@@ -50,7 +50,7 @@ Si Android informa presión de memoria, se liberan las imágenes y se limita la 
 
 ## Emulador y respaldos
 
-Por decisión del usuario, no se incluye puente de red para enviar desde un celular al emulador. Sus pruebas de recepción se hacen desde un navegador del PC mediante reenvío ADB local y se retira ese reenvío al terminar. El QR directo debe comprobarse en un TV Box real.
+Por decisión del usuario, no se incluye puente de red para enviar desde un celular al emulador. Sus pruebas de recepción se hacen desde un navegador del PC mediante reenvío ADB local y se retira ese reenvío al terminar. El QR directo se comprobó desde un celular al TV original; consulta VALIDACION-TV-0.12.2.md. Otro firmware necesita su propia prueba.
 
 Las imágenes y los índices están en el almacenamiento privado de la app y permanecen al actualizar sin desinstalar. El exportador existente de preferencias no incorpora los archivos de la biblioteca: no transfieras sus identificadores como si fueran fotos. Otro TV debe importar sus propias imágenes. No desinstales para forzar una versión anterior, porque Android elimina datos privados.
 
@@ -58,4 +58,8 @@ Las recuperaciones con código 27 no muestran esta biblioteca, pero una actualiz
 
 ## Corrección 0.12.1
 
-El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones actuales son código 29, específicas por API; no desinstales para bajar una versión.
+El fondo ocupa una capa independiente de borde a borde. Los márgenes se aplican únicamente al reloj, los controles y las aplicaciones. La foto mantiene su proporción y se centra para llenar la pantalla; se recortan los extremos necesarios en fotos verticales o panorámicas, sin deformarlas. Los límites de resolución y memoria no aumentan. Las recuperaciones de 0.12.1 usan código 29. La recuperación vigente para 0.12.2 vuelve a 0.12.1 con código 31 en ambas API; no desinstales para bajar una versión.
+
+## Recepción más clara en 0.12.2
+
+Cada foto guardada produce una confirmación visible y actualiza el contador sin reconstruir la pantalla ni generar otro QR. El primer éxito enfoca Ver foto recibida. Abrir la vista previa o terminar cierra el receptor. Los archivos inválidos muestran el fallo sin incrementar el contador. Una foto ya guardada sigue disponible aunque caduque la sesión. No se añaden consultas periódicas, servicios ni animaciones.

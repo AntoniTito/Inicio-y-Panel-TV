@@ -1,0 +1,82 @@
+{
+  "version": "0.12.2",
+  "code": 30,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-06T14:19:40.311Z",
+  "checks": [
+    {
+      "name": "New reception hides preview until a photo arrives",
+      "passed": true
+    },
+    {
+      "name": "Local authenticated page opens",
+      "passed": true
+    },
+    {
+      "name": "First upload is confirmed after saving",
+      "passed": true
+    },
+    {
+      "name": "TV visibly confirms reception and offers preview and library",
+      "passed": true
+    },
+    {
+      "name": "Receiving does not apply a wallpaper",
+      "passed": true
+    },
+    {
+      "name": "First receipt focuses the direct preview button",
+      "passed": true
+    },
+    {
+      "name": "Both next-step buttons fit the 720p screen",
+      "passed": true
+    },
+    {
+      "name": "Invalid file reports a failure",
+      "passed": true
+    },
+    {
+      "name": "Failed upload does not increment the saved-photo count",
+      "passed": true
+    },
+    {
+      "name": "Second upload succeeds in the same session",
+      "passed": true
+    },
+    {
+      "name": "Counter and library button reflect multiple uploads",
+      "passed": true
+    },
+    {
+      "name": "Remote OK opens preview and closes the receiver port",
+      "passed": true
+    },
+    {
+      "name": "Opening preview still requires choosing Use this photo",
+      "passed": true
+    },
+    {
+      "name": "New session resets its own received count",
+      "passed": true
+    },
+    {
+      "name": "Finish opens the library and closes the port",
+      "passed": true
+    },
+    {
+      "name": "All three saved photos are present in the library",
+      "passed": true
+    },
+    {
+      "name": "Expiry closes the listener",
+      "passed": true
+    },
+    {
+      "name": "Saved photo can still be previewed after session expiry",
+      "passed": true
+    }
+  ],
+  "physicalDeviceContacted": false
+}

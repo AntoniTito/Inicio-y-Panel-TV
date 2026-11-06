@@ -1,12 +1,12 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box, con reloj superior, Ajustes y las optimizaciones de 0.10.4. La versión vigente **0.12.1, código 28**, añade acceso desde una fila vacía, fondos opcionales y recepción local por QR. Conserva la firma original y las adaptaciones para Android 10/12. El TV Box físico permanece en 0.10.4.
+Inicio y paneles superpuestos para TV Box, con reloj superior, Ajustes y las optimizaciones de 0.10.4. La versión vigente **0.12.2, código 30**, añade acceso desde una fila vacía, fondos opcionales y recepción local por QR. Conserva la firma original y las adaptaciones para Android 10/12. El TV Box original Android 10 ya está actualizado; consulta el alcance de las [pruebas físicas](docs/VALIDACION-TV-0.12.2.md).
 
 ## Uso rápido en Windows
 
-**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` / rama `main` corrige su cobertura completa. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
+**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` / rama `main` confirma la recepción en el TV y ofrece acceso directo a la foto y la biblioteca. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
 
-1. Descarga el repositorio privado y los tres APK de su entrega (actual y dos recuperaciones por API) a `entregas/`. La copia local consolidada ya los incluye. Para descargar de un repositorio privado necesitas acceso a él. Este proyecto no se ha publicado automáticamente.
+1. Descarga el repositorio privado y los dos APK de su entrega (actual y recuperación común a API 29/31) a `entregas/`. La copia local consolidada ya los incluye. Para descargar de un repositorio privado necesitas acceso a él. Este proyecto no se ha publicado automáticamente.
 2. Si falta ADB: `powershell -File .\herramientas\preparar-herramientas.ps1 -SoloAdb`.
 3. Activa depuración en el TV Box y autoriza el PC. Sustituye `IP:PUERTO` por su conexión real:
 
@@ -16,7 +16,7 @@ powershell -File .\z6.ps1 instalar -Dispositivo IP:PUERTO -Perfil replica
 
 El asistente identifica y respalda el destino, instala, aplica preferencias, configura permisos y verifica Z6 como HOME antes de deshabilitar el inicio anterior. Pedirá la autorización local de Android si está disponible. No cambia redes, emparejamientos, idioma, zona horaria ni resolución. El nombre del usuario se personaliza en el propio panel.
 
-**Compatibilidad:** el asistente admite Android 10/API 29 y Android TV 12/API 31. La base 0.10.4 fue comprobada en el TV físico Android 10; 0.12.0 se comprobó en el emulador API 31 y su biblioteca/recepción en API 29. La imagen stock API 29 presenta fallos nativos de superposición reproducidos también con 0.10.4; su control físico y regresión en un TV Android 10 siguen pendientes. Las otras API permiten diagnosticar, pero bloquean la instalación automática. Consulta la [matriz](docs/COMPATIBILIDAD.md).
+**Compatibilidad:** el asistente admite Android 10/API 29 y Android TV 12/API 31. La base 0.10.4 fue comprobada en el TV físico Android 10; 0.12.0 se comprobó en el emulador API 31 y su biblioteca/recepción en API 29. La imagen stock API 29 presenta fallos nativos de superposición reproducidos también con 0.10.4; la comprobación física de la entrega actual se registra por separado y no se extrapola a otros modelos. Las otras API permiten diagnosticar, pero bloquean la instalación automática. Consulta la [matriz](docs/COMPATIBILIDAD.md).
 
 ## Comandos
 
@@ -30,7 +30,7 @@ El asistente identifica y respalda el destino, instala, aplica preferencias, con
 .\z6.ps1 compilar
 ```
 
-`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona automáticamente la recuperación con código 29: 0.10.4 en API 29 y 0.12.0 en API 31. Después se necesita código 30 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
+`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.12.1/código 31 para API 29 y 31. Después se necesita código 32 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
 
 Para aplicaciones externas, proporciona APK de procedencia verificada mediante `-CarpetaApks RUTA`, nombrados por paquete, por ejemplo `com.xuper.netxxus.apk`. Se valida el identificador con las build-tools antes de instalar. No se incluyen cuentas, licencias ni APK de terceros en Git. Usa `-SoloPanel` si las instalarás después, como en el emulador actual.
 
@@ -49,7 +49,7 @@ Para aplicaciones externas, proporciona APK de procedencia verificada mediante `
 
 Lee [instalación y recuperación](docs/INSTALACION.md), [compilación](docs/COMPILACION.md), [compatibilidad](docs/COMPATIBILIDAD.md) y [consolidación](docs/CONSOLIDACION.md).
 
-El archivo `.local/Z6-Panel-0.12.1-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
+El archivo `.local/Z6-Panel-0.12.2-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
 
 El emulador configurado y su recuperación se describen en [Android TV 12](docs/EMULADOR-TV12.md). Para otro emulador: `.\z6.ps1 instalar -Dispositivo emulator-5554 -SoloPanel`, sustituyendo el serial real.
 

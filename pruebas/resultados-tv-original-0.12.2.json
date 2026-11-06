@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-06",
+  "environment": "TV Box original TV GRATIS, Android 10, 1280x720",
+  "api": 29,
+  "emulator": false,
+  "version": "0.12.2",
+  "code": 30,
+  "previousVersion": "0.10.4",
+  "previousCode": 22,
+  "intermediateVersion": "0.12.1",
+  "checks": [
+    { "name": "Original installed APK matches signed 0.10.4 reference", "passed": true },
+    { "name": "Private APK and preference snapshots saved before each update", "passed": true },
+    { "name": "Signed in-place update installed 0.12.2 without uninstalling", "passed": true },
+    { "name": "All existing preference values preserved through both updates", "passed": true },
+    { "name": "Z6 HOME, accessibility and visible YouTube FOR/Xuper app order preserved", "passed": true },
+    { "name": "Native settings sidebar with eight entries opens on physical API29", "passed": true, "testedVersion": "0.12.1" },
+    { "name": "Helper PING works after APK updates without PC bootstrap", "passed": true },
+    { "name": "Receiver responds HTTP 200 over direct LAN without ADB forwarding", "passed": true, "testedVersion": "0.12.1" },
+    { "name": "User confirmed phone page opened and photo was received", "passed": true, "testedVersion": "0.12.1" },
+    { "name": "Received photo metadata and optimized file size preserved after 0.12.2 update", "passed": true },
+    { "name": "Current Home wallpaper view covers 1280x720", "passed": true }
+  ],
+  "changedExistingPreferenceKeys": [],
+  "photoCountBefore0122": 1,
+  "photoCountAfter0122": 1,
+  "helperVersion": "0.11.0",
+  "incident": "ADB access was lost once while the TV remained on the LAN. User reactivated USB debugging and the connection recovered. Cause not determined.",
+  "pending": [
+    "Phone confirmation and physical remote interaction with the new 0.12.2 receiver UI",
+    "Full reboot recovery on this release",
+    "Physical performance, sustained video playback and JBL audio regression",
+    "USB import, sleep and HDMI-CEC regression"
+  ],
+  "privateEvidence": "Stored under privado/actualizaciones; no personal photos, session links or device identifiers included here."
+}

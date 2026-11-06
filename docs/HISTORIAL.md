@@ -14,3 +14,5 @@ Los datos de auditoría advierten que los valores declarados por un firmware gen
 - 0.12.0/código 26: acceso a añadir apps sin elementos visibles, biblioteca privada de fondos, presentación, paisajes Wikimedia y recepción temporal por QR. Recuperaciones específicas código 27 y evidencia separada por API.
 
 - 0.12.1/código 28: fondo de borde a borde en una capa independiente; controles con los mismos márgenes. Recuperaciones código 29 y prueba de píxeles en las cuatro esquinas.
+
+- 0.12.2/código 30: confirmación de recepción y contador en el TV, vista previa directa, terminar en biblioteca y navegación Atrás por nivel. Recuperación común 0.12.1/código 31 para API 29/31.
