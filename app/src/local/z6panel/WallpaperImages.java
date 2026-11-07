@@ -30,7 +30,7 @@ final class WallpaperImages {
   }catch(Found ready){return ready.header;}catch(RuntimeException e){throw new IOException(e.getMessage()==null?"Imagen no compatible":e.getMessage(),e);}catch(IOException e){throw new IOException("No se pudo leer la imagen. Usa JPG, PNG o WebP estático; HEIC depende del equipo",e);}
  }
  static long available(){Runtime r=Runtime.getRuntime();return r.maxMemory()-(r.totalMemory()-r.freeMemory());}
- static boolean lowRam(Context c){ActivityManager am=(ActivityManager)c.getSystemService(Context.ACTIVITY_SERVICE);ActivityManager.MemoryInfo info=new ActivityManager.MemoryInfo();am.getMemoryInfo(info);return am.isLowRamDevice()||info.lowMemory||am.getMemoryClass()<128;}
+ static boolean lowRam(Context c){ActivityManager am=(ActivityManager)c.getSystemService(Context.ACTIVITY_SERVICE);if(am.isLowRamDevice()||am.getMemoryClass()<128)return true;ActivityManager.MemoryInfo info=new ActivityManager.MemoryInfo();am.getMemoryInfo(info);return info.lowMemory;}
  static boolean fourK(Context c){ActivityManager am=(ActivityManager)c.getSystemService(Context.ACTIVITY_SERVICE);return !lowRam(c)&&am.getMemoryClass()>=192&&available()>=96*MB;}
  static int screenWidth(Context c){return Math.max(1,c.getResources().getDisplayMetrics().widthPixels);}
  static int screenHeight(Context c){return Math.max(1,c.getResources().getDisplayMetrics().heightPixels);}

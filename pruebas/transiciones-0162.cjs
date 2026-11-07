@@ -1,4 +1,5 @@
 // Uses the authenticated shell bridge and native Activity lifecycle, never image deletion.
+const version=process.argv[3]||'0.16.2';if(!/^0\.16\.[23]$/.test(version))throw Error('Unsupported test report version');
 const q=require('./adb-fondos.cjs'),s=process.argv[2];
 if(!s)throw Error('Explicit ADB device required');
 const results=[],check=(name,ok,evidence)=>{results.push({name,passed:!!ok,evidence});console.log((ok?'OK ':'FAIL ')+name);if(!ok)throw Error(name)};
@@ -28,6 +29,6 @@ async function showHome(){try{q.panel(s,'action','close')}catch(e){}q.command(s,
  const now=q.json(s,'wallpaper_backup_manifest').images.map(i=>({id:i.id,size:i.size,sha256:i.sha256})).sort((a,b)=>a.id.localeCompare(b.id));
  check('Image bytes and IDs unchanged',JSON.stringify(photos)===JSON.stringify(now),{count:now.length});
  check('Preferences unchanged',q.panel(s,'prefs_export').match(/base64=([A-Za-z0-9+/=]+)/)[1]===prefs,{});
- const report={version:'0.16.2',api:+q.command(s,'shell','getprop','ro.build.version.sdk'),emulator:q.command(s,'shell','getprop','ro.kernel.qemu')==='1',checks:results};
- q.fs.writeFileSync(q.path.join(q.root,'pruebas','resultados-transiciones-0.16.2-api'+report.api+'.json'),JSON.stringify(report,null,2)+'\n');
+ const report={version,api:+q.command(s,'shell','getprop','ro.build.version.sdk'),emulator:q.command(s,'shell','getprop','ro.kernel.qemu')==='1',checks:results};
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas','resultados-transiciones-'+version+'-api'+report.api+'.json'),JSON.stringify(report,null,2)+'\n');
 })().catch(e=>{console.error(e);process.exitCode=1});

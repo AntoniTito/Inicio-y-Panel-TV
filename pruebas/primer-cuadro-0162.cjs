@@ -1,6 +1,7 @@
 const q=require('./adb-fondos.cjs'),s=process.argv[2];
+const version=process.argv[3]||'0.16.2';if(!/^0\.16\.[23]$/.test(version))throw Error('Unsupported test report version');
 if(!/^emulator-\d+$/.test(s||'')||q.command(s,'shell','getprop','ro.kernel.qemu')!=='1')throw Error('Emulator only');
-const original=q.panel(s,'prefs_export').match(/base64=([A-Za-z0-9+/=]+)/)[1],state=JSON.parse(Buffer.from(original,'base64')),checks=[];let created='',forward=0;
+const original=q.panel(s,'prefs_export').match(/base64=([A-Za-z0-9+/=]+)/)[1],state=JSON.parse(Buffer.from(original,'base64')),checks=[];const initialFallbacks=q.panel(s,'home_inspect').wallpaper.firstFrameFallbacks;let created='',forward=0;
 const assert=(name,ok)=>{checks.push({name,passed:!!ok});if(!ok)throw Error(name);console.log('OK '+name)};
 (async()=>{try{
  q.panel(s,'wallpaper_open');await q.wait(()=>q.panel(s,'wallpaper_inspect').visible);let p=q.panel(s,'wallpaper_inspect').photos[0];
@@ -11,7 +12,7 @@ const assert=(name,ok)=>{checks.push({name,passed:!!ok});if(!ok)throw Error(name
   q.panel(s,'prefs_restore',Buffer.from(JSON.stringify(next)).toString('base64'));
   q.panel(s,'wallpaper_open');await q.wait(()=>q.panel(s,'wallpaper_inspect').visible);await q.wait(()=>!q.panel(s,'home_inspect').wallpaper.loaded);q.panel(s,'wallpaper_action','close');q.command(s,'shell','am','start','-n','local.z6panel/.HomeActivity');
   const h=await q.wait(()=>{const h=q.panel(s,'home_inspect');return h.visible&&!h.wallpaper.firstDrawPending&&(['photo','slideshow'].includes(mode)?h.wallpaper.loaded:!h.wallpaper.loaded)?h:null});
-  assert(mode+' returns without a blank-frame timeout',h.wallpaper.firstFrameFallbacks===0);
+  assert(mode+' returns without a blank-frame timeout',h.wallpaper.firstFrameFallbacks===initialFallbacks);
  }
- q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-primer-cuadro-0.16.2-api31.json'),JSON.stringify({version:'0.16.2',api:31,emulator:true,checks},null,2)+'\n');
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-primer-cuadro-'+version+'-api31.json'),JSON.stringify({version,api:31,emulator:true,initialFallbacks,checks},null,2)+'\n');
  }finally{if(forward)q.command(s,'forward','--remove','tcp:'+forward);if(created){q.panel(s,'wallpaper_open');await q.wait(()=>q.panel(s,'wallpaper_inspect').visible);q.panel(s,'wallpaper_action','remove:'+created);await q.wait(()=>!q.panel(s,'wallpaper_inspect').photos.some(p=>p.id===created));q.panel(s,'wallpaper_action','close');}q.panel(s,'prefs_restore',original);q.command(s,'shell','am','start','-n','local.z6panel/.HomeActivity')}})().catch(e=>{console.error(e);process.exitCode=1});

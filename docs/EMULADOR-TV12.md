@@ -52,3 +52,7 @@ Instalado código 40 y verificada la retirada del acceso a galería dentro de Fo
 ## 0.16.2: transiciones del inicio
 
 Actualizado a código 42 conservando los datos del AVD. Trece comprobaciones de Home, Panel e inicio, ajustes de Android y preservación de fotos/preferencias. Se conserva la evidencia anterior de reproducción y recuperación; no se repitió como parte de esta corrección.
+
+## 0.16.3: menos trabajo al reanudar Home
+
+Mismo APK código 44 para API 29/31. Reutilización del fondo visible, invalidación por preferencias y MediaStore y caducidad sin consultas periódicas nuevas. Ver VERIFICACION-0.16.3.md para mediciones físicas y pruebas del AVD por separado.

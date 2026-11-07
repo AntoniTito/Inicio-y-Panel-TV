@@ -1,0 +1,48 @@
+{
+  "version": "0.16.3",
+  "api": 31,
+  "emulator": true,
+  "checks": [
+    {
+      "name": "Repeated HOME avoids maintenance",
+      "passed": true,
+      "evidence": {
+        "additionalRuns": 0
+      }
+    },
+    {
+      "name": "Repeated HOME reuses image and fast path",
+      "passed": true,
+      "evidence": {
+        "fastResumes": 12
+      }
+    },
+    {
+      "name": "Changed wallpaper preferences invalidate reuse",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Media events while paused start no image work",
+      "passed": true,
+      "evidence": {
+        "imageRetained": true
+      }
+    },
+    {
+      "name": "Returning after media change refreshes state",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Expired reuse window performs maintenance",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "No first-frame fallback introduced",
+      "passed": true,
+      "evidence": {}
+    }
+  ]
+}

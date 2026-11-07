@@ -1,0 +1,101 @@
+{
+  "version": "0.16.3",
+  "api": 29,
+  "emulator": false,
+  "before": {
+    "phase": "antes",
+    "api": 29,
+    "emulator": false,
+    "method": "Three rounds of 12 native HOME intents with 200ms spacing; app process CPU ticks and Android gfxinfo frame p95, not physical input-to-display latency",
+    "rounds": [
+      {
+        "round": 1,
+        "homeIntents": 12,
+        "cpuMs": 1300,
+        "elapsedMs": 6739,
+        "p95FrameMs": null,
+        "frames": 0,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 0
+      },
+      {
+        "round": 2,
+        "homeIntents": 12,
+        "cpuMs": 1410,
+        "elapsedMs": 6880,
+        "p95FrameMs": null,
+        "frames": 0,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 0
+      },
+      {
+        "round": 3,
+        "homeIntents": 12,
+        "cpuMs": 1240,
+        "elapsedMs": 6829,
+        "p95FrameMs": null,
+        "frames": 0,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 0
+      }
+    ],
+    "medianCpuMs": 1300,
+    "medianFrameP95Ms": null
+  },
+  "after": {
+    "phase": "despues",
+    "api": 29,
+    "emulator": false,
+    "method": "Three rounds of 12 native HOME intents with 200ms spacing; app process CPU ticks and Android gfxinfo frame p95, not physical input-to-display latency",
+    "rounds": [
+      {
+        "round": 1,
+        "homeIntents": 12,
+        "cpuMs": 180,
+        "elapsedMs": 7027,
+        "p95FrameMs": 23,
+        "frames": 1,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 1,
+        "maintenanceRuns": 1,
+        "fastResumes": 12
+      },
+      {
+        "round": 2,
+        "homeIntents": 12,
+        "cpuMs": 90,
+        "elapsedMs": 7003,
+        "p95FrameMs": null,
+        "frames": 0,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 1,
+        "maintenanceRuns": 1,
+        "fastResumes": 24
+      },
+      {
+        "round": 3,
+        "homeIntents": 12,
+        "cpuMs": 80,
+        "elapsedMs": 7204,
+        "p95FrameMs": null,
+        "frames": 0,
+        "networkRequests": 0,
+        "imageReady": true,
+        "firstFrameFallbacks": 1,
+        "maintenanceRuns": 1,
+        "fastResumes": 36
+      }
+    ],
+    "medianCpuMs": 90,
+    "medianFrameP95Ms": null
+  },
+  "reductionPercent": 93.07692307692308,
+  "imagesUnchanged": true,
+  "photoCount": 3,
+  "preferencesUnchanged": true
+}

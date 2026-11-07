@@ -23,9 +23,11 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 
 | `v0.16.1` | Etiqueta histórica | Quita el acceso a la galería nativa desde Fondos, manteniendo imágenes y funciones. Código 40; recuperación 0.16.0/código 41. |
 
-| `v0.16.2` / `main` | Entrega vigente | Evita borrar el fondo durante las pausas breves de Home y ajustes. Código 42; recuperación 0.16.1/código 43. |
+| `v0.16.2` | Etiqueta histórica | Evita borrar el fondo durante las pausas breves de Home y ajustes. Código 42; recuperación 0.16.1/código 43. |
 
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.16.2.md. La recuperación vigente conserva el comportamiento 0.16.1 con código 43 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 44 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
+| `v0.16.3` / `main` | Entrega vigente | Reduce el trabajo de Home reutilizando el fondo validado; mantiene entrada y retorno sin parpadeo. Código 44; recuperación 0.16.2/código 45. |
+
+Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.16.3.md. La recuperación vigente conserva el comportamiento 0.16.2 con código 45 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 46 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 
