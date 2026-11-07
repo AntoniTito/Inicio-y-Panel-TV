@@ -1,0 +1,47 @@
+{
+  "phase": "despues",
+  "api": 29,
+  "emulator": false,
+  "menu": {
+    "page": "panelAddApp",
+    "title": "Añadir aplicación",
+    "edit": true,
+    "selection": 10,
+    "addVisible": true,
+    "clock": false,
+    "home": false
+  },
+  "returned": {
+    "page": "bottom",
+    "title": "",
+    "edit": true,
+    "selection": 10,
+    "addVisible": true,
+    "clock": true,
+    "home": false
+  },
+  "reproducedStalePage": false,
+  "afterLeft": {
+    "page": "bottom",
+    "title": "",
+    "edit": true,
+    "selection": 9,
+    "addVisible": true,
+    "clock": true,
+    "home": false
+  },
+  "nestedReturn": true,
+  "addThenCancel": true,
+  "afterCancel": {
+    "page": "bottom",
+    "title": "",
+    "edit": false,
+    "selection": 4,
+    "addVisible": false,
+    "clock": true,
+    "home": false
+  },
+  "closed": true,
+  "preferencesUnchanged": true,
+  "imagesUnchanged": true
+}

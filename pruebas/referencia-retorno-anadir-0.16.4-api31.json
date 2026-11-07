@@ -1,0 +1,27 @@
+{
+  "phase": "antes",
+  "api": 31,
+  "emulator": true,
+  "menu": {
+    "page": "panelAddApp",
+    "title": "Añadir aplicación",
+    "edit": true,
+    "selection": 7,
+    "addVisible": true,
+    "clock": false,
+    "home": false
+  },
+  "returned": {
+    "page": "panelAddApp",
+    "title": "",
+    "edit": false,
+    "selection": 5,
+    "addVisible": false,
+    "clock": false,
+    "home": false
+  },
+  "reproducedStalePage": true,
+  "preferencesUnchanged": true,
+  "imagesUnchanged": true,
+  "isolatedDiagnosticBuild": true
+}

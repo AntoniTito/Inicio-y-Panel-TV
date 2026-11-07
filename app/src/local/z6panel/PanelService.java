@@ -422,9 +422,10 @@ public class PanelService extends AccessibilityService {
  private void setScreenProfile(int profile){try{if(Build.VERSION.SDK_INT>=23&&!Settings.System.canWrite(this)){message("Permiso de brillo pendiente");return;}int brightness=profile==0?180:profile==1?255:70;if(!Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS,brightness)){message("No se pudo aplicar el perfil");return;}prefs.edit().putInt("screen_profile",profile).apply();renderSide();}catch(SecurityException e){message("El firmware no permite cambiar el brillo");}}
  private void push(Page p){pages.push(p);generation++;renderSide();}
  private void back(){
-  if(editMode){cancelEditMode();renderBottom();return;}
-  if(pages.isEmpty()){hide();return;}
-  pages.pop();generation++;if(pages.isEmpty()&&HomeActivity.visible)hide();else render();
+  // A child page belongs to the current editing session: leave that page first.
+  if(!pages.isEmpty()){pages.pop();generation++;if(pages.isEmpty()&&HomeActivity.visible)hide();else render();return;}
+  if(editMode){cancelEditMode();return;}
+  hide();
  }
  private void info(String label){add(label,"",null);}
  private void add(String label,String detail,Runnable run){actions.add(new Action(label,detail,run));}
@@ -701,7 +702,7 @@ public class PanelService extends AccessibilityService {
   if(panel!=null)hide();openPage(name);
  }
  String actionForShell(String id){for(int i=0;i<actions.size();i++)if(actions.get(i).id.equals(id)){if(actions.get(i).run==null)return "DISABLED";if(!pages.isEmpty()){pages.peek().selected=i;pages.peek().selectedId=id;pages.peek().interacted=true;}runAction(i);return "OK";}return "NOT_FOUND";}
- void keyForShell(int key){if(!Arrays.asList(3,4,19,20,21,22,23,176).contains(key))throw new IllegalArgumentException("Unsupported key");long now=SystemClock.uptimeMillis();onKeyEvent(new KeyEvent(now,now,KeyEvent.ACTION_DOWN,key,0));onKeyEvent(new KeyEvent(now,now+30,KeyEvent.ACTION_UP,key,0));}
+ void keyForShell(int key,int duration){if(!Arrays.asList(3,4,19,20,21,22,23,176).contains(key)||duration<0||duration>1500||duration>30&&key!=KeyEvent.KEYCODE_DPAD_CENTER&&key!=KeyEvent.KEYCODE_BACK)throw new IllegalArgumentException("Unsupported key or duration");long now=SystemClock.uptimeMillis();onKeyEvent(new KeyEvent(now,now,KeyEvent.ACTION_DOWN,key,0));onKeyEvent(new KeyEvent(now,now+duration,KeyEvent.ACTION_UP,key,0));}
  void prepareForRestore(){localGeneration++;foregroundGeneration++;localStarting=false;localAttempts=0;hide();}
  private android.graphics.drawable.StateListDrawable focusSelector(){android.graphics.drawable.StateListDrawable d=new android.graphics.drawable.StateListDrawable();d.addState(new int[]{android.R.attr.state_selected},focusBackground(true));d.addState(new int[0],focusBackground(false));return d;}
  private void updatePanelLayout(WindowManager.LayoutParams desired){android.view.ViewGroup.LayoutParams p=panel.getLayoutParams();if(p instanceof WindowManager.LayoutParams){WindowManager.LayoutParams old=(WindowManager.LayoutParams)p;if(old.width==desired.width&&old.height==desired.height&&old.gravity==desired.gravity&&old.x==desired.x&&old.y==desired.y)return;}wm.updateViewLayout(panel,desired);}

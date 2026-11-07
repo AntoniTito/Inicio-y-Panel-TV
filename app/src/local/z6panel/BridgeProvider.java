@@ -37,7 +37,7 @@ public final class BridgeProvider extends ContentProvider {
     else if("wallpaper_next".equals(method)){HomeActivity.advanceWallpaperForShell();result.putString("status","OK");}
     else if("open".equals(method)){service.openForShell(arg);result.putString("status","OK");}
     else if("action".equals(method))result.putString("status",service.actionForShell(arg));
-    else if("key".equals(method)){service.keyForShell(Integer.parseInt(arg));result.putString("status","OK");}
+    else if("key".equals(method)){String[] values=arg.split(":",-1);if(values.length>2)throw new IllegalArgumentException("Invalid key");service.keyForShell(Integer.parseInt(values[0]),values.length==2?Integer.parseInt(values[1]):30);result.putString("status","OK");}
     else if("timer_test".equals(method))result.putString("status",SleepTimer.scheduleSeconds(getContext(),Integer.parseInt(arg)));
     else if("timer_cancel".equals(method)){SleepTimer.cancel(getContext());result.putString("status","OK");}
     else throw new IllegalArgumentException("Unsupported method");
