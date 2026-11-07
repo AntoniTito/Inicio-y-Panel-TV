@@ -1,0 +1,28 @@
+{
+  "version": "0.17.0",
+  "date": "2026-11-07",
+  "timezone": "America/Lima",
+  "api": 29,
+  "emulator": false,
+  "source": "user_report",
+  "carouselEditingAndVideo": {
+    "promptedChecks": [
+      "Circular navigation in Apps and Actions",
+      "Up/down between sections",
+      "Held directional key",
+      "Editing confined to Apps",
+      "Add app and Back",
+      "Video continues without blocking"
+    ],
+    "answer": "Sí, todo funciona con fluidez"
+  },
+  "returnToHome": {
+    "promptedChecks": [
+      "Return from Panel e inicio without flicker",
+      "Return from Android settings without flicker"
+    ],
+    "answer": "Sí, sigue sin parpadear"
+  },
+  "apkChanged": false,
+  "nativeAdbBurstResultUnchanged": true
+}

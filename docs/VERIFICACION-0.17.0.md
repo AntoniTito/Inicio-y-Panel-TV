@@ -44,7 +44,11 @@ Son muestras de estas sesiones, sin deducir ausencia universal de fugas ni consu
 
 ## Control físico y límites
 
-La comprobación final con el control físico, video reproduciéndose, flechas rápidas/sostenidas y regreso a Inicio sin parpadeo está pendiente de confirmación del usuario para esta versión. Las confirmaciones de 0.16.5 y anteriores permanecen en sus informes históricos y no se presentan como pruebas de 0.17.0. En este TV las 17 flechas inyectadas con `input dpad keyevent` no llegaron al panel: cero actualizaciones del foco y selección intacta. El ensayo nativo se registra como inconcluso, no aprobado, en `pruebas/resultados-rafaga-panel-0.17.0-api29.json`. No se deduce continuidad de video de los eventos del puente.
+El 7 de noviembre de 2026 el usuario confirmó en el TV original, con video reproduciéndose y su control físico, que funcionan las vueltas de Apps y Acciones, el cambio de fila con arriba/abajo, la flecha sostenida y edición → Añadir app → Atrás. Confirmó que la edición permanece en Apps, el video continúa sin bloqueos y todo responde con fluidez. También confirmó que volver a Inicio desde Panel e inicio y desde Ajustes de Android sigue sin parpadear. Es evidencia manual comunicada por el usuario, separada de las pruebas automáticas y de las confirmaciones históricas.
+
+En este TV las 17 flechas inyectadas con `input dpad keyevent` no llegaron al panel: cero actualizaciones del foco y selección intacta. Ese ensayo nativo permanece inconcluso, no aprobado, en `pruebas/resultados-rafaga-panel-0.17.0-api29.json`; la confirmación con el control físico no cambia su resultado. No se deduce continuidad de video de los eventos del puente.
+
+La etiqueta fija `v0.17.0` conserva el informe inicial, que señalaba esta confirmación como pendiente. Un commit posterior registra la confirmación; la etiqueta no se mueve. No cambió el APK.
 
 No se ejecutaron apagado, reinicio, borrado de fotos, cambios de red ni alteraciones HDMI. El alcance es navegación del panel y conservación de sus menús; no es una certificación de otros TV Box, reproducción 4K o todos los firmwares.
 
