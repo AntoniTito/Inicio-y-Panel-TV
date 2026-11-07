@@ -1,17 +1,17 @@
 # Compatibilidad comprobada
 
-La entrega vigente es 0.16.3/código 44. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.16.3.md](VERIFICACION-0.16.3.md); no equivale a compatibilidad universal.
+La entrega vigente es 0.16.4/código 46. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.16.4.md](VERIFICACION-0.16.4.md); no equivale a compatibilidad universal.
 
 | Entorno | Estado |
 |---|---|
-| TV Box original, Android 10/API 29 | 0.16.3/código 44: medición de CPU antes/después, transiciones, imágenes y preferencias conservadas. Ver VERIFICACION-0.16.3.md. |
+| TV Box original, Android 10/API 29 | 0.16.4/código 46: selección translúcida revisada en captura y confirmada por el usuario. Ver VERIFICACION-0.16.4.md. |
 | Otro Android 10/API 29 | Instalador admitido; cada firmware de destino requiere su propia validación de 0.16.0. |
-| Emulador Android TV 12/API 31 | 0.16.3/código 44: reutilización e invalidación por preferencias, MediaStore y caducidad; las comprobaciones se detallan por separado. |
+| Emulador Android TV 12/API 31 | Evidencia extensa hasta 0.16.3/código 44. 0.16.4 cambia solo colores de un drawable existente; no se repitió la comprobación del emulador. |
 | Emulador Android TV 10/API 29 r3 | Fotos y recepción comprobadas. Su compositor falla con ciertas ventanas; el fallo se reprodujo con 0.10.4. Auxiliar iniciado desde PC para la integración. No valida control físico ni autonomía. |
 | Otro equipo Android 12/API 31 | Instalador admitido; las diferencias de firmware requieren validación propia. |
 | API distintas de 29/31 | Diagnóstico disponible; instalación automática bloqueada hasta adaptación y validación. |
 
-Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.16.2 con código 45 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 46 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
+Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.16.3 con código 47 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 48 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
 
 Mantener los valores propios del destino no significa inventar capacidades: Wi-Fi, Bluetooth, HDMI-CEC, suspensión, Home y recuperación autónoma dependen del firmware. Los ajustes nativos son la alternativa donde estén disponibles. No se eliminan confirmaciones de Android ni se promete apagar el televisor mediante CEC.
 
