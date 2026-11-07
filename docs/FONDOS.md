@@ -1,80 +1,61 @@
-# Fondos del inicio
+﻿# Fondos del inicio
 
-Abre Ajustes → Panel e inicio → Fondos del inicio. Los cuatro modos están **en una sola fila**. Las flechas muestran su sección y su vista previa; la marca **En uso** identifica el fondo aplicado. Mover el foco no aplica ni descarga imágenes.
+Z6 Panel 0.16.0 mantiene los cuatro modos en una fila: Fondo original, Foto fija, Presentación y Paisaje diario. Los fondos aparecen solo en Inicio; el video y el panel superpuesto conservan su comportamiento. Las flechas previsualizan y OK utiliza una elección.
 
-Los fondos aparecen únicamente en Inicio. El video y el panel superpuesto conservan su comportamiento.
+## Fotos y presentación
 
-## Foto fija: gestionar sin salir
+Foto fija muestra seis miniaturas junto a la vista previa: OK usa la foto sin salir. La vista previa se conserva al recorrer controles. Seleccionar permite marcar varias y Eliminar muestra una confirmación con la cantidad; Eliminar todas incluye las fotos personales y los paisajes conservados de Mis fotos.
 
-Al enfocar **Foto fija** aparecen tus fotos junto a la vista previa, seis por página. OK sobre el modo entra en ellas.
+Presentación admite Todas las fotos o Fotos elegidas, utiliza el orden de la biblioteca y cambia cada 5, 15, 30 o 60 minutos. Usar presentación guarda las marcas; mover el foco o marcar no aplica el cambio. Todas incluye futuras fotos personales y paisajes conservados, pero no paisajes temporales. Si se elimina la última participante, se recupera Fondo original.
 
-- Las flechas previsualizan las miniaturas. Moverse a los controles conserva la vista previa.
-- **OK sobre una foto la usa**, sin salir de esta pantalla.
-- Al volver a Foto fija se recupera la última vista previa de esta sesión; la foto aplicada se conserva también al reiniciar.
-- **Eliminar foto** borra la foto enfocada, tras confirmar.
-- **Seleccionar** permite marcar varias; **Eliminar (N)** pide confirmación.
-- **Eliminar todas** borra todas las fotos personales de Z6, tras confirmar la cantidad.
+Mis fotos conserva la galería ampliada de ocho miniaturas, orden, información y comparación de resoluciones. Las tareas habituales siguen integradas en Foto fija y Presentación.
 
-El borrado es directo, **sin papelera**: se eliminan archivo y miniatura, se verifica su ausencia y se informa el tamaño liberado. Una miniatura pendiente no puede regenerarse después del borrado. Si falla una eliminación se indica en pantalla. Borrar el fondo activo recupera Fondo original; seleccionar otra miniatura solamente la previsualiza.
+## Los 12 paisajes de hoy
 
-Se elimina la copia privada de Z6. Un original en el celular, USB o en otra carpeta del TV no se elimina. No es un servicio de borrado forense. Recuperar una versión del APK no devuelve las fotos que hayas eliminado.
+En Paisaje diario abre Los 12 de hoy. El catálogo tiene hasta doce fotografías de Wikimedia, incluida la identificada como Paisaje de hoy, elegida por Z6 dentro de su colección. No equivale a la fotografía oficial del día de Wikimedia.
 
-**Mis fotos**, en el pie, conserva la galería ampliada de ocho miniaturas por página y sus opciones de información, orden y comparación de resoluciones. La gestión habitual ya está integrada en Foto fija.
+- Seis miniaturas por página. Las flechas previsualizan; OK descarga el paisaje elegido y lo usa. Una elección ya descargada se utiliza localmente.
+- Conservar lo guarda en Mis fotos sin caducidad. Reutiliza el mismo archivo, sin volver a descargarlo ni crear otro original permanente. Si falta, lo prepara antes de confirmar.
+- Los estados distinguen Disponible para descargar, Descargado · temporal, Conservado y Eliminada.
+- Cambiar cada se ajusta con izquierda/derecha: Desactivado, 1, 2, 3 o 6 horas. Inicialmente está desactivado. Una selección manual reinicia el intervalo.
+- La rotación sigue el tiempo real. Al volver de otra aplicación se elige la posición correspondiente, sin descargar los paisajes omitidos. Solo se prepara anticipadamente el siguiente mientras Inicio está visible.
 
-## Presentación
+El catálogo y sus miniaturas se conservan durante la fecha local del TV. Al renovarse, la selección avanza por la colección y evita repetir los del día anterior cuando hay suficientes candidatos. Si no hay doce adecuados, se muestra la cantidad disponible. Una renovación fallida conserva el catálogo anterior con su fecha y habilita Reintentar; no se presenta como actualizado. Los intentos automáticos están separados al menos una hora y solo se realizan al volver a Z6.
 
-Al enfocar **Presentación** se muestran las mismas fotos, con marcas de inclusión. OK sobre una miniatura incluye o excluye esa foto; las flechas la previsualizan.
+Al comenzar otro día se eliminan los paisajes temporales anteriores, salvo el fondo activo, que sirve de respaldo sin Internet. Este se elimina al disponer de su reemplazo. La limpieza se realiza al volver a Inicio/Fondos o después de reiniciar; no despierta el TV a medianoche. Los conservados y las fotos personales permanecen hasta borrarlos.
 
-- **Todas las fotos** incluye también futuras importaciones.
-- Al desmarcar una, se pasa a **Fotos elegidas**: las importaciones posteriores no se añaden automáticamente.
-- **Usar presentación (N)** guarda y aplica la selección. Las marcas pendientes no cambian el fondo antes de esa acción.
-- Sobre **Cada N min**, izquierda/derecha eligen 5, 15, 30 o 60 minutos.
-- **Ordenar** permite mover las participantes conservando las posiciones de las fotos ajenas. OK guarda el movimiento; Atrás lo cancela.
+Los créditos conservan autor, licencia y origen. Se utiliza la [colección de paisajes destacados](https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_landscapes), con la [API de categorías](https://www.mediawiki.org/wiki/API:Categorymembers) y la [información de imágenes](https://www.mediawiki.org/wiki/API:Imageinfo). No es una integración con Bing. Las fotos personales no se envían a Wikimedia.
 
-Si eliminas la última participante, se recupera Fondo original. Quitar una marca de la presentación no borra la foto del TV.
+## Galería del TV y borrado
 
-## Fondo original y Paisaje diario
+Las imágenes optimizadas se publican en MediaStore, en Pictures/Z6, separadas en Mis fotos, Conservadas y Paisajes del dia. Aparecen en las aplicaciones multimedia que consultan ese índice. Las miniaturas del catálogo permanecen privadas y no aparecen como fotos independientes. Un paisaje que todavía solo tiene miniatura no se ha descargado como fondo.
 
-**Fondo original** utiliza el color de Z6, sin fotos ni descargas. OK lo aplica.
+Abrir galería del TV utiliza un visor instalado. En el TV original se recupera reversiblemente la galería AOSP; si otro firmware carece de visor, Mis fotos sigue disponible. El instalador conserva por dispositivo el estado original de esa galería para restaurarlo. La apariencia y la papelera de aplicaciones externas dependen de cada visor.
 
-**Paisaje diario** permite usar el paisaje guardado, actualizar cuando corresponde, consultar los créditos y **Elegir otro paisaje**.
+Eliminar desde Z6 borra directamente su imagen compartida y su miniatura, sin papelera, verifica la ausencia e informa el tamaño liberado. El mismo archivo deja de estar disponible en Multimedia. Un original que permanezca en el celular, USB u otra ubicación externa no se elimina. No se promete borrado forense del almacenamiento flash.
 
-Elegir otro paisaje abre opciones de Wikimedia dentro de la misma pantalla: hasta 30 opciones por consulta y seis miniaturas por página. Las flechas previsualizan una miniatura; **OK descarga, prepara y aplica ese paisaje**. Se descarga la versión útil para el equipo, hasta 1080p; no el archivo original de gran tamaño. La elección se conserva durante el día y el modo diario puede cambiarla al día siguiente cuando vuelvas a Inicio.
+Una eliminación externa se detecta por eventos y al regresar a Z6: se retiran las referencias de foto fija y presentación y no se vuelve a descargar automáticamente ese paisaje durante el catálogo actual. Si la otra app utiliza papelera, su funcionamiento se respeta. Recuperar un APK no devuelve fotos borradas.
 
-Atrás vuelve de los paisajes a los controles del modo. Salir cancela las solicitudes y elimina las miniaturas temporales. Las fotos personales no se envían a Internet. Si falla la descarga, se conserva el fondo anterior. El último paisaje válido permanece sin conexión. Actualizar no vuelve a descargar el paisaje de hoy si tiene resolución suficiente. Para archivos antiguos insuficientes aparece **Mejorar nitidez**, que recupera la misma fotografía con un encuadre útil.
+## Añadir imágenes y resolución
 
-La vista previa se identifica como **Miniatura**: la imagen del inicio se prepara al pulsar OK. El catálogo descarta archivos que no pueden llenar el encuadre con suficientes píxeles a partir de las versiones reducidas disponibles. En panorámicas se calcula también la altura necesaria antes de recortar, para evitar ampliar una franja pequeña y verla borrosa. La descarga se hace una vez al elegir; el fondo guardado se utiliza localmente.
+Desde el celular abre un QR temporal para equipos de la misma red. La recepción dura hasta 15 minutos y se cierra al salir, caducar o perder la red. El TV muestra miniatura, resolución y tamaño. Usar esta foto aplica explícitamente; recibir nunca cambia el fondo por sí solo. El emulador se comprueba desde el PC mediante ADB, sin puente al celular.
 
-Los créditos conservan autor, licencia y origen. Se utiliza la [colección de paisajes destacados](https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_landscapes), con la [API de categorías](https://www.mediawiki.org/wiki/API:Categorymembers) e [información y miniaturas de imágenes](https://www.mediawiki.org/wiki/API:Imageinfo). No es una integración con Bing.
+Desde TV o USB utiliza el selector nativo o la alternativa con carpetas/volúmenes y selección múltiple. Se solicitan los permisos necesarios al entrar, sin acceso completo al almacenamiento ni root. Solo se copia a Z6 la versión optimizada. Si un USB no está expuesto por Android, copiar a Imágenes o enviar desde el celular.
 
-## Añadir imágenes
+Resolución del fondo representa el área efectiva de Inicio y los recursos disponibles: no la capacidad máxima del TV Box ni la resolución nativa del televisor. No se modifica HDMI. Automática usa hasta 1080p, limitada a 720p en equipos con pocos recursos. Las fotos personales pueden usar 4K manualmente con las protecciones existentes: Inicio efectivo 3840×2160, heap de 192 MB, equipo sin poca RAM y margen libre de 96 MB. Una foto pequeña no recupera detalle al elegir más resolución.
 
-El pie mantiene **Desde el celular**, **Desde TV o USB**, **Mis fotos**, **Ver inicio** y **Volver**.
+Fotos personales: entrada máxima 20 MB; hasta 50 fotos permanentes y 100 MB en total, incluidos paisajes conservados. Una copia JPEG optimizada por imagen, hasta 720p/1 MB, 1080p/2 MB o 4K/4 MB. Verticales y cuadradas completas, horizontales con recorte central. JPG, PNG y WebP estáticos; HEIC/HEIF depende del decodificador.
 
-Desde el celular abre un QR temporal. Ambos equipos deben estar en la misma red local. La página permite enviar varias fotos; el TV muestra miniatura, resolución, tamaño y contador. **Usar esta foto** la aplica explícitamente; **Ver recibidas** abre la galería; **Seguir recibiendo** conserva el QR. Recibir nunca aplica automáticamente un fondo.
+Paisajes de Internet: hasta 720p/1 MB o 1080p/2 MB, sin originales ni 4K. Se calcula la altura útil antes del recorte; se descartan derivados insuficientes para evitar ampliaciones borrosas. La vista previa se identifica como Miniatura y el fondo completo se prepara al utilizarlo.
 
-La recepción dura hasta 15 minutos y se cierra al salir, caducar o perder la red. Se usa HTTP local con una sesión aleatoria; no publiques el enlace ni abras puertos del router. El emulador se prueba desde el navegador del PC con reenvío ADB temporal; no incluye puente al celular.
+## Fluidez, actualización y recuperación
 
-Desde TV o USB utiliza el selector nativo cuando funciona, o una alternativa con carpetas, volúmenes, miniaturas y selección múltiple. El permiso se solicita al entrar. Si Android no expone un USB, copia las fotos a Imágenes o envíalas desde el celular. No se solicita acceso completo al almacenamiento ni root. La importación conserva los archivos válidos y explica los errores por archivo; no aplica fondos por sí sola.
+Catálogo persistente de hasta doce; miniaturas en disco hasta 2 MB y caché decodificada hasta 4 MB. Solo una imagen de fondo activa y una vista previa reducida, hasta 960×540. Operaciones pesadas serializadas, solicitudes antiguas descartadas, una descarga simultánea y prioridad para la elección del usuario. Sin animaciones ni procesos de descarga durante otras apps o suspensión.
 
-## Resolución del fondo y almacenamiento
+Se conserva como máximo el lote temporal del día y un fondo anterior de respaldo. Si falta espacio o memoria se detiene la preparación opcional y se conserva el fondo válido. La galería integrada reutiliza vistas y no decodifica originales al mover el foco.
 
-Resolución del fondo indica los píxeles que Z6 utiliza según el **área efectiva del inicio y los recursos disponibles**. No indica la resolución máxima del TV Box ni la resolución nativa del televisor. En el equipo original el inicio es 1280×720. No se cambia HDMI. [Referencia de Android](https://developer.android.com/reference/android/view/Display).
+La migración conserva IDs, orden y preferencias: publicación pendiente, verificación por tamaño/hash, registro de URI y retirada posterior del archivo privado. Se reanuda tras interrupción; un fallo conserva la copia original y se informa como publicación pendiente. El instalador usa una espera interna para respaldar los bytes antes de liberar la migración. Nunca copiar esa marca a perfiles de otros equipos.
 
-Automática usa hasta 1080p y limita a 720p en equipos con pocos recursos. 4K es manual: requiere un inicio de al menos 3840×2160, equipo sin poca RAM, heap de al menos 192 MB y 96 MB de margen disponible. Información separa inicio, límite utilizado y archivo guardado. Solo se ofrecen elecciones útiles. Elegir más resolución no recupera detalle perdido: el aviso **Puede verse borrosa** permite continuar o reenviar el original.
+Actualizar sin desinstalar conserva las fotos. Exportar preferencias no incluye imágenes y sus URI no sirven en otro TV. Fotos, sesiones, índices individuales y respaldos quedan fuera de Git y del portable.
 
-Las fotos personales se guardan en el almacenamiento privado del TV Box, en una sola copia JPEG optimizada. Verticales y cuadradas se muestran completas; horizontales se encuadran al centro. Orientación corregida antes de reducir, sin agrandar fotos pequeñas. Límites: entrada de 20 MB, 50 fotos y 100 MB de biblioteca. Copias de hasta 720p/1 MB, 1080p/2 MB o 4K/4 MB, JPEG de 85 a 75. JPG, PNG y WebP estáticos; HEIC/HEIF depende del decodificador del equipo.
-
-Las fotos existentes conservan sus archivos. Para recuperar detalle perdido hace falta reenviar el original.
-
-## Fluidez y recuperación
-
-Foto fija y Presentación reutilizan la misma galería y sus vistas. Se mantiene una vista previa reducida, hasta 960×540, y una caché de miniaturas de 4 MB. Solo se cargan las miniaturas de la página visible. Las operaciones pesadas se serializan fuera del hilo de interfaz; las respuestas antiguas se descartan. La navegación entre modos reutiliza recursos mientras esta pantalla está abierta; al salir se liberan sus imágenes. Sin animaciones ni nuevos procesos periódicos.
-
-Actualizar sin desinstalar conserva fotos y preferencias. El exportador de preferencias no incluye archivos de imagen: otro TV debe importar sus propias fotos. Fotos, sesiones y respaldos quedan fuera de Git y del paquete portable.
-
-La recuperación de 0.15.0 utiliza el comportamiento 0.14.0 con código 37 y la firma original. Entiende las presentaciones con fotos elegidas. Después necesitarás código 38 o superior para actualizar. No desinstales para bajar una versión.
-
-## Aplicaciones sin iconos visibles
-
-Si una fila está vacía, **＋ Añadir aplicación** permite incorporar una app instalada u oculta con OK. Se conserva la edición con OK sostenido y Ajustes → Aplicaciones. Añadir un icono no instala aplicaciones; Play o Downloader se abren únicamente si están disponibles. No se incluyen APK ni cuentas de terceros.
+La recuperación vigente es el comportamiento 0.15.0 con código 39 y un adaptador de almacenamiento compartido. No instalar el APK histórico código 36 sobre una biblioteca migrada. La receta reproducible es herramientas/recuperacion-0160.cjs, ejecutada desde la base 0.16.0 con Node, Git, SDK/JDK y firma original. Tras usar la recuperación, una actualización necesita código 40 o superior.

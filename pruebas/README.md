@@ -60,3 +60,15 @@ Los scripts restauran las preferencias guardadas y retiran conexiones temporales
 `node pruebas/fondos-0150.cjs emulator-5554` comprueba la fila, gestión integrada, vista previa persistente, aplicación, selección de presentación, eliminación real de archivo/miniatura/referencias, páginas y elección de paisajes. Solo admite emulador sin fotos personales y elimina sus propios archivos de prueba.
 
 `node pruebas/rendimiento-0150.cjs emulator-5554 before --timing-only` toma referencia en 0.14.0. Copiar esa referencia a `.local/rendimiento-antes-0150.json` antes de `after` con 20 ciclos, o comparar solo tiempos con `after --timing-only`. `pruebas/emulador-0150-api31.ps1 -Dispositivo emulator-5554 -Reiniciar` verifica el resto del panel. No ejecutar otras pruebas sobre el mismo emulador durante rendimiento.
+
+## 0.16.0: catálogo diario y MediaStore
+
+`node pruebas/fondos-0160.cjs emulator-5554` adapta las 23 comprobaciones de navegación a las miniaturas persistentes. `node pruebas/media-0160.cjs emulator-5554` comprueba publicación compartida, copia pendiente interrumpida, hash/URI/IDs, eliminación externa, caché sin red, conservación sin duplicado, horario real y limpieza del día anterior. Exigen un AVD sin fotos personales y retiran sus propias fotos de prueba. Las inyecciones de fallos están restringidas por hardware AOSP ranchu/goldfish, UID shell y permiso DUMP; no funcionan en el TV físico y no admiten rutas arbitrarias.
+
+`pruebas/emulador-0160-api31.ps1 -Dispositivo emulator-5554 -Reiniciar` repite controles y recuperación tras reinicio. Normaliza una solicitud de Ver inicio que pueda haber quedado pendiente de otra suite antes de comprobar Home sobre Ajustes. No instala ni configura aplicaciones externas.
+
+`node pruebas/rendimiento-0160.cjs emulator-5554 before --timing-only` toma la referencia en 0.15.0. Para la ronda completa posterior copiar `.local/rendimiento-antes-0160-sin-carga.json` a `.local/rendimiento-antes-0160.json` y ejecutar `after`. Incluye tres rondas por modo y 20 ciclos de memoria con Presentación. No ejecutar otras suites ni compilar durante la medición. Incluye transporte ADB y no mide pulsación a cuadro visible.
+
+`herramientas/respaldar-fotos.ps1` verifica cada archivo por bloques y hash dentro de privado/. La receta `node herramientas/recuperacion-0160.cjs` reconstruye el comportamiento 0.15.0/código 39 con adaptador compartido; requiere el checkout 0.16.0, la etiqueta histórica, Node, JDK/SDK y firma original. No instalar la recuperación en hardware para probarla sin un motivo concreto.
+
+`node pruebas/recuperacion-0160.cjs emulator-5554` instala código 39 solo tras guardar un snapshot temporal, comprueba lectura/representación y limpieza compartida y devuelve el AVD a código 38. No usa downgrade ni desinstalación; elimina su snapshot de prueba. `node pruebas/respaldo-diario-0160.cjs emulator-5554` comprueba la retirada del respaldo migrado una vez reemplazado. Ambas suites son exclusivamente de emulador.

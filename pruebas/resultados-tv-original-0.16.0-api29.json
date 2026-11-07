@@ -1,0 +1,108 @@
+{
+  "version": "0.16.0",
+  "code": 38,
+  "api": 29,
+  "emulator": false,
+  "utc": "2026-11-07T01:23:22.051Z",
+  "originalPhotoCount": 1,
+  "checks": [
+    {
+      "name": "Personal IDs preserved and published to MediaStore",
+      "passed": true
+    },
+    {
+      "name": "No pending physical publication",
+      "passed": true
+    },
+    {
+      "name": "Previously active landscape remains available after migration",
+      "passed": true
+    },
+    {
+      "name": "Daily rotation remains disabled initially",
+      "passed": true
+    },
+    {
+      "name": "Wallpaper controls fit physical 720p",
+      "passed": true
+    },
+    {
+      "name": "Actual wallpaper button opens the native gallery",
+      "passed": true
+    },
+    {
+      "name": "Gallery accepts native directional and OK/Back events",
+      "passed": true
+    },
+    {
+      "name": "Physical daily catalog is bounded to twelve",
+      "passed": true,
+      "evidence": 12
+    },
+    {
+      "name": "Physical reopen reuses catalog and thumbnails without network",
+      "passed": true,
+      "evidence": {
+        "firstMs": 6623,
+        "warmMs": 4090
+      }
+    },
+    {
+      "name": "Physical disk thumbnail cache remains below 2 MB",
+      "passed": true
+    },
+    {
+      "name": "LAN receiver publishes optimized photo directly to Multimedia",
+      "passed": true
+    },
+    {
+      "name": "Physical imported photo respects useful resolution",
+      "passed": true
+    },
+    {
+      "name": "External deletion updates the physical Z6 library",
+      "passed": true
+    },
+    {
+      "name": "Fault-injection seam is rejected on physical hardware",
+      "passed": true
+    },
+    {
+      "name": "Personal bytes preserved after gallery and receiver tests",
+      "passed": true
+    },
+    {
+      "name": "Physical landscape download is a shared optimized 1280x720 JPEG",
+      "passed": true
+    },
+    {
+      "name": "Conserve does not replace the chosen background",
+      "passed": true
+    },
+    {
+      "name": "Deleting the conserved test landscape removes its MediaStore row",
+      "passed": true
+    },
+    {
+      "name": "Only original personal photos remain after landscape tests",
+      "passed": true
+    },
+    {
+      "name": "Visual inspection shows both native-gallery albums with thumbnails",
+      "passed": true
+    },
+    {
+      "name": "Final signed build installed and auxiliary reconnected",
+      "passed": true
+    },
+    {
+      "name": "Final update preserves personal hashes and wallpaper preferences",
+      "passed": true
+    }
+  ],
+  "pending": [
+    "Physical remote user confirmation",
+    "Physical 1080p/4K, USB, video/JBL/CEC and full hardware reboot not repeated"
+  ],
+  "apkSha256": "8B98E3CB7C8C35968122B66090AC3C891D476CB4A1E06140A5C4B38DBD9DD342"
+}

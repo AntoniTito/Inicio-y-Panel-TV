@@ -1,0 +1,108 @@
+{
+  "version": "0.16.0",
+  "code": 38,
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-07T01:10:20.979Z",
+  "checks": [
+    {
+      "name": "Received photo has one shared MediaStore master",
+      "passed": true
+    },
+    {
+      "name": "Chunked backup can hash the shared master",
+      "passed": true
+    },
+    {
+      "name": "Interrupted-publication fixture retains a private original",
+      "passed": true
+    },
+    {
+      "name": "Pending partial copy resumes with identical bytes",
+      "passed": true
+    },
+    {
+      "name": "Migration reuses URI and preserves ID without duplicates",
+      "passed": true
+    },
+    {
+      "name": "Migration preserves chosen-photo reference",
+      "passed": true
+    },
+    {
+      "name": "Read-only backup returns bounded chunks",
+      "passed": true
+    },
+    {
+      "name": "External gallery deletion reconciles the Z6 library",
+      "passed": true
+    },
+    {
+      "name": "Daily catalog contains at most twelve suitable choices",
+      "passed": true
+    },
+    {
+      "name": "Daily thumbnail cache stays within twelve files and 2 MB",
+      "passed": true
+    },
+    {
+      "name": "Reopening today reuses catalog and thumbnails without network",
+      "passed": true
+    },
+    {
+      "name": "Chosen landscape is prepared at effective 720p",
+      "passed": true
+    },
+    {
+      "name": "Conserve moves the existing master without copying or downloading",
+      "passed": true
+    },
+    {
+      "name": "Using a downloaded landscape does not redownload it",
+      "passed": true
+    },
+    {
+      "name": "Rotation follows elapsed wall-clock slots",
+      "passed": true,
+      "evidence": {
+        "slot": 2
+      }
+    },
+    {
+      "name": "Another app visible: no wallpaper network work continues",
+      "passed": true
+    },
+    {
+      "name": "Returning after elapsed hours resumes at the correct later slot",
+      "passed": true,
+      "evidence": {
+        "slot": 5
+      }
+    },
+    {
+      "name": "Offline rollover retains only the active previous-day landscape",
+      "passed": true
+    },
+    {
+      "name": "Offline rollover preserves conserved pictures",
+      "passed": true
+    },
+    {
+      "name": "Offline catalog exposes its old date instead of claiming it is current",
+      "passed": true
+    },
+    {
+      "name": "Renewal advances the saved collection cursor",
+      "passed": true
+    },
+    {
+      "name": "A successful new day keeps the permanent landscape",
+      "passed": true
+    },
+    {
+      "name": "Deleting conserved image removes the shared master directly",
+      "passed": true
+    }
+  ],
+  "note": "Day rollover and a partial pending publication were injected only through a shell/DUMP-protected AOSP-emulator fixture. No physical clock was changed."
+}

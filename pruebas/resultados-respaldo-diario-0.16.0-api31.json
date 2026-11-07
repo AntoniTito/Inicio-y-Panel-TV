@@ -1,0 +1,20 @@
+{
+  "version": "0.16.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-07T01:52:21.086Z",
+  "checks": [
+    {
+      "name": "Disabled rotation preserves the same-day chosen landscape on Home resume",
+      "passed": true
+    },
+    {
+      "name": "Active migrated fallback remains until a valid replacement exists",
+      "passed": true
+    },
+    {
+      "name": "Replacement immediately removes an unneeded same-day legacy master",
+      "passed": true
+    }
+  ]
+}

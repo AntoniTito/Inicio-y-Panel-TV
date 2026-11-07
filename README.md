@@ -1,10 +1,10 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box, con reloj superior, Ajustes y las optimizaciones de 0.10.4. La versión vigente **0.15.0, código 36**, muestra los cuatro modos en una fila, permite gestionar fotos junto a la vista previa, borrar sin papelera y elegir otro paisaje de Wikimedia. Mantiene la biblioteca, fotos optimizadas y QR local. Conserva la firma original y las adaptaciones para Android 10/12. Consulta el estado del emulador y del TV original por separado en [verificación de la entrega](docs/VERIFICACION-0.15.0.md).
+Inicio y paneles superpuestos para TV Box, con reloj superior, Ajustes y las optimizaciones de 0.10.4. La versión vigente **0.16.0, código 38**, añade 12 paisajes diarios con caché, descarga progresiva, rotación opcional y guardado permanente. Las imágenes optimizadas son visibles en Multimedia mediante MediaStore, con limpieza de temporales y gestión integrada. Mantiene la biblioteca, fotos optimizadas y QR local. Conserva la firma original y las adaptaciones para Android 10/12. Consulta el estado del emulador y del TV original por separado en [verificación de la entrega](docs/VERIFICACION-0.16.0.md).
 
 ## Uso rápido en Windows
 
-**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` conserva la recepción confirmada. `v0.13.0` conserva la biblioteca visual. `v0.14.0` conserva el rediseño anterior. `v0.15.0` / rama `main` añade la gestión integrada y elección de paisajes. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
+**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` conserva la recepción confirmada. `v0.13.0` conserva la biblioteca visual. `v0.14.0` conserva el rediseño anterior. `v0.15.0` conserva la gestión integrada y elección de paisajes. `v0.16.0` / `main` incorpora catálogo diario y galería compartida. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
 
 1. Descarga el repositorio privado y los dos APK de su entrega (actual y recuperación común a API 29/31) a `entregas/`. La copia local consolidada ya los incluye. Para descargar de un repositorio privado necesitas acceso a él. Este proyecto no se ha publicado automáticamente.
 2. Si falta ADB: `powershell -File .\herramientas\preparar-herramientas.ps1 -SoloAdb`.
@@ -30,7 +30,7 @@ El asistente identifica y respalda el destino, instala, aplica preferencias, con
 .\z6.ps1 compilar
 ```
 
-`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.14.0/código 37 para API 29 y 31. Después se necesita código 38 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
+`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.15.0/código 39 para API 29 y 31. Después se necesita código 40 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
 
 Para aplicaciones externas, proporciona APK de procedencia verificada mediante `-CarpetaApks RUTA`, nombrados por paquete, por ejemplo `com.xuper.netxxus.apk`. Se valida el identificador con las build-tools antes de instalar. No se incluyen cuentas, licencias ni APK de terceros en Git. Usa `-SoloPanel` si las instalarás después, como en el emulador actual.
 
@@ -42,14 +42,14 @@ Para aplicaciones externas, proporciona APK de procedencia verificada mediante `
 | `herramientas` | Compilación, dependencias y restauración. |
 | `perfiles` | Preferencias transferibles y aplicaciones requeridas. |
 | `entregas` | APK firmados locales y manifiesto de integridad. Los binarios se distribuyen aparte de Git. |
-| `pruebas` | Pruebas locales con ADB simulado, sin tocar el TV. |
+| `pruebas` | Pruebas con ADB simulado y suites de emulador, que exigen un destino explícito. |
 | `docs` | Guías, limitaciones y resultados. |
 | `privado` | Firma, respaldo de firma, auditorías, identidades y preferencias personales. Excluido de Git. |
 | `.local` | SDK, compilaciones y resultados temporales. Excluido de Git. |
 
 Lee [instalación y recuperación](docs/INSTALACION.md), [compilación](docs/COMPILACION.md), [compatibilidad](docs/COMPATIBILIDAD.md) y [consolidación](docs/CONSOLIDACION.md).
 
-El archivo `.local/Z6-Panel-0.15.0-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
+El archivo `.local/Z6-Panel-0.16.0-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
 
 El emulador configurado y su recuperación se describen en [Android TV 12](docs/EMULADOR-TV12.md). Para otro emulador: `.\z6.ps1 instalar -Dispositivo emulator-5554 -SoloPanel`, sustituyendo el serial real.
 

@@ -17,9 +17,11 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 
 | `v0.14.0` | Etiqueta histórica | Fondos con vista previa y OK directo, galería y presentación seleccionable, importación visual. APK código 34; recuperación 0.13.0/código 35 con protección de selección parcial. |
 
-| `v0.15.0` | `main` | Modos en fila, fotos y presentación integradas, eliminación sin papelera, elección de paisajes de Wikimedia. APK código 36; recuperación 0.14.0/código 37. |
+| `v0.15.0` | Etiqueta histórica | Modos en fila, fotos y presentación integradas, eliminación sin papelera, elección de paisajes de Wikimedia. APK código 36; recuperación histórica 0.14.0/código 37. |
 
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.15.0.md. La recuperación vigente conserva el comportamiento 0.14.0 con código 37 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 38 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
+| `v0.16.0` / `main` | Entrega vigente | Doce paisajes diarios, caché persistente, rotación opcional, conservación permanente y galería MediaStore. Código 38; recuperación 0.15.0/código 39 con adaptador compartido. |
+
+Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.16.0.md. La recuperación vigente conserva el comportamiento 0.15.0 con código 39 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 40 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 

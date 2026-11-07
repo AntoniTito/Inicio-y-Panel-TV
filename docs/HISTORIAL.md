@@ -26,3 +26,5 @@ Fondos del inicio pasa de una lista a vista previa y controles, con foco indepen
 ## 0.15.0
 
 Modos en una sola fila y gestión de fotos junto a la vista previa. Foto fija aplica con OK; Presentación permite marcar sin salir. El borrado verifica archivo y miniatura, impide regenerarlas tras eliminar y comunica el espacio liberado. Elegir otro paisaje consulta hasta 30 opciones de Wikimedia con seis miniaturas visibles; solo descarga la imagen completa elegida. Sin nuevas dependencias ni procesos periódicos. Recuperación 0.14.0/código 37.
+
+- 0.16.0/código 38: catálogo de hasta 12 paisajes estable por día, miniaturas persistentes, descarga progresiva, rotación por horario real y conservación permanente. Álbumes compartidos mediante MediaStore, migración por hash, reconciliación de borrados externos y respaldo por bloques. Recuperación 0.15.0/código 39 con adaptador de almacenamiento; una actualización posterior requiere código 40.

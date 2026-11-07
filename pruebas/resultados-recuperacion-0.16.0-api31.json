@@ -1,0 +1,39 @@
+{
+  "version": "0.16.0",
+  "api": 31,
+  "emulator": true,
+  "utc": "2026-11-07T01:33:49.816Z",
+  "recoveryVersion": "0.15.0",
+  "recoveryCode": 39,
+  "checks": [
+    {
+      "name": "Snapshot preserves the current version before recovery",
+      "passed": true
+    },
+    {
+      "name": "Signed recovery installs over 0.16.0 without uninstalling",
+      "passed": true
+    },
+    {
+      "name": "Recovery preserves shared image bytes and identifiers",
+      "passed": true
+    },
+    {
+      "name": "Recovery renders the shared photo through the compatibility adapter",
+      "passed": true
+    },
+    {
+      "name": "Recovery renewal removes obsolete shared temporary landscapes",
+      "passed": true
+    },
+    {
+      "name": "Recovery daily cleanup preserves permanent photo bytes",
+      "passed": true
+    },
+    {
+      "name": "Snapshot restores 0.16.0 and its intact library",
+      "passed": true
+    }
+  ],
+  "note": "Recovery installed only in emulator. A temporary emulator snapshot restores code 38; no downgrade or uninstall is used."
+}

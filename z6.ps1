@@ -157,12 +157,33 @@ try{
     $artifact=Get-Z6Artifact
     $code=Get-PanelCode
     if($code -gt $artifact.code){throw 'Installed version is newer; refusing downgrade or uninstall.'}
-    if($code -lt $artifact.code){Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'install','-r',$artifact.path)|Out-Null}
+    $heldPreferences=$null
+    $migrationPath=Join-Path $deviceDir 'migracion-media.json'
+    if(Test-Path -LiteralPath $migrationPath){$migration=Read-Z6Json $migrationPath;if($migration.pending){if($migration.deviceId -ne $device.id){throw 'Media migration belongs to another device'};$heldPreferences=(Get-Content -LiteralPath (Join-Path $deviceDir 'preferencias-antes-media.base64') -Raw).Trim()}}
+    if($code -lt $artifact.code){
+     if(!$heldPreferences -and $code -gt 0 -and $code -lt 38 -and $artifact.code -ge 38){
+      $heldPreferences=Get-Z6PanelPreferences
+      $hold=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($heldPreferences))|ConvertFrom-Json
+      $hold|Add-Member -MemberType NoteProperty -Name wallpaper_publish_hold -Value ([ordered]@{type='boolean';value=$true}) -Force
+      $heldPreferences|Set-Content -LiteralPath (Join-Path $deviceDir 'preferencias-antes-media.base64') -Encoding ASCII
+      $encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($hold|ConvertTo-Json -Depth 20 -Compress)))
+      Write-Z6Json ([ordered]@{deviceId=$device.id;pending=$true}) $migrationPath
+      Set-Z6PanelPreferences $encoded
+     }
+     try{Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'install','-r',$artifact.path)|Out-Null}catch{if($heldPreferences){Set-Z6PanelPreferences $heldPreferences};throw}
+    }
+    if($heldPreferences){
+     & (Join-Path $PSScriptRoot 'herramientas\respaldar-fotos.ps1') -Dispositivo $Dispositivo -AdbPath $AdbPath -Salida (Join-Path $deviceDir ('fotos-antes-media-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ')))
+     Set-Z6PanelPreferences $heldPreferences
+     Write-Z6Json ([ordered]@{deviceId=$device.id;pending=$false}) $migrationPath
+     $steps.Add('Photo bytes backed up before releasing shared-storage migration')
+    }
     if((Get-PanelCode) -ne $artifact.code){throw 'Panel version verification failed'}
     $steps.Add('Signed panel release installed or already present')
     Install-ProvidedApps
    }elseif(!(Get-PanelPath)){throw 'Install the panel before configuring it'}
    Configure-Panel
+   if((Get-PanelCode) -ge 38){& (Join-Path $PSScriptRoot 'herramientas\galeria.ps1') -Dispositivo $Dispositivo -AdbPath $AdbPath -EstadoLocal $EstadoLocal}
    Write-Report $(if($warnings.Count){'configured-with-limitations'}else{'configured-not-physically-validated'})
    Write-Host ('Backup: '+$snapshotPath)
    Write-Host 'Configuration finished. Review ultimo-informe.json and perform the physical checklist.'
@@ -196,6 +217,7 @@ try{
    if(!$original.panelPresent){$helperPids=Invoke-Z6Shell @('pidof','z6panel_bridge') -AllowFailure;foreach($helperPid in ($helperPids -split '\s+')){if($helperPid -match '^\d+$'){Invoke-Z6Shell @('kill',$helperPid)|Out-Null}}}
    Invoke-Z6Shell @('am','start','-a','android.intent.action.MAIN','-c','android.intent.category.HOME')|Out-Null
    $steps.Add('Original HOME and modified settings restored; unrelated accessibility services retained; panel data not uninstalled')
+   & (Join-Path $PSScriptRoot 'herramientas\galeria.ps1') -Dispositivo $Dispositivo -AdbPath $AdbPath -EstadoLocal $EstadoLocal -Restaurar
    Write-Report 'restored';Write-Output 'Restored. Panel remains installed; no data uninstall was performed.'
   }
  }
