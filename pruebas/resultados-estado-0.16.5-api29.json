@@ -5,5 +5,12 @@
   "emulator": false,
   "imagesUnchanged": true,
   "photoCount": 2,
-  "preferencesUnchanged": true
+  "preferencesUnchanged": true,
+  "manualConfirmation": {
+    "source": "usuario",
+    "date": "2026-11-07",
+    "navigationResponsive": true,
+    "videoContinues": true,
+    "workflow": "Home → edición → Añadir app → Atrás"
+  }
 }
