@@ -1,0 +1,12 @@
+{
+  "api": 31,
+  "emulator": true,
+  "fixtureCount": 6,
+  "checks": [
+    "overflow row wraps to last",
+    "selected removable fixture",
+    "overflow row returns directly to first",
+    "removal keeps nearest app position",
+    "original preferences and catalog restored"
+  ]
+}

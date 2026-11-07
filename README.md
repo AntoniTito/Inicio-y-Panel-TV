@@ -1,10 +1,10 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box. La versión vigente **0.16.5, código 48**, corrige el bloqueo al volver de Añadir app durante la edición del panel: recupera la sección, selección y navegación correctas. Conserva las optimizaciones, fondos y selección translúcida. Consulta la [verificación de la entrega](docs/VERIFICACION-0.16.5.md).
+Inicio y paneles superpuestos para TV Box. La versión vigente **0.17.0, código 50**, incorpora navegación circular independiente en Apps y Acciones del panel superpuesto, memoria de selección por fila y edición confinada a Apps. Conserva fondos, diseño, optimizaciones y el regreso desde Añadir app. Consulta la [verificación de la entrega](docs/VERIFICACION-0.17.0.md).
 
 ## Uso rápido en Windows
 
-**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` conserva la recepción confirmada. `v0.13.0` conserva la biblioteca visual. `v0.14.0` conserva el rediseño anterior. `v0.15.0` conserva la gestión integrada y elección de paisajes. `v0.16.0` conserva catálogo diario y galería compartida; `v0.16.1` retira el acceso a la galería nativa dentro de Fondos; `v0.16.2` corrige las transiciones del fondo; `v0.16.3` evita trabajo repetido al recibir Home; `v0.16.4` aclara la selección translúcida de las tarjetas; `v0.16.5` / `main` corrige el retorno desde Añadir app en edición. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
+**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` conserva la recepción confirmada. `v0.13.0` conserva la biblioteca visual. `v0.14.0` conserva el rediseño anterior. `v0.15.0` conserva la gestión integrada y elección de paisajes. `v0.16.0` conserva catálogo diario y galería compartida; `v0.16.1` retira el acceso a la galería nativa dentro de Fondos; `v0.16.2` corrige las transiciones del fondo; `v0.16.3` evita trabajo repetido al recibir Home; `v0.16.4` aclara la selección translúcida de las tarjetas; `v0.16.5` conserva la corrección del retorno desde Añadir app; `v0.17.0` / `main` incorpora las filas circulares independientes del panel. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
 
 1. Descarga el repositorio privado y los dos APK de su entrega (actual y recuperación común a API 29/31) a `entregas/`. La copia local consolidada ya los incluye. Para descargar de un repositorio privado necesitas acceso a él. Este proyecto no se ha publicado automáticamente.
 2. Si falta ADB: `powershell -File .\herramientas\preparar-herramientas.ps1 -SoloAdb`.
@@ -47,9 +47,9 @@ Para aplicaciones externas, proporciona APK de procedencia verificada mediante `
 | `privado` | Firma, respaldo de firma, auditorías, identidades y preferencias personales. Excluido de Git. |
 | `.local` | SDK, compilaciones y resultados temporales. Excluido de Git. |
 
-Lee [instalación y recuperación](docs/INSTALACION.md), [compilación](docs/COMPILACION.md), [compatibilidad](docs/COMPATIBILIDAD.md) y [consolidación](docs/CONSOLIDACION.md).
+Lee [instalación y recuperación](docs/INSTALACION.md), [navegación del panel](docs/PANEL-SUPERPUESTO.md), [compilación](docs/COMPILACION.md), [compatibilidad](docs/COMPATIBILIDAD.md) y [consolidación](docs/CONSOLIDACION.md).
 
-El archivo `.local/Z6-Panel-0.16.5-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
+El archivo `.local/Z6-Panel-0.17.0-portable.zip` es una entrega lista para trasladar: incluye código, asistentes y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
 
 El emulador configurado y su recuperación se describen en [Android TV 12](docs/EMULADOR-TV12.md). Para otro emulador: `.\z6.ps1 instalar -Dispositivo emulator-5554 -SoloPanel`, sustituyendo el serial real.
 

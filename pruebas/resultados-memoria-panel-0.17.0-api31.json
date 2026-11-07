@@ -1,0 +1,28 @@
+{
+  "api": 31,
+  "emulator": true,
+  "warmupCycles": 5,
+  "cycles": 20,
+  "beforePssKB": 37132,
+  "samples": [
+    {
+      "cycle": 5,
+      "pssKB": 34899
+    },
+    {
+      "cycle": 10,
+      "pssKB": 34652
+    },
+    {
+      "cycle": 15,
+      "pssKB": 35452
+    },
+    {
+      "cycle": 20,
+      "pssKB": 34720
+    }
+  ],
+  "growthKB": -2412,
+  "processStable": true,
+  "passed": true
+}

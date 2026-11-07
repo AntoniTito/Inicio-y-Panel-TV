@@ -61,22 +61,23 @@ public class PanelService extends AccessibilityService {
  }
  private final LinkedHashMap<String,Screen> screens=new LinkedHashMap<String,Screen>(8,.75f,true){protected boolean removeEldestEntry(Map.Entry<String,Screen> e){return size()>8;}};
  private Screen currentScreen;
- private final Runnable trimRecentTasks=()->loader.execute(()->SystemBridge.call("RECENTS_TRIM"));
  private final PanelKeys keys=new PanelKeys();
- private final ArrayList<View> cards=new ArrayList<>(),sideViews=new ArrayList<>();
+ private final ArrayList<View> sideViews=new ArrayList<>();
+ private final BottomNavigation bottom=new BottomNavigation();
+ private final Map<String,View> bottomViews=new HashMap<>();
+ private final ArrayList<String> quickIds=new ArrayList<>();
+ private View lastPainted,saveCard;private String editFocusSnapshot;
  private final ArrayList<Action> actions=new ArrayList<>();
  private final ArrayList<Runnable> quickActions=new ArrayList<>();
  private List<AppCatalog.Entry> visible=new ArrayList<>();
  private final Deque<Page> pages=new ArrayDeque<>();
- private int selected=0,generation=0,scanVersion=0,scrollGeneration=0;
+ private int generation=0,scanVersion=0,scrollGeneration=0;
  private boolean restoringAppScroll=false;
  private boolean suppressAutoScroll=false;
  private static class AppScroll extends HorizontalScrollView {
-  boolean frozen;
   boolean holdLayout;
   int heldScroll;
   AppScroll(Context context){super(context);}
-  public void computeScroll(){if(frozen)return;super.computeScroll();}
   void holdCurrentPosition(){heldScroll=getScrollX();holdLayout=true;scrollTo(heldScroll,0);}
   void releasePosition(){holdLayout=false;}
   protected void onLayout(boolean changed,int left,int top,int right,int bottom){
@@ -84,10 +85,10 @@ public class PanelService extends AccessibilityService {
    if(holdLayout)scrollTo(heldScroll,0);
   }
  }
- private boolean editMode=false,addSlot=false;
+ private boolean editMode=false;
  private String editOrderSnapshot;private Set<String> editHiddenSnapshot,editShownSnapshot;
  private boolean localStarting=false;private int localAttempts=0,localGeneration=0;
- private boolean destroyed=false,loading=true,wifiScanPending=false;
+ private boolean destroyed=false,loading=true;
  private boolean btShowPaired=true,btShowFound=false;
  private String managerFilter="Todas";
  private String foregroundPackage;
@@ -115,7 +116,7 @@ public class PanelService extends AccessibilityService {
   Action(String id,String label,String detail,Runnable run,boolean isDevice){this.id=id;this.label=label;this.detail=detail;this.run=run;this.device=isDevice;}
  }
  private final Runnable networkRefresh=()->{if(panel!=null&&!pages.isEmpty()&&pages.peek().name.equals("network"))render();};
- private final BroadcastReceiver networkChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){if(android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(i.getAction())){wifiScanPending=false;if(panel!=null&&!pages.isEmpty()&&pages.peek().name.equals("wifiScan"))renderSide();return;}ui.removeCallbacks(networkRefresh);ui.postDelayed(networkRefresh,250);}};
+ private final BroadcastReceiver networkChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){ui.removeCallbacks(networkRefresh);ui.postDelayed(networkRefresh,250);}};
  private final BroadcastReceiver changes=new BroadcastReceiver(){
   public void onReceive(Context c,Intent i){catalog.invalidate(i.getData()==null?null:i.getData().getSchemeSpecificPart());catalogDirty=true;refreshCatalog();}
  };
@@ -128,7 +129,7 @@ public class PanelService extends AccessibilityService {
   IntentFilter f=new IntentFilter();f.addAction(Intent.ACTION_PACKAGE_ADDED);f.addAction(Intent.ACTION_PACKAGE_REMOVED);f.addAction(Intent.ACTION_PACKAGE_CHANGED);f.addDataScheme("package");
   if(Build.VERSION.SDK_INT>=33)registerReceiver(changes,f,Context.RECEIVER_NOT_EXPORTED);else registerReceiver(changes,f);
   bluetooth=new BluetoothControls(this,()->{if(panel!=null&&!pages.isEmpty()&&(pages.peek().name.equals("bluetooth")||pages.peek().name.equals("btDevice")))renderSide();},this::onBluetoothPairingRequest);
-  IntentFilter net=new IntentFilter(android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION);net.addAction(android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);net.addAction(ConnectivityManager.CONNECTIVITY_ACTION);net.addAction(android.net.wifi.WifiManager.NETWORK_STATE_CHANGED_ACTION);
+  IntentFilter net=new IntentFilter(android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION);net.addAction(ConnectivityManager.CONNECTIVITY_ACTION);net.addAction(android.net.wifi.WifiManager.NETWORK_STATE_CHANGED_ACTION);
   if(Build.VERSION.SDK_INT>=33)registerReceiver(networkChanges,net,Context.RECEIVER_EXPORTED);else registerReceiver(networkChanges,net);
   IntentFilter audioEvents=new IntentFilter("android.media.VOLUME_CHANGED_ACTION");audioEvents.addAction("android.media.STREAM_MUTE_CHANGED_ACTION");audioEvents.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
   if(Build.VERSION.SDK_INT>=33)registerReceiver(audioChanges,audioEvents,Context.RECEIVER_EXPORTED);else registerReceiver(audioChanges,audioEvents);
@@ -207,9 +208,9 @@ public class PanelService extends AccessibilityService {
  }
  private void hide(){
   hideClockPanel();
-  generation++;ui.removeCallbacks(tickSettings);pages.clear();cancelEditMode();if(bluetooth!=null)bluetooth.stopScan();
+  generation++;ui.removeCallbacks(tickSettings);pages.clear();cancelEditMode(false);if(bluetooth!=null)bluetooth.stopScan();
   if(panel!=null){panel.animate().cancel();try{wm.removeView(panel);}catch(IllegalArgumentException ignored){}panel.removeAllViews();panel=null;}
-  currentScreen=null;cards.clear();sideViews.clear();actions.clear();quickDetails.clear();title=null;subtitle=null;panelClock=null;
+  currentScreen=null;bottomViews.clear();lastPainted=null;sideViews.clear();actions.clear();quickDetails.clear();title=null;subtitle=null;panelClock=null;
  }
  private void render(){if(panel==null)return;if(pages.isEmpty())renderBottom();else renderSide();}
  private void base(boolean side){
@@ -222,11 +223,10 @@ public class PanelService extends AccessibilityService {
  private void renderBottom(){
   if(panel==null)return;generation++;currentScreen=null;PerfStats.fullRenders.incrementAndGet();
   int previousAppScroll=horizontal==null?0:horizontal.getScrollX();
-  base(false);cards.clear();
-  quickActions.clear();quickDetails.clear();visible=catalog.visible(0);selected=Math.max(0,selected);
+  base(false);bottomViews.clear();lastPainted=null;actions.clear();sideViews.clear();
+  quickActions.clear();quickIds.clear();quickDetails.clear();visible=catalog.visible(0);
   title.setVisibility(View.GONE);subtitle.setVisibility(View.GONE);subtitle.setText("");
   if(loading&&visible.isEmpty()){subtitle.setVisibility(View.VISIBLE);subtitle.setText("Cargando…");}
-  boolean compact=true;
   LinearLayout body=new LinearLayout(this);body.setOrientation(LinearLayout.VERTICAL);panel.addView(body,new LinearLayout.LayoutParams(-1,0,1));
   TextView quickTitle=text("ACCIONES",11,0xFFBFC5C8);quickTitle.setGravity(Gravity.CENTER_VERTICAL);quickTitle.setPadding(dp(4),0,0,0);body.addView(quickTitle,new LinearLayout.LayoutParams(-1,dp(16)));
   quickHorizontal=new HorizontalScrollView(this);quickHorizontal.setHorizontalScrollBarEnabled(false);quickHorizontal.setClipToPadding(false);quickRow=new LinearLayout(this);quickRow.setGravity(Gravity.CENTER_VERTICAL);quickRow.setPadding(0,0,dp(3),0);row=quickRow;quickHorizontal.addView(quickRow);body.addView(quickHorizontal,new LinearLayout.LayoutParams(-1,dp(38)));
@@ -234,7 +234,7 @@ public class PanelService extends AccessibilityService {
   LinearLayout appsHeader=new LinearLayout(this);appsHeader.setGravity(Gravity.CENTER_VERTICAL);body.addView(appsHeader,new LinearLayout.LayoutParams(-1,dp(17)));
   TextView appsTitle=text("APPS",11,0xFFBFC5C8);appsTitle.setGravity(Gravity.CENTER_VERTICAL);appsTitle.setPadding(dp(4),0,0,0);appsHeader.addView(appsTitle,new LinearLayout.LayoutParams(-2,-1));
   editHint=text("  ·  ← → mover  ·  ↑ ocultar  ·  OK guardar  ·  ATRÁS cancelar",9,0xFFBFC5C8);editHint.setGravity(Gravity.CENTER_VERTICAL);editHint.setSingleLine(true);editHint.setVisibility(editMode?View.VISIBLE:View.GONE);appsHeader.addView(editHint,new LinearLayout.LayoutParams(0,-1,1));
-  AppScroll appScroll=new AppScroll(this);appScroll.setHorizontalScrollBarEnabled(false);appScroll.setFillViewport(false);appScroll.setClipToPadding(false);appScroll.setPadding(0,dp(3),0,dp(3));LinearLayout appRow=new LinearLayout(this);appRow.setGravity(Gravity.CENTER_VERTICAL);appRow.setClipChildren(false);appRow.setClipToPadding(false);appRow.setPadding(0,0,dp(8),0);appScroll.addView(appRow,new HorizontalScrollView.LayoutParams(-2,-1));body.addView(appScroll,new LinearLayout.LayoutParams(-1,dp(compact?72:92)));
+  AppScroll appScroll=new AppScroll(this);appScroll.setHorizontalScrollBarEnabled(false);appScroll.setFillViewport(false);appScroll.setClipToPadding(false);appScroll.setPadding(0,dp(3),0,dp(3));LinearLayout appRow=new LinearLayout(this);appRow.setGravity(Gravity.CENTER_VERTICAL);appRow.setClipChildren(false);appRow.setClipToPadding(false);appRow.setPadding(0,0,dp(8),0);appScroll.addView(appRow,new HorizontalScrollView.LayoutParams(-2,-1));body.addView(appScroll,new LinearLayout.LayoutParams(-1,dp(72)));
   horizontal=appScroll;row=appRow;restoringAppScroll=previousAppScroll>0;
   final int restoreAppScroll=previousAppScroll;
   if(restoringAppScroll)appScroll.setVisibility(View.INVISIBLE);
@@ -248,19 +248,15 @@ public class PanelService extends AccessibilityService {
   });
   if(visible.isEmpty()&&loading){TextView empty=text("Cargando…",14,Color.LTGRAY);appRow.addView(empty,new LinearLayout.LayoutParams(-2,dp(64)));}
   for(int i=0;i<visible.size();i++){
-   final int n=i;AppCatalog.Entry e=visible.get(i);LinearLayout card=new LinearLayout(this);card.setOrientation(1);card.setGravity(Gravity.CENTER);card.setPadding(dp(8),dp(3),dp(8),dp(3));card.setClipChildren(false);card.setClipToPadding(false);
-   LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(120),dp(compact?62:88));cp.setMargins(0,dp(2),dp(8),0);appRow.addView(card,cp);
-   ImageView icon=new ImageView(this);icon.setImageDrawable(catalog.icon(e));icon.setScaleType(ImageView.ScaleType.FIT_CENTER);card.addView(icon,new LinearLayout.LayoutParams(dp(compact?26:40),dp(compact?26:40)));
+   AppCatalog.Entry e=visible.get(i);LinearLayout card=new LinearLayout(this);card.setOrientation(1);card.setGravity(Gravity.CENTER);card.setPadding(dp(8),dp(3),dp(8),dp(3));card.setClipChildren(false);card.setClipToPadding(false);
+   LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(120),dp(62));cp.setMargins(0,dp(2),dp(8),0);appRow.addView(card,cp);
+   ImageView icon=new ImageView(this);icon.setImageDrawable(catalog.icon(e));icon.setScaleType(ImageView.ScaleType.FIT_CENTER);card.addView(icon,new LinearLayout.LayoutParams(dp(26),dp(26)));
    TextView label=text(e.title,10,Color.WHITE);label.setGravity(Gravity.CENTER);label.setMaxLines(2);card.addView(label,new LinearLayout.LayoutParams(-1,-2));
-   card.setContentDescription(e.title);card.setOnClickListener(v->{selected=quickActions.size()+n;if(!editMode)launch(e);});cards.add(card);
+   card.setContentDescription(e.title);final String id="app:"+e.pkg;registerBottomCard(id,card);card.setOnClickListener(v->{bottom.choose(BottomNavigation.Section.APPS,id);paintBottom();if(!editMode)launch(catalog.find(e.pkg));});
   }
-  boolean showAdd=editMode||(!loading&&visible.isEmpty());
-  LinearLayout add=new LinearLayout(this);add.setGravity(Gravity.CENTER);add.setPadding(dp(8),dp(3),dp(8),dp(3));add.setContentDescription("Añadir aplicación");add.setVisibility(showAdd?View.VISIBLE:View.GONE);
-  TextView addLabel=text("+ Añadir",10,Color.WHITE);addLabel.setGravity(Gravity.CENTER);add.addView(addLabel,new LinearLayout.LayoutParams(-1,-1));
-  LinearLayout.LayoutParams addParams=new LinearLayout.LayoutParams(dp(120),dp(62));addParams.setMargins(0,dp(2),dp(8),0);appRow.addView(add,addParams);addCard=add;
-  add.setOnClickListener(v->{selected=cards.size()-1;push(new Page("panelAddApp",null));});
-  if(showAdd)cards.add(add);
-  if(selected<0||selected>=cards.size())selected=quickActions.size()<cards.size()?quickActions.size():0;
+  addCard=auxiliaryCard(BottomNavigation.ADD,"+ Añadir",()->push(new Page("panelAddApp",null)),appRow);
+  saveCard=auxiliaryCard(BottomNavigation.SAVE,"✓ Guardar",this::saveEditMode,appRow);
+  syncBottomRows();
   paintBottom();
   showClockPanel();
  }
@@ -284,142 +280,54 @@ public class PanelService extends AccessibilityService {
   if(clockPanel!=null){try{wm.removeView(clockPanel);}catch(IllegalArgumentException ignored){}clockPanel.removeAllViews();clockPanel=null;}
   panelClock=null;panelDate=null;
  }
+ private void registerBottomCard(String id,View card){card.setTag(id);card.setBackground(focusSelector());bottomViews.put(id,card);}
+ private View auxiliaryCard(String id,String label,Runnable action,LinearLayout parent){LinearLayout card=new LinearLayout(this);card.setGravity(Gravity.CENTER);card.setPadding(dp(8),dp(3),dp(8),dp(3));card.setContentDescription(label);TextView text=text(label,10,Color.WHITE);text.setGravity(Gravity.CENTER);card.addView(text,new LinearLayout.LayoutParams(-1,-1));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(dp(120),dp(62));lp.setMargins(0,dp(2),dp(8),0);parent.addView(card,lp);registerBottomCard(id,card);card.setOnClickListener(v->{bottom.choose(BottomNavigation.Section.APPS,id);paintBottom();action.run();});return card;}
+ private void syncBottomRows(){List<String> ids=new ArrayList<>();for(AppCatalog.Entry e:visible)ids.add("app:"+e.pkg);boolean add=editMode||(!loading&&visible.isEmpty()),save=editMode&&visible.isEmpty();if(add)ids.add(BottomNavigation.ADD);if(save)ids.add(BottomNavigation.SAVE);if(addCard!=null)addCard.setVisibility(add?View.VISIBLE:View.GONE);if(saveCard!=null)saveCard.setVisibility(save?View.VISIBLE:View.GONE);bottom.update(quickIds,ids);if(editMode&&bottom.section()!=BottomNavigation.Section.APPS)bottom.first(BottomNavigation.Section.APPS);}
  private void paintBottom(){
-  for(int i=0;i<cards.size();i++){View card=cards.get(i);if(!(card.getBackground() instanceof android.graphics.drawable.StateListDrawable))card.setBackground(focusSelector());if(card.isSelected()!=(i==selected)){card.setSelected(i==selected);PerfStats.focusUpdates.incrementAndGet();}}
-  if(restoringAppScroll||suppressAutoScroll)return;
-  if(selected<cards.size()){
-   View v=cards.get(selected);HorizontalScrollView scroll=v.getParent()==quickRow?quickHorizontal:horizontal;
-   final int scrollToken=++scrollGeneration;
-   scroll.post(()->{
-    if(panel==null||!pages.isEmpty()||scrollToken!=scrollGeneration)return;
-    int viewport=scroll.getWidth(), left=scroll.getScrollX(), right=left+viewport;
-    int target=left;
-    if(v.getLeft()<left)target=v.getLeft()-dp(8);
-    else if(v.getRight()>right)target=v.getRight()-viewport+dp(8);
-    int max=Math.max(0,scroll.getChildAt(0).getWidth()-viewport);
-    target=Math.min(target,max);
-    target=Math.max(0,target);
-    if(target!=left){
-     if(scroll==horizontal)scroll.scrollTo(target,0);
-     else scroll.smoothScrollTo(target,0);
-    }
-   });
-  }
+  View focused=bottomViews.get(bottom.id());
+  if(lastPainted!=focused){if(lastPainted!=null&&lastPainted.isSelected()){lastPainted.setSelected(false);PerfStats.focusUpdates.incrementAndGet();}lastPainted=focused;}
+  if(focused!=null&&!focused.isSelected()){focused.setSelected(true);PerfStats.focusUpdates.incrementAndGet();}
+  if(restoringAppScroll||suppressAutoScroll||focused==null)return;
+  final HorizontalScrollView scroll=bottom.section()==BottomNavigation.Section.ACTIONS?quickHorizontal:horizontal;final String id=bottom.id();final int token=++scrollGeneration;
+  scroll.post(()->{if(panel==null||!pages.isEmpty()||token!=scrollGeneration||!id.equals(bottom.id()))return;revealBottomCard(focused,scroll);});
  }
- private void revealSelectedAppInstant(){
-  if(horizontal==null||selected<quickActions.size()||selected>=cards.size())return;
-  View selectedView=cards.get(selected);
-  if(selectedView.getParent()!=row)return;
-  int left=horizontal.getScrollX(),right=left+horizontal.getWidth(),target=left;
-  if(selectedView.getLeft()<left)target=selectedView.getLeft()-dp(8);
-  else if(selectedView.getRight()>right)target=selectedView.getRight()-horizontal.getWidth()+dp(8);
-  int max=Math.max(0,horizontal.getChildAt(0).getWidth()-horizontal.getWidth());
-  target=Math.max(0,Math.min(target,max));
-  horizontal.scrollTo(target,0);
-  if(horizontal instanceof AppScroll)((AppScroll)horizontal).heldScroll=target;
- }
+ private void revealBottomCard(View card,HorizontalScrollView scroll){if(scroll==null||scroll.getChildCount()==0)return;int left=scroll.getScrollX(),target=left,viewport=scroll.getWidth();if(card.getLeft()<left)target=card.getLeft()-dp(8);else if(card.getRight()>left+viewport)target=card.getRight()-viewport+dp(8);target=Math.max(0,Math.min(target,Math.max(0,scroll.getChildAt(0).getWidth()-viewport)));if(target!=left)scroll.scrollTo(target,0);if(scroll instanceof AppScroll)((AppScroll)scroll).heldScroll=target;}
+ private void revealSelectedAppInstant(){if(bottom.section()==BottomNavigation.Section.APPS){View v=bottomViews.get(bottom.id());if(v!=null)revealBottomCard(v,horizontal);}}
  private void addQuickSection(){
   boolean muted=cachedMuted;
-  addQuickCard(-1,"Audio",muted?"Activar sonido":"Silenciar",()->volume(AudioManager.ADJUST_TOGGLE_MUTE));
-  addQuickCard(-1,"Wi‑Fi",wifiSummary(),()->push(new Page("network",null)));
-  addQuickCard(-1,"Bluetooth",bluetooth.adapter!=null&&bluetooth.adapter.isEnabled()?"Activo":"Apagado",()->push(new Page("bluetooth",null)));
-  addQuickCard(-1,"Ajustes","",()->push(new Page("settings",null)));
-  addQuickCard(-1,"Inicio","",()->goHome());
+  addQuickCard("action:audio",-1,"Audio",muted?"Activar sonido":"Silenciar",()->volume(AudioManager.ADJUST_TOGGLE_MUTE));
+  addQuickCard("action:wifi",-1,"Wi‑Fi",wifiSummary(),()->push(new Page("network",null)));
+  addQuickCard("action:bluetooth",-1,"Bluetooth",bluetooth.adapter!=null&&bluetooth.adapter.isEnabled()?"Activo":"Apagado",()->push(new Page("bluetooth",null)));
+  addQuickCard("action:settings",-1,"Ajustes","",()->push(new Page("settings",null)));
+  addQuickCard("action:home",-1,"Inicio","",()->goHome());
  }
  private void beginEditMode(){
-  if(editMode)return;editOrderSnapshot=catalog.editOrder();editHiddenSnapshot=catalog.editHidden();editShownSnapshot=catalog.editShown();editMode=true;addSlot=false;selected=Math.max(quickActions.size(),selected);
-  scrollGeneration++;
-  suppressAutoScroll=true;
-  if(horizontal instanceof AppScroll)((AppScroll)horizontal).holdCurrentPosition();
-  if(editHint!=null)editHint.setVisibility(View.VISIBLE);
-  if(addCard!=null){addCard.setVisibility(View.VISIBLE);if(!cards.contains(addCard))cards.add(addCard);}
-  paintBottom();
-  if(horizontal instanceof AppScroll){
-   AppScroll scroll=(AppScroll)horizontal;
-   scroll.post(()->{if(horizontal==scroll){revealSelectedAppInstant();scroll.releasePosition();suppressAutoScroll=false;}});
-  }
+  if(editMode||bottom.section()!=BottomNavigation.Section.APPS||!bottom.id().startsWith("app:"))return;
+  editFocusSnapshot=bottom.id();editOrderSnapshot=catalog.editOrder();editHiddenSnapshot=catalog.editHidden();editShownSnapshot=catalog.editShown();editMode=true;scrollGeneration++;suppressAutoScroll=true;
+  if(horizontal instanceof AppScroll)((AppScroll)horizontal).holdCurrentPosition();if(editHint!=null)editHint.setVisibility(View.VISIBLE);syncBottomRows();paintBottom();
+  final HorizontalScrollView scroll=horizontal;scroll.post(()->{if(panel!=null&&horizontal==scroll){revealSelectedAppInstant();if(scroll instanceof AppScroll)((AppScroll)scroll).releasePosition();suppressAutoScroll=false;paintBottom();}});
  }
- private void endEditMode(){
-  scrollGeneration++;
-  suppressAutoScroll=false;
-  if(horizontal instanceof AppScroll)((AppScroll)horizontal).releasePosition();
-  editMode=false;addSlot=false;
-  if(visible.isEmpty()){renderBottom();return;}
-  if(editHint!=null)editHint.setVisibility(View.GONE);
-  if(addCard!=null){addCard.setVisibility(View.INVISIBLE);}
-  if(selected>=cards.size())selected=Math.max(0,cards.size()-1);
-  for(int i=0;i<cards.size();i++)cards.get(i).setBackground(focusBackground(i==selected));
-  cards.remove(addCard);
-  if(horizontal!=null)horizontal.scrollTo(horizontal.getScrollX(),0);
- }
- private void saveEditMode(){editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;endEditMode();}
- private void cancelEditMode(){if(!editMode)return;catalog.restoreEditState(editOrderSnapshot,editHiddenSnapshot,editShownSnapshot);editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;endEditMode();renderBottom();}
+ private void endEditMode(){scrollGeneration++;suppressAutoScroll=false;if(horizontal instanceof AppScroll)((AppScroll)horizontal).releasePosition();editMode=false;if(editHint!=null)editHint.setVisibility(View.GONE);syncBottomRows();paintBottom();}
+ private void saveEditMode(){editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;editFocusSnapshot=null;endEditMode();}
+ private void cancelEditMode(){cancelEditMode(true);}
+ private void cancelEditMode(boolean redraw){if(!editMode)return;String focus=editFocusSnapshot;catalog.restoreEditState(editOrderSnapshot,editHiddenSnapshot,editShownSnapshot);editOrderSnapshot=null;editHiddenSnapshot=null;editShownSnapshot=null;editFocusSnapshot=null;editMode=false;suppressAutoScroll=false;visible=catalog.visible(0);if(redraw)renderBottom();else syncBottomRows();if(focus!=null)bottom.choose(BottomNavigation.Section.APPS,focus);if(redraw)paintBottom();}
  private void moveEdit(int delta){
-  if(!editMode)return;
-  if(horizontal instanceof AppScroll)((AppScroll)horizontal).frozen=false;
-  if(addSlot){if(delta<0){addSlot=false;visible=catalog.visible(0);selected=quickActions.size()+Math.max(0,visible.size()-1);paintBottom();}return;}
-  int appIndex=selected-quickActions.size();if(appIndex<0||appIndex>=visible.size())return;
-  AppCatalog.Entry e=visible.get(appIndex);
-  if(delta>0&&appIndex==visible.size()-1){addSlot=true;selected=quickActions.size()+visible.size();paintBottom();return;}
-  if(delta<0&&appIndex==0)return;
-  if(!catalog.moveVisible(e,delta))return;
-  int nextIndex=appIndex+delta;
-  int currentCardIndex=quickActions.size()+appIndex,nextCardIndex=quickActions.size()+nextIndex;
-  if(horizontal!=null&&row!=null&&currentCardIndex>=0&&nextCardIndex>=0&&nextCardIndex<cards.size()){
-   View current=cards.get(currentCardIndex),target=cards.get(nextCardIndex);
-   int targetPosition=row.indexOfChild(target);
-   row.removeView(current);row.addView(current,targetPosition);
-   cards.remove(currentCardIndex);cards.add(nextCardIndex,current);
-  }
-  Collections.swap(visible,appIndex,nextIndex);
-  selected=quickActions.size()+nextIndex;
-  paintBottom();
+  if(!editMode)return;String id=bottom.id();int index=bottom.appIndex();
+  if(!id.startsWith("app:")){if(bottom.move(delta,false))paintBottom();return;}
+  if(delta>0&&index==visible.size()-1){bottom.choose(BottomNavigation.Section.APPS,BottomNavigation.ADD);paintBottom();return;}
+  int target=index+delta;if(target<0||target>=visible.size())return;AppCatalog.Entry e=catalog.find(id.substring(4));if(e==null||!catalog.moveVisible(e,delta))return;
+  View moving=bottomViews.get(id),other=bottomViews.get("app:"+visible.get(target).pkg);if(moving!=null&&other!=null){int at=row.indexOfChild(other);row.removeView(moving);row.addView(moving,at);}Collections.swap(visible,index,target);syncBottomRows();paintBottom();
  }
- private void hideEdit(){
-  if(!editMode||addSlot)return;
-  int appIndex=selected-quickActions.size();if(appIndex<0||appIndex>=visible.size())return;
-  catalog.toggleVisible(visible.get(appIndex));visible=catalog.visible(0);
-  selected=visible.isEmpty()?Math.max(0,quickActions.size()-1):quickActions.size()+Math.min(appIndex,visible.size()-1);
-  renderBottom();
- }
- private void addAppToPanel(AppCatalog.Entry entry){
-  if(entry==null)return;
-  catalog.setVisible(entry,true);catalog.moveVisibleToEnd(entry);
-  visible=catalog.visible(0);
-  selected=quickActions.size()+Math.max(0,visible.size()-1);
-  addSlot=false;
-  pages.pop();
-  renderBottom();
- }
- private void addQuickCard(int iconRes,String label,String detail,Runnable action){
-  final int index=quickActions.size();quickActions.add(action);LinearLayout card=new LinearLayout(this);card.setOrientation(LinearLayout.HORIZONTAL);card.setGravity(Gravity.CENTER_VERTICAL);card.setPadding(dp(7),0,dp(7),0);LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(108),dp(34));cp.rightMargin=dp(4);row.addView(card,cp);
+ private void hideEdit(){if(!editMode||!bottom.id().startsWith("app:"))return;int index=bottom.appIndex();AppCatalog.Entry e=catalog.find(bottom.id().substring(4));if(e==null)return;catalog.toggleVisible(e);visible=catalog.visible(0);renderBottom();bottom.choose(BottomNavigation.Section.APPS,visible.isEmpty()?BottomNavigation.SAVE:"app:"+visible.get(Math.min(index,visible.size()-1)).pkg);paintBottom();}
+ private void addAppToPanel(AppCatalog.Entry entry){if(entry==null)return;catalog.setVisible(entry,true);catalog.moveVisibleToEnd(entry);pages.pop();renderBottom();bottom.choose(BottomNavigation.Section.APPS,"app:"+entry.pkg);paintBottom();}
+ private void addQuickCard(String id,int iconRes,String label,String detail,Runnable action){
+  quickIds.add(id);quickActions.add(action);LinearLayout card=new LinearLayout(this);card.setOrientation(LinearLayout.HORIZONTAL);card.setGravity(Gravity.CENTER_VERTICAL);card.setPadding(dp(7),0,dp(7),0);LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(dp(108),dp(34));cp.rightMargin=dp(4);row.addView(card,cp);
   TextView title=text(label,9,Color.WHITE);title.setGravity(Gravity.CENTER_VERTICAL);title.setSingleLine(true);card.addView(title,new LinearLayout.LayoutParams(-2,-1));
   if(iconRes!= -1){ImageView glyph=new ImageView(this);glyph.setImageResource(iconRes);glyph.setColorFilter(0xFFD0D4D5);glyph.setAlpha(.82f);glyph.setScaleType(ImageView.ScaleType.CENTER_INSIDE);LinearLayout.LayoutParams iconParams=new LinearLayout.LayoutParams(dp(15),dp(18));iconParams.leftMargin=dp(2);card.addView(glyph,iconParams);}
   TextView value=null;if(!detail.isEmpty()){value=text(" · "+detail,8,0xFFAAAAAA);value.setGravity(Gravity.CENTER_VERTICAL);value.setSingleLine(true);card.addView(value,new LinearLayout.LayoutParams(0,-1,1));}quickDetails.add(value);
-  card.setOnClickListener(v->{selected=index;quickActions.get(index).run();});cards.add(card);
+  registerBottomCard(id,card);card.setOnClickListener(v->{if(editMode)return;bottom.choose(BottomNavigation.Section.ACTIONS,id);paintBottom();int index=quickIds.indexOf(id);if(index>=0)quickActions.get(index).run();});
  }
  private String wifiSummary(){android.net.wifi.WifiManager wifi=(android.net.wifi.WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);if(!wifi.isWifiEnabled())return "Desactivado";ConnectivityManager cm=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);NetworkCapabilities caps=cm.getNetworkCapabilities(cm.getActiveNetwork());return caps!=null&&caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)?"Conectado":"Sin conexión Wi-Fi";}
- private void startWifiScan(){
-  android.net.wifi.WifiManager wifi=(android.net.wifi.WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-  if(!wifi.isWifiEnabled()){message("Activa Wi-Fi para buscar redes");return;}
-  if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){message("Permiso de ubicación necesario para ver redes");return;}
-  wifiScanPending=true;try{if(!wifi.startScan()){wifiScanPending=false;message("No se pudo iniciar la búsqueda");}}catch(SecurityException e){wifiScanPending=false;message("Android rechazó la búsqueda Wi-Fi");}
-  renderSide();
- }
- private void connectWifi(android.net.wifi.ScanResult result){
-  android.net.wifi.WifiManager wifi=(android.net.wifi.WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-  String ssid=result.SSID;if(ssid==null||ssid.isEmpty()){message("Red sin nombre");return;}
-  try{
-   java.util.List<android.net.wifi.WifiConfiguration> saved=wifi.getConfiguredNetworks();
-   if(saved!=null)for(android.net.wifi.WifiConfiguration c:saved)if(("\""+ssid+"\"").equals(c.SSID)){wifi.enableNetwork(c.networkId,true);wifi.reconnect();message("Conectando a "+ssid);return;}
-   if(result.capabilities!=null&&!result.capabilities.contains("WEP")&&!result.capabilities.contains("WPA")){
-    android.net.wifi.WifiConfiguration c=new android.net.wifi.WifiConfiguration();c.SSID="\""+ssid+"\"";c.allowedKeyManagement.set(android.net.wifi.WifiConfiguration.KeyMgmt.NONE);
-    int id=wifi.addNetwork(c);if(id>=0){wifi.enableNetwork(id,true);wifi.reconnect();message("Conectando a "+ssid);return;}
-   }
-   message("Red protegida: primero guárdala en Android para conectarla desde aquí");
-  }catch(SecurityException e){message("El firmware no permite conectar esta red desde el panel");}
- }
- private void setScreenProfile(int profile){try{if(Build.VERSION.SDK_INT>=23&&!Settings.System.canWrite(this)){message("Permiso de brillo pendiente");return;}int brightness=profile==0?180:profile==1?255:70;if(!Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS,brightness)){message("No se pudo aplicar el perfil");return;}prefs.edit().putInt("screen_profile",profile).apply();renderSide();}catch(SecurityException e){message("El firmware no permite cambiar el brillo");}}
  private void push(Page p){pages.push(p);generation++;renderSide();}
  private void back(){
   // A child page belongs to the current editing session: leave that page first.
@@ -595,7 +503,7 @@ public class PanelService extends AccessibilityService {
    case "rebootConfirm":
     title.setText("Reiniciar equipo");subtitle.setText("Se cerrarán las aplicaciones y se cancelará el temporizador.");
     addKey("confirmReboot","Reiniciar","",ready()?()->{SleepTimer.cancel(this);systemCommand("REBOOT");}:null);addKey("cancel","Cancelar","",this::back);p.selectedId=p.selectedId==null?"cancel":p.selectedId;return true;
-   case "diagnostics":case "localControl":
+   case "diagnostics":
     title.setText("Diagnóstico y permisos");subtitle.setText(bridgeStatus);
     info("Control del equipo: "+(ready()?"conectado":"no disponible"));
     info("Ajustes de sistema: "+(canSecure()?"permitidos":"pendientes"));
@@ -692,7 +600,7 @@ public class PanelService extends AccessibilityService {
  private void moveApp(AppCatalog.Entry e,int direction){if(catalog.moveVisible(e,direction)){renderSide();message("Orden guardado");}else message(direction<0?"Ya es la primera aplicación":"Ya es la última aplicación");}
  String inspectForShell()throws org.json.JSONException{
   boolean clockVisible=panel!=null&&pages.isEmpty()&&clockPanel!=null&&panelClock!=null&&panelDate!=null&&clockPanel.isShown();
-  org.json.JSONObject result=new org.json.JSONObject();result.put("visible",panel!=null);result.put("bottomAppCount",visible.size());result.put("bottomAddVisible",addCard!=null&&addCard.getVisibility()==View.VISIBLE);result.put("bottomSelection",selected);result.put("editMode",editMode);result.put("page",pages.isEmpty()?"bottom":pages.peek().name);result.put("title",title==null?"":title.getText());result.put("subtitle",subtitle==null?"":subtitle.getText());result.put("bridgeReady",ready());result.put("foreground",foregroundPackage);result.put("homeVisible",HomeActivity.visible);result.put("timer",SleepTimer.summary(this));result.put("timerRemaining",SleepTimer.remainingMillis(this));
+  org.json.JSONObject result=new org.json.JSONObject();result.put("visible",panel!=null);result.put("bottomAppCount",visible.size());result.put("bottomAddVisible",addCard!=null&&addCard.getVisibility()==View.VISIBLE);result.put("bottomSelection",bottom.flatIndex());result.put("bottomSection",bottom.section().name().toLowerCase(Locale.ROOT));result.put("bottomFocusedId",bottom.id());result.put("bottomSectionIndex",bottom.index());result.put("bottomSaveVisible",saveCard!=null&&saveCard.getVisibility()==View.VISIBLE);result.put("editMode",editMode);result.put("page",pages.isEmpty()?"bottom":pages.peek().name);result.put("title",title==null?"":title.getText());result.put("subtitle",subtitle==null?"":subtitle.getText());result.put("bridgeReady",ready());result.put("foreground",foregroundPackage);result.put("homeVisible",HomeActivity.visible);result.put("timer",SleepTimer.summary(this));result.put("timerRemaining",SleepTimer.remainingMillis(this));
   result.put("panelClockEnabled",prefs.getBoolean("overlay_clock",true));result.put("panelClockVisible",clockVisible);result.put("panelClockText",clockVisible?panelClock.getText()+" · "+panelDate.getText():"");
   if(clockVisible){int[] xy=new int[2];clockPanel.getLocationOnScreen(xy);org.json.JSONObject bounds=new org.json.JSONObject();bounds.put("x",xy[0]);bounds.put("y",xy[1]);bounds.put("width",clockPanel.getWidth());bounds.put("height",clockPanel.getHeight());result.put("panelClockBounds",bounds);result.put("panelClockTextColor",String.format(Locale.ROOT,"#%06X",panelClock.getCurrentTextColor()&0xFFFFFF));result.put("panelDateTextColor",String.format(Locale.ROOT,"#%06X",panelDate.getCurrentTextColor()&0xFFFFFF));}
   org.json.JSONArray rows=new org.json.JSONArray();for(int i=0;i<actions.size();i++){Action a=actions.get(i);org.json.JSONObject row=new org.json.JSONObject();row.put("id",a.id);row.put("label",a.label);row.put("detail",a.detail);row.put("enabled",a.run!=null);row.put("selected",!pages.isEmpty()&&pages.peek().selected==i);if(i<sideViews.size()){View v=sideViews.get(i);int[] xy=new int[2];v.getLocationOnScreen(xy);row.put("x",xy[0]);row.put("y",xy[1]);row.put("width",v.getWidth());row.put("height",v.getHeight());}rows.put(row);}result.put("actions",rows);return result.toString();
@@ -701,7 +609,7 @@ public class PanelService extends AccessibilityService {
   if(name==null)name="settings";if(!Arrays.asList("settings","sound","network","bluetooth","appearance","manage","system","timer","diagnostics","regional","storage","status","animations","timezone","display","install").contains(name))throw new IllegalArgumentException("Unknown page");
   if(panel!=null)hide();openPage(name);
  }
- String actionForShell(String id){for(int i=0;i<actions.size();i++)if(actions.get(i).id.equals(id)){if(actions.get(i).run==null)return "DISABLED";if(!pages.isEmpty()){pages.peek().selected=i;pages.peek().selectedId=id;pages.peek().interacted=true;}runAction(i);return "OK";}return "NOT_FOUND";}
+ String actionForShell(String id){if(panel!=null&&pages.isEmpty()&&(id.equals("close")||id.equals("back"))){if(id.equals("close"))hide();else back();return "OK";}for(int i=0;i<actions.size();i++)if(actions.get(i).id.equals(id)){if(actions.get(i).run==null)return "DISABLED";if(!pages.isEmpty()){pages.peek().selected=i;pages.peek().selectedId=id;pages.peek().interacted=true;}runAction(i);return "OK";}return "NOT_FOUND";}
  void keyForShell(int key,int duration){if(!Arrays.asList(3,4,19,20,21,22,23,176).contains(key)||duration<0||duration>1500||duration>30&&key!=KeyEvent.KEYCODE_DPAD_CENTER&&key!=KeyEvent.KEYCODE_BACK)throw new IllegalArgumentException("Unsupported key or duration");long now=SystemClock.uptimeMillis();onKeyEvent(new KeyEvent(now,now,KeyEvent.ACTION_DOWN,key,0));onKeyEvent(new KeyEvent(now,now+duration,KeyEvent.ACTION_UP,key,0));}
  void prepareForRestore(){localGeneration++;foregroundGeneration++;localStarting=false;localAttempts=0;hide();}
  private android.graphics.drawable.StateListDrawable focusSelector(){android.graphics.drawable.StateListDrawable d=new android.graphics.drawable.StateListDrawable();d.addState(new int[]{android.R.attr.state_selected},focusBackground(true));d.addState(new int[0],focusBackground(false));return d;}
@@ -713,21 +621,7 @@ public class PanelService extends AccessibilityService {
   if(screen!=null){title=screen.title;subtitle=screen.subtitle;}else{title=text("",20,Color.WHITE);subtitle=text("",11,0xFFBDC7CE);}
   actions.clear();
   if(buildModern(page)){
-  }else if(page.name.equals("settings")){
-   title.setText("Ajustes");subtitle.setText("");
-   add("Ajustes de Android","Abrir la configuración nativa del TV Box",()->launchIntent(new Intent(Settings.ACTION_SETTINGS)));
-   add("Personalizar inicio","Nombre, reloj y elementos visibles",()->launchIntent(new Intent(this,PersonalizeActivity.class)));
-   add("Sonido","",()->push(new Page("sound",null)));
-   add("Protección visual","Perfiles de brillo para reducir la fatiga visual",()->push(new Page("screenProfiles",null)));
-   add("Apariencia","",()->push(new Page("appearance",null)));
-   add("Aplicaciones","",()->push(new Page("manage",null)));
-   add("Conexiones","",()->push(new Page("connections",null)));
-   add("Equipo","",()->push(new Page("system",null)));
-  }else if(page.name.equals("connections")){
-   title.setText("Conexiones");subtitle.setText("");
-   add("Red","",()->push(new Page("network",null)));
-   add("Bluetooth","",()->push(new Page("bluetooth",null)));
-  }else if(page.name.equals("bluetooth")){
+}else if(page.name.equals("bluetooth")){
    title.setText("Bluetooth");android.bluetooth.BluetoothAdapter adapter=bluetooth.adapter;
    if(adapter==null){subtitle.setText("No disponible");}
    else if(Build.VERSION.SDK_INT>=31){
@@ -799,12 +693,6 @@ public class PanelService extends AccessibilityService {
     ui.postDelayed(()->{if(panel!=null&&!pages.isEmpty()&&pages.peek().name.equals("btPairConfirm"))hide();},1200);
    });
    add("Cancelar","Volver a la lista",this::back);
-  }else if(page.name.equals("btOff")){
-   title.setText("Desactivar Bluetooth");subtitle.setText("Se desconectarán parlantes y controles Bluetooth");add("Desactivar","",()->{if(bluetooth.adapter.disable()){pages.pop();render();}else message("No se pudo desactivar");});
-  }else if(page.name.equals("btLocation")){
-   title.setText("Búsqueda Bluetooth");subtitle.setText("Android puede pedir confirmación para activar Ubicación");boolean enabled=Settings.Secure.getInt(getContentResolver(),Settings.Secure.LOCATION_MODE,0)!=0;
-   add(enabled?"Desactivar Ubicación":"Activar Ubicación","",()->{if(!canSecure()){message("Permiso de sistema pendiente");return;}bluetooth.stopScan();if(!enabled)hide();if(Settings.Secure.putInt(getContentResolver(),Settings.Secure.LOCATION_MODE,enabled?0:1)){if(enabled)renderSide();}else message("No se pudo cambiar Ubicación");});
-   if(enabled)add("Buscar dispositivos","",()->{pages.pop();if(!bluetooth.scan())message("No se pudo iniciar la búsqueda");else render();});
   }else if(page.name.equals("btDevice")){
    android.bluetooth.BluetoothDevice device=bluetooth.adapter.getRemoteDevice(page.pkg);title.setText(bluetooth.label(device));subtitle.setText(bluetooth.state(device));
    info(bluetooth.supportsAudio(device)?"Dispositivo de audio":"Dispositivo Bluetooth");
@@ -818,137 +706,21 @@ public class PanelService extends AccessibilityService {
    }else if(bluetooth.supportsAudio(device))info("El firmware no permite controlar esta conexión");
    else info("Este dispositivo no ofrece salida de audio");
    if(device.getBondState()==android.bluetooth.BluetoothDevice.BOND_BONDED)addKey("forget","Olvidar dispositivo","Tendrás que volver a emparejarlo",()->push(new Page("btForget",device.getAddress())));
-  }else if(page.name.equals("system")){
-   title.setText("Equipo");subtitle.setText("");
-   add("Pantalla · información","",()->push(new Page("display",null)));
-   add("Fecha e idioma","",()->push(new Page("regional",null)));
-   add("Almacenamiento","",()->push(new Page("storage",null)));
-   add("Animaciones del sistema","",()->push(new Page("animations",null)));
-   add("Acerca del equipo","",()->push(new Page("status",null)));
-   add("Inicio del control avanzado","",()->push(new Page("localControl",null)));
-   add("Reiniciar","",()->push(new Page("rebootConfirm",null)));
-  }else if(page.name.equals("localControl")){
-   title.setText("Control avanzado");subtitle.setText(prefs.getBoolean("local_adb_enabled",false)?"Inicio local activado":"Requiere autorizar una clave local una vez");
-   add(prefs.getBoolean("local_adb_enabled",false)?"Reactivar ahora":"Autorizar inicio autónomo","",()->startLocalControl(true));
-   if(prefs.getBoolean("local_adb_enabled",false))add("Desactivar inicio automático","",()->{localGeneration++;prefs.edit().putBoolean("local_adb_enabled",false).apply();renderSide();});
-   add("Comprobar conexión","",()->systemCommand("PING"));
   }else if(page.name.equals("animations")){
    title.setText("Animaciones");subtitle.setText(canSecure()?"":"Permiso de sistema pendiente");
    for(float scale:new float[]{0f,0.5f,1f}){final float value=scale;add(scale==0?"Desactivadas":scale==0.5f?"Rápidas":"Normales","",()->{if(!canSecure()){message("Permiso de sistema pendiente");return;}boolean saved=true;for(String key:new String[]{Settings.Global.WINDOW_ANIMATION_SCALE,Settings.Global.TRANSITION_ANIMATION_SCALE,Settings.Global.ANIMATOR_DURATION_SCALE})saved&=Settings.Global.putFloat(getContentResolver(),key,value);message(saved?"Guardado":"No se pudo guardar");});}
-  }else if(page.name.equals("network")){
-   title.setText("Wi-Fi");subtitle.setText("Conecta, desconecta o busca redes");
-   android.net.wifi.WifiManager wifi=(android.net.wifi.WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-   boolean wifiEnabled=wifi.isWifiEnabled();
-   add(wifiEnabled?"Desconectar Wi-Fi":"Activar Wi-Fi",wifiEnabled?"Apaga la conexión inalámbrica":"Enciende la radio Wi-Fi",()->{if(wifi.isWifiEnabled())push(new Page("wifiConfirm",null));else systemCommand("WIFI_ON");});
-   add("Buscar redes Wi-Fi","Buscar dentro de este panel sin cerrar el video",()->{push(new Page("wifiScan",null));startWifiScan();});
-   ConnectivityManager cm=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);Network n=cm.getActiveNetwork();NetworkCapabilities caps=cm.getNetworkCapabilities(n);
-   boolean wifiConnected=caps!=null&&caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-   info(!wifiEnabled?"Wi-Fi apagado":wifiConnected?"Wi-Fi conectado":"Wi-Fi encendido · sin red");
-   if(wifiConnected){
-    String ssid=wifi.getConnectionInfo()==null?null:wifi.getConnectionInfo().getSSID();
-    if(ssid!=null&&!ssid.equals("<unknown ssid>"))info("Red  "+ssid.replace("\"",""));
-    info(caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)?"Internet verificado":"Internet sin verificar");
-   }
-   LinkProperties links=cm.getLinkProperties(n);if(links!=null)for(LinkAddress addr:links.getLinkAddresses())if(addr.getAddress() instanceof java.net.Inet4Address)info("IP  "+addr.getAddress().getHostAddress());
-  }else if(page.name.equals("wifiScan")){
-   title.setText("Buscar redes Wi-Fi");subtitle.setText(wifiScanPending?"Buscando redes…":"Selecciona una red para conectar");
-   add("Actualizar búsqueda","",()->startWifiScan());
-   android.net.wifi.WifiManager wifi=(android.net.wifi.WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-   if(wifi.isWifiEnabled()&&!wifiScanPending){
-    java.util.List<android.net.wifi.ScanResult> results=new java.util.ArrayList<>(wifi.getScanResults());
-    java.util.Collections.sort(results,(a,b)->Integer.compare(b.level,a.level));
-    java.util.HashSet<String> seen=new java.util.HashSet<>();
-    for(android.net.wifi.ScanResult result:results){
-     if(result.SSID==null||result.SSID.isEmpty()||!seen.add(result.SSID))continue;
-     final android.net.wifi.ScanResult chosen=result;
-     boolean open=result.capabilities==null||(!result.capabilities.contains("WEP")&&!result.capabilities.contains("WPA"));
-     add(result.SSID,(open?"Abierta":"Protegida")+" · señal "+result.level+" dBm",()->connectWifi(chosen));
-    }
-    if(seen.isEmpty())info("No se encontraron redes");
-   }else if(!wifi.isWifiEnabled())info("Activa Wi-Fi para buscar redes");
-  }else if(page.name.equals("wifiConfirm")){
-   title.setText("Desconectar Wi-Fi");subtitle.setText("Se interrumpirá la conexión a Internet");add("Desconectar","",()->systemCommand("WIFI_OFF"));
-  }else if(page.name.equals("rebootConfirm")){
-   title.setText("Reiniciar equipo");subtitle.setText("Se cerrarán las aplicaciones");add("Reiniciar","",()->systemCommand("REBOOT"));
   }else if(page.name.equals("display")){
    title.setText("Pantalla");subtitle.setText("Solo lectura");Display display=wm.getDefaultDisplay();android.graphics.Point size=new android.graphics.Point();display.getRealSize(size);
    info(size.x+" × "+size.y);info(Math.round(display.getRefreshRate())+" Hz");info("Escala  "+getResources().getDisplayMetrics().densityDpi+" dpi");
-  }else if(page.name.equals("screenProfiles")){
-   title.setText("Protección visual");subtitle.setText("Perfiles de brillo reversibles; no cambian el color real de las apps");
-   add("Normal",prefs.getInt("screen_profile",0)==0?"Activo":"",()->setScreenProfile(0));
-   add("Luz alta",prefs.getInt("screen_profile",0)==1?"Activo":"",()->setScreenProfile(1));
-   add("Noche",prefs.getInt("screen_profile",0)==2?"Activo":"",()->setScreenProfile(2));
-  }else if(page.name.equals("regional")){
-   title.setText("Fecha e idioma");subtitle.setText(canSecure()?"":"Permiso de sistema pendiente");
-   if(canSecure()){add("Hora automática: "+(Settings.Global.getInt(getContentResolver(),Settings.Global.AUTO_TIME,0)==1?"sí":"no"),"",()->toggleGlobal(Settings.Global.AUTO_TIME));add("Zona automática: "+(Settings.Global.getInt(getContentResolver(),Settings.Global.AUTO_TIME_ZONE,0)==1?"sí":"no"),"",()->toggleGlobal(Settings.Global.AUTO_TIME_ZONE));}
-   add("Elegir zona horaria","",()->push(new Page("timezone",null)));
-   info(new java.text.SimpleDateFormat("dd MMM yyyy · HH:mm",new Locale("es")).format(new Date()));info(TimeZone.getDefault().getID());info(Locale.getDefault().getDisplayLanguage(new Locale("es")));
   }else if(page.name.equals("timezone")){
    title.setText("Zona horaria");subtitle.setText("La selección desactiva la zona automática");
    String[] labels={"Lima","Bogotá","Ciudad de México","Buenos Aires","Santiago","Madrid","UTC"};String[] zones={"America/Lima","America/Bogota","America/Mexico_City","America/Argentina/Buenos_Aires","America/Santiago","Europe/Madrid","UTC"};
    for(int i=0;i<labels.length;i++){final String zone=zones[i];add(labels[i],"",()->setTimezone(zone));}
-  }else if(page.name.equals("storage")){
-   title.setText("Almacenamiento");subtitle.setText("Solo lectura");StatFs fs=new StatFs(Environment.getDataDirectory().getPath());
-   info((fs.getAvailableBytes()/1048576)+" MB libres");info((fs.getTotalBytes()/1048576)+" MB totales");info(((fs.getTotalBytes()-fs.getAvailableBytes())*100/fs.getTotalBytes())+"% utilizado");
-   add("Administrar aplicaciones","",()->push(new Page("manage",null)));
-  }else if(page.name.equals("sound")){
-   AudioManager a=audio();title.setText("Sonido");subtitle.setText(a.isVolumeFixed()?"Volumen fijo: usa el televisor":"Volumen "+a.getStreamVolume(3)+" / "+a.getStreamMaxVolume(3)+(a.isStreamMute(3)?" · Silenciado":""));
-   add("Volumen −","",()->volume(AudioManager.ADJUST_LOWER));
-   add("Volumen +","",()->volume(AudioManager.ADJUST_RAISE));
-   add(a.isStreamMute(3)?"Activar sonido":"Silenciar","",()->volume(AudioManager.ADJUST_TOGGLE_MUTE));
-   add("Dispositivos Bluetooth","",()->push(new Page("bluetooth",null)));
-  }else if(page.name.equals("appearance")){
-   title.setText("Apariencia");subtitle.setText("");
-   add("Opacidad: "+Math.min(90,prefs.getInt("opacity",80))+"%","70 / 80 / 90%",()->{int n=prefs.getInt("opacity",80);prefs.edit().putInt("opacity",n>=90?70:n+10).apply();renderSide();});
-   add(prefs.getBoolean("compact",true)?"Tarjetas: compactas":"Tarjetas: amplias","Tamaño del panel inferior",()->{prefs.edit().putBoolean("compact",!prefs.getBoolean("compact",true)).apply();renderSide();});
-   add(prefs.getBoolean("animate",false)?"Animación: activada":"Animación: desactivada","Transición breve al abrir el panel",()->{prefs.edit().putBoolean("animate",!prefs.getBoolean("animate",false)).apply();renderSide();});
-   add("Volumen: directo","Indicador del sistema desactivado",()->{prefs.edit().putBoolean("custom_volume",true).apply();hideVolumeHud();renderSide();finishLocalControl(true,0);});
-  }else if(page.name.equals("status")){
-   title.setText("Estado del equipo");
-   add("Comprobar control avanzado","",()->systemCommand("PING"));
-   ConnectivityManager c=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);NetworkCapabilities n=c.getNetworkCapabilities(c.getActiveNetwork());StatFs fs=new StatFs(Environment.getDataDirectory().getPath());
-   subtitle.setText("Información consultada directamente a Android");
-   add("Android "+Build.VERSION.RELEASE+" · API "+Build.VERSION.SDK_INT,"Modelo declarado: "+Build.MODEL,()->message("Los datos de modelo son los declarados por el firmware."));
-   add(n==null?"Sin red activa":n.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)?"Wi-Fi conectado":n.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)?"Ethernet conectado":"Red activa","No es una prueba de velocidad de Internet",()->message("La conexión se conserva bajo la gestión de Android."));
-   add((fs.getAvailableBytes()/1048576)+" MB disponibles","Almacenamiento de datos",()->message("Ocultar o deshabilitar apps no equivale a liberar sus datos."));
-  }else if(page.name.equals("manage")){
-   title.setText("Aplicaciones");subtitle.setText("");
-   add("Filtro: "+managerFilter,"Todas / Usuario / Sistema / Ocultas",()->{String[] filters={"Todas","Usuario","Sistema","Ocultas"};managerFilter=filters[(Arrays.asList(filters).indexOf(managerFilter)+1)%4];page.selected=0;renderSide();});
-   add("Abrir Google Play","Instalar aplicaciones desde la tienda",()->launch(catalog.find("com.android.vending")));
-   add("Abrir Downloader","Descargar APK de una fuente que autorices",()->launch(catalog.find("com.esaba.downloader")));
-   add("Restaurar orden original","Devuelve la fila a la organización inicial",()->{catalog.resetOrder();page.selected=0;message("Orden original restaurado");renderSide();});
-   for(AppCatalog.Entry e:catalog.all()){
-    if(managerFilter.equals("Usuario")&&e.system||managerFilter.equals("Sistema")&&!e.system||managerFilter.equals("Ocultas")&&catalog.visible(e))continue;
-    add(e.title,(e.system?"Sistema":"Usuario")+" · "+(catalog.visible(e)?"Visible":"Oculta")+" · "+catalog.category(e),()->push(new Page("app",e.pkg)));
-   }
-
   }else if(page.name.equals("panelAddApp")){
    addKey("installApps","Instalar aplicaciones","Abre una tienda disponible",()->push(new Page("install",null)));
    title.setText("Añadir aplicación");subtitle.setText("Selecciona una aplicación para mostrarla en Apps");
-   for(AppCatalog.Entry e:catalog.all())if(!catalog.visible(e)){final AppCatalog.Entry entry=e;add(e.title,"",()->addAppToPanel(entry));}
+   for(AppCatalog.Entry e:catalog.all())if(!catalog.visible(e)){final AppCatalog.Entry entry=e;addKey("add:"+e.pkg,e.title,"",()->addAppToPanel(entry));}
 
-  }else if(page.name.equals("app")){
-   AppCatalog.Entry e=catalog.find(page.pkg);title.setText(e==null?"App no disponible":e.title);subtitle.setText(page.pkg);
-   if(e!=null){
-    add("Abrir",e.system?"Aplicación de sistema":"Aplicación del usuario",()->launch(e));
-    add(catalog.favorite(e)?"Quitar de favoritos":"Añadir a favoritos",catalog.visible(e)?"Acceso en la fila Favoritos":"Está oculta; muéstrala para verla en Favoritos",()->{catalog.toggleFavorite(e);renderSide();});
-    add(catalog.visible(e)?"Ocultar del panel":"Mostrar en el panel","Solo cambia nuestra interfaz; la app permanece instalada",()->{catalog.toggleVisible(e);renderSide();});
-    add("Categoría: "+catalog.category(e),"OK alterna TV y video / Herramientas / Otras",()->{catalog.cycleCategory(e);renderSide();});
-    add("Mover antes","Un puesto en el orden global del catálogo",()->{if(!catalog.move(e,-1))message("Ya es la primera aplicación");else message("Orden guardado");});
-    add("Mover después","Un puesto en el orden global del catálogo",()->{if(!catalog.move(e,1))message("Ya es la última aplicación");else message("Orden guardado");});
-    add("Información y permisos","",()->push(new Page("appinfo",e.pkg)));
-    if(!e.system&&!Arrays.asList(AppCatalog.PRIORITY).contains(e.pkg))add("Desinstalar","",()->push(new Page("uninstall",e.pkg)));
-
-   }
-  }else if(page.name.equals("uninstall")){
-   AppCatalog.Entry e=catalog.find(page.pkg);title.setText("Desinstalar app");subtitle.setText("Se eliminarán la app y sus datos del usuario actual");if(e!=null)info(e.title);
-   if(e!=null&&!e.system&&!Arrays.asList(AppCatalog.PRIORITY).contains(e.pkg))add("Desinstalar","",()->systemCommand("UNINSTALL:"+e.pkg));
-  }else if(page.name.equals("appinfo")){
-   title.setText("Información de la app");subtitle.setText("Solo lectura");
-   try{PackageInfo pi=getPackageManager().getPackageInfo(page.pkg,PackageManager.GET_PERMISSIONS);info(pi.applicationInfo.loadLabel(getPackageManager()).toString());info("Versión "+pi.versionName);
-    if(pi.requestedPermissions!=null)for(int i=0;i<pi.requestedPermissions.length;i++){String label=pi.requestedPermissions[i].replace("android.permission.","");try{label=getPackageManager().getPermissionInfo(pi.requestedPermissions[i],0).loadLabel(getPackageManager()).toString();}catch(Exception ignored){}
-     info(label+((pi.requestedPermissionsFlags[i]&PackageInfo.REQUESTED_PERMISSION_GRANTED)!=0?" · permitido":" · sin conceder"));}
-   }catch(Exception ex){info("App no disponible");}
   }else if(page.name.equals("restricted")){
    title.setText(page.description);subtitle.setText("Control no disponible con los permisos actuales");
   }
@@ -997,36 +769,14 @@ public class PanelService extends AccessibilityService {
    else if(key==KeyEvent.KEYCODE_DPAD_UP||key==KeyEvent.KEYCODE_DPAD_DOWN){int delta=key==KeyEvent.KEYCODE_DPAD_UP?-1:1;int start=p.selected>=footer&&delta<0?footer:p.selected;for(int i=start+delta;i>=0&&i<actions.size();i+=delta)if(actions.get(i).run!=null){p.selected=i;break;}}
    paintSide();return;
   }
-  if(editMode){
-   if(key==KeyEvent.KEYCODE_DPAD_LEFT){moveEdit(-1);return;}
-   if(key==KeyEvent.KEYCODE_DPAD_RIGHT){moveEdit(1);return;}
-   if(key==KeyEvent.KEYCODE_DPAD_UP){hideEdit();return;}
-   if(key==KeyEvent.KEYCODE_DPAD_DOWN&&addSlot){return;}
-  }
-  if(key==KeyEvent.KEYCODE_DPAD_UP||key==KeyEvent.KEYCODE_DPAD_DOWN){
-   if(key==KeyEvent.KEYCODE_DPAD_DOWN){
-    if(selected<quickActions.size()&&(!visible.isEmpty()||(!loading&&addCard!=null&&cards.contains(addCard)))){selected=quickActions.size()+Math.max(0,Math.min(selected,visible.size()-1));paintBottom();return;}
-    return;
-   }
-   if(selected>=quickActions.size()){selected=Math.min(quickActions.size()-1,selected-quickActions.size());paintBottom();return;}
-   return;
-  }
-  if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT){
-   int delta=key==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1;
-   selected=Math.max(0,Math.min(cards.size()-1,selected+delta));
-  }
-  paintBottom();
+  if(editMode){if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT)moveEdit(key==KeyEvent.KEYCODE_DPAD_LEFT?-1:1);else if(key==KeyEvent.KEYCODE_DPAD_UP)hideEdit();return;}
+  boolean changed=false;if(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT)changed=bottom.move(key==KeyEvent.KEYCODE_DPAD_LEFT?-1:1,true);else if(key==KeyEvent.KEYCODE_DPAD_UP||key==KeyEvent.KEYCODE_DPAD_DOWN)changed=bottom.vertical(key==KeyEvent.KEYCODE_DPAD_DOWN);if(changed)paintBottom();
  }
  private void confirm(boolean longer){
   if(!pages.isEmpty()){runAction(pages.peek().selected);return;}
-  if(editMode){
-   if(addSlot){push(new Page("panelAddApp",null));return;}
-   saveEditMode();return;
-  }
-  if(selected>=0&&selected<quickActions.size()){quickActions.get(selected).run();return;}
-  if(!loading&&visible.isEmpty()&&selected==quickActions.size()){push(new Page("panelAddApp",null));return;}
-  int appIndex=selected-quickActions.size();if(appIndex<0||appIndex>=visible.size())return;
-  AppCatalog.Entry e=visible.get(appIndex);if(longer)beginEditMode();else launch(e);
+  String id=bottom.id();if(editMode){if(id.equals(BottomNavigation.ADD))push(new Page("panelAddApp",null));else saveEditMode();return;}
+  if(bottom.section()==BottomNavigation.Section.ACTIONS){int index=bottom.index();if(index>=0&&index<quickActions.size())quickActions.get(index).run();return;}
+  if(id.equals(BottomNavigation.ADD)){push(new Page("panelAddApp",null));return;}if(!id.startsWith("app:"))return;AppCatalog.Entry e=catalog.find(id.substring(4));if(e==null)return;if(longer)beginEditMode();else launch(e);
  }
  protected boolean onKeyEvent(KeyEvent e){
   if(HomeActivity.isApplicationDialogOpen())return false;
@@ -1044,7 +794,7 @@ public class PanelService extends AccessibilityService {
    return true;
   }
   boolean trigger=k==KeyEvent.KEYCODE_SETTINGS||k==KeyEvent.KEYCODE_MENU||k==KeyEvent.KEYCODE_HOME&&prefs.getBoolean("home",true);
-  if(trigger){keys.down(k,generation);if(e.getRepeatCount()==0){if(k==KeyEvent.KEYCODE_SETTINGS)openPage("settings");else if(k==KeyEvent.KEYCODE_HOME){if(HomeActivity.visible){if(panel!=null)hide();}else if(panel==null)show();else{pages.clear();selected=quickActions.size();renderBottom();}}else toggle();}return true;}
+  if(trigger){keys.down(k,generation);if(e.getRepeatCount()==0){if(k==KeyEvent.KEYCODE_SETTINGS)openPage("settings");else if(k==KeyEvent.KEYCODE_HOME){if(HomeActivity.visible){if(panel!=null)hide();}else if(panel==null)show();else{pages.clear();bottom.first(BottomNavigation.Section.APPS);renderBottom();}}else toggle();}return true;}
   if(panel==null){if(!HomeActivity.visible)return false;if(k==KeyEvent.KEYCODE_DPAD_CENTER||k==KeyEvent.KEYCODE_ENTER){keys.down(k,generation);return true;}return HomeActivity.handleHomeKey(e);}
   boolean relevant=k==KeyEvent.KEYCODE_BACK||k==KeyEvent.KEYCODE_ESCAPE||k==KeyEvent.KEYCODE_DPAD_UP||k==KeyEvent.KEYCODE_DPAD_DOWN||k==KeyEvent.KEYCODE_DPAD_LEFT||k==KeyEvent.KEYCODE_DPAD_RIGHT||k==KeyEvent.KEYCODE_DPAD_CENTER||k==KeyEvent.KEYCODE_ENTER;
   if(!relevant)return false;

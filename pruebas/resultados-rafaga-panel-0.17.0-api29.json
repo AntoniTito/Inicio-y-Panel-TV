@@ -1,0 +1,12 @@
+{
+  "api": 29,
+  "emulator": false,
+  "moves": 17,
+  "method": "Native input dpad keyevent with 17 right presses in a single process; protected bridge used only to prepare and inspect",
+  "initialIndex": 2,
+  "expectedIndex": 1,
+  "actualIndex": 2,
+  "focusUpdates": 0,
+  "status": "injected_keys_not_delivered_to_overlay",
+  "passed": null
+}
