@@ -1,0 +1,27 @@
+{
+  "version": "0.16.2",
+  "api": 29,
+  "emulator": false,
+  "cycles": 20,
+  "samples": [
+    {
+      "cycle": 5,
+      "pssKb": 31500
+    },
+    {
+      "cycle": 10,
+      "pssKb": 33789
+    },
+    {
+      "cycle": 15,
+      "pssKb": 30398
+    },
+    {
+      "cycle": 20,
+      "pssKb": 31004
+    }
+  ],
+  "growthAfterWarmupKb": -2785,
+  "limitKb": 8192,
+  "passed": true
+}

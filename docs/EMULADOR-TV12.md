@@ -48,3 +48,7 @@ Catálogo diario persistente de doce imágenes, rotación opcional y MediaStore,
 ## Actualización 0.16.1
 
 Instalado código 40 y verificada la retirada del acceso a galería dentro de Fondos. Se conservaron los datos del AVD y se detuvo la instancia de pruebas al finalizar. Evidencia en VERIFICACION-0.16.1.md.
+
+## 0.16.2: transiciones del inicio
+
+Actualizado a código 42 conservando los datos del AVD. Trece comprobaciones de Home, Panel e inicio, ajustes de Android y preservación de fotos/preferencias. Se conserva la evidencia anterior de reproducción y recuperación; no se repitió como parte de esta corrección.

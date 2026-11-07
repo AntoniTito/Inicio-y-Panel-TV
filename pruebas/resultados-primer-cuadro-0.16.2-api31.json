@@ -1,0 +1,23 @@
+{
+  "version": "0.16.2",
+  "api": 31,
+  "emulator": true,
+  "checks": [
+    {
+      "name": "original returns without a blank-frame timeout",
+      "passed": true
+    },
+    {
+      "name": "photo returns without a blank-frame timeout",
+      "passed": true
+    },
+    {
+      "name": "slideshow returns without a blank-frame timeout",
+      "passed": true
+    },
+    {
+      "name": "missing returns without a blank-frame timeout",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": "0.16.2",
+  "api": 31,
+  "emulator": true,
+  "checks": [
+    {
+      "name": "Full-size wallpaper is ready",
+      "passed": true,
+      "evidence": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "Six native HOME intents retain the visible image",
+      "passed": true,
+      "evidence": {
+        "renders": 0,
+        "releases": 0
+      }
+    },
+    {
+      "name": "Remote HOME retains wallpaper",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Panel e inicio opens above intact Home",
+      "passed": true,
+      "evidence": {
+        "page": "appearance"
+      }
+    },
+    {
+      "name": "Android settings opens successfully",
+      "passed": true,
+      "evidence": {
+        "homeVisible": false,
+        "imageRetained": true,
+        "workActive": false
+      }
+    },
+    {
+      "name": "Image work stops behind native settings",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Returning from Android settings restores the same wallpaper",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Android settings return draws without the empty-frame timeout",
+      "passed": true,
+      "evidence": {
+        "fallbacks": 0
+      }
+    },
+    {
+      "name": "Fully covering Home releases its bitmap",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Returning from Fondos restores the image",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "name": "Fondos return draws without the empty-frame timeout",
+      "passed": true,
+      "evidence": {
+        "fallbacks": 0
+      }
+    },
+    {
+      "name": "Image bytes and IDs unchanged",
+      "passed": true,
+      "evidence": {
+        "count": 1
+      }
+    },
+    {
+      "name": "Preferences unchanged",
+      "passed": true,
+      "evidence": {}
+    }
+  ]
+}
