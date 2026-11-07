@@ -1,6 +1,6 @@
-﻿# Fondos del inicio
+# Fondos del inicio
 
-Z6 Panel 0.16.0 mantiene los cuatro modos en una fila: Fondo original, Foto fija, Presentación y Paisaje diario. Los fondos aparecen solo en Inicio; el video y el panel superpuesto conservan su comportamiento. Las flechas previsualizan y OK utiliza una elección.
+Z6 Panel 0.16.1 mantiene los cuatro modos en una fila: Fondo original, Foto fija, Presentación y Paisaje diario. Los fondos aparecen solo en Inicio; el video y el panel superpuesto conservan su comportamiento. Las flechas previsualizan y OK utiliza una elección.
 
 ## Fotos y presentación
 
@@ -30,7 +30,7 @@ Los créditos conservan autor, licencia y origen. Se utiliza la [colección de p
 
 Las imágenes optimizadas se publican en MediaStore, en Pictures/Z6, separadas en Mis fotos, Conservadas y Paisajes del dia. Aparecen en las aplicaciones multimedia que consultan ese índice. Las miniaturas del catálogo permanecen privadas y no aparecen como fotos independientes. Un paisaje que todavía solo tiene miniatura no se ha descargado como fondo.
 
-Abrir galería del TV utiliza un visor instalado. En el TV original se recupera reversiblemente la galería AOSP; si otro firmware carece de visor, Mis fotos sigue disponible. El instalador conserva por dispositivo el estado original de esa galería para restaurarlo. La apariencia y la papelera de aplicaciones externas dependen de cada visor.
+El acceso a la galería nativa se retiró de Fondos en 0.16.1. Mis fotos sigue integrado y las imágenes permanecen disponibles en Multimedia y en los visores del sistema. En el TV original se recupera reversiblemente la galería AOSP; si otro firmware carece de visor, Mis fotos sigue disponible. El instalador conserva por dispositivo el estado original de esa galería para restaurarlo. La apariencia y la papelera de aplicaciones externas dependen de cada visor.
 
 Eliminar desde Z6 borra directamente su imagen compartida y su miniatura, sin papelera, verifica la ausencia e informa el tamaño liberado. El mismo archivo deja de estar disponible en Multimedia. Un original que permanezca en el celular, USB u otra ubicación externa no se elimina. No se promete borrado forense del almacenamiento flash.
 
@@ -58,4 +58,4 @@ La migración conserva IDs, orden y preferencias: publicación pendiente, verifi
 
 Actualizar sin desinstalar conserva las fotos. Exportar preferencias no incluye imágenes y sus URI no sirven en otro TV. Fotos, sesiones, índices individuales y respaldos quedan fuera de Git y del portable.
 
-La recuperación vigente es el comportamiento 0.15.0 con código 39 y un adaptador de almacenamiento compartido. No instalar el APK histórico código 36 sobre una biblioteca migrada. La receta reproducible es herramientas/recuperacion-0160.cjs, ejecutada desde la base 0.16.0 con Node, Git, SDK/JDK y firma original. Tras usar la recuperación, una actualización necesita código 40 o superior.
+La recuperación vigente conserva el comportamiento 0.16.0 con código 41, incluido su botón de galería y el almacenamiento compartido. No instalar el APK histórico código 36 sobre una biblioteca migrada. La receta reproducible es herramientas/recuperacion-0161.ps1, usando la etiqueta v0.16.0 con Git, SDK/JDK y firma original. Tras usar la recuperación, una actualización necesita código 42 o superior.

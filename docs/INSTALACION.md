@@ -20,7 +20,7 @@ El auxiliar autónomo requiere la autorización propia del destino y un transpor
 
 `z6.ps1 restaurar -Dispositivo IP:PUERTO` usa el respaldo inicial del destino. También puedes indicar `-Respaldo ARCHIVO`. Rechaza identidades diferentes, restaura el HOME y las animaciones, recupera los permisos que modificó y conserva otros servicios de accesibilidad activados posteriormente. Z6 Panel permanece instalado para evitar perder sus datos.
 
-`-RecuperarVersion` selecciona 0.15.0/código 39 para API 29 y 31, con la misma firma. No funciona encima de códigos superiores. Tras recuperarlo, una actualización debe tener código 40 o mayor. Sin esa opción solo se restauran HOME y ajustes originales, conservando el APK instalado. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
+`-RecuperarVersion` selecciona 0.16.0/código 41 para API 29 y 31, con la misma firma. No funciona encima de códigos superiores. Tras recuperarlo, una actualización debe tener código 42 o mayor. Sin esa opción solo se restauran HOME y ajustes originales, conservando el APK instalado. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
 
 Los estados originales de la limpieza antigua se conservan en `privado/referencia/original`. No son una receta para otros modelos. El restaurador específico se niega a ejecutarlos sin una identidad comprobada del TV original. Los respaldos del instalador nuevo sí incluyen su identidad desde el principio.
 
@@ -30,7 +30,7 @@ Las imágenes de 0.16.0 se publican en MediaStore y los índices quedan privados
 
 El repositorio se prepara localmente, sin remoto ni publicación automática. Para publicarlo elige un repositorio privado y conecta su URL. Los APK locales conservados se adjuntan a la entrega junto con `entregas/manifest.json`. No añadas por fuerza `privado` o `.local` ni publiques la firma, credenciales, inventarios o sesiones de terceros.
 
-La recuperación vigente 0.15.0/código 39 entiende Todas/Elegidas y añade el adaptador para las imágenes de MediaStore. No usar el APK histórico 0.15.0/código 36 para recuperar una biblioteca migrada. La protección que usa Fondo original se limita a las recuperaciones anteriores de código 35 o menor. No elimina la biblioteca; tampoco recupera imágenes borradas expresamente.
+La recuperación vigente 0.16.0/código 41 entiende Todas/Elegidas y añade el adaptador para las imágenes de MediaStore. No usar el APK histórico 0.15.0/código 36 para recuperar una biblioteca migrada. La protección que usa Fondo original se limita a las recuperaciones anteriores de código 35 o menor. No elimina la biblioteca; tampoco recupera imágenes borradas expresamente.
 
 ## Galería y respaldo de fotos desde 0.16.0
 

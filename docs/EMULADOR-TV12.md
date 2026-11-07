@@ -44,3 +44,7 @@ Instalado 0.15.0/código 36 con la misma firma y APK del TV original. Incluye mo
 ## Actualización 0.16.0
 
 Catálogo diario persistente de doce imágenes, rotación opcional y MediaStore, con la misma firma y APK para API 29/31. Se conservan los datos del AVD; no se borraron snapshots previos. La recepción sigue probándose desde el PC por ADB, sin puente al celular. Las pruebas nuevas y sus límites están en VERIFICACION-0.16.0.md. Las carpetas compartidas requieren un visor instalado para abrirse fuera de Z6; no se instala una galería de terceros automáticamente.
+
+## Actualización 0.16.1
+
+Instalado código 40 y verificada la retirada del acceso a galería dentro de Fondos. Se conservaron los datos del AVD y se detuvo la instancia de pruebas al finalizar. Evidencia en VERIFICACION-0.16.1.md.

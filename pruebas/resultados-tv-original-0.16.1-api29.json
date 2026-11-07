@@ -1,0 +1,42 @@
+{
+  "version": "0.16.1",
+  "code": 40,
+  "api": 29,
+  "emulator": false,
+  "utc": "2026-11-07T02:10:26.753Z",
+  "checks": [
+    {
+      "name": "Native-gallery shortcut removed from wallpaper settings",
+      "passed": true
+    },
+    {
+      "name": "Five remaining daily controls are visible",
+      "passed": true
+    },
+    {
+      "name": "Controls fit physical 720p",
+      "passed": true
+    },
+    {
+      "name": "All existing photo and daily-image hashes preserved",
+      "passed": true
+    },
+    {
+      "name": "Wallpaper preferences preserved",
+      "passed": true
+    },
+    {
+      "name": "Auxiliary reconnected after update",
+      "passed": true
+    }
+  ],
+  "homeResolution": [
+    1280,
+    720
+  ],
+  "storedDailyResolution": [
+    1280,
+    720
+  ],
+  "photoCount": 2
+}
