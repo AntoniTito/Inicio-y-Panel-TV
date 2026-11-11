@@ -1,0 +1,13 @@
+{
+  "api": 29,
+  "physical": true,
+  "physicalKeyCode": 88,
+  "selectedAppForeground": true,
+  "triggerReason": "botón",
+  "channelRouteCompleted": true,
+  "videoAudioUserConfirmationPending": false,
+  "userConfirmedVideoAudio": true,
+  "userConfirmedFromZ6Home": true,
+  "processFreshFromHome": true,
+  "libraryPreserved": true
+}

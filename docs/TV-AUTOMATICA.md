@@ -1,6 +1,6 @@
 # Inicio y recuperación de TV
 
-Disponible en Z6 Panel 0.18.0/código 52 para API 29 y 31. Se configura en **Ajustes → Aplicaciones → Inicio y recuperación de TV**.
+Disponible en Z6 Panel 0.18.1/código 54 para API 29 y 31. Se configura en **Ajustes → Aplicaciones → Inicio y recuperación de TV**.
 
 1. Elige la aplicación instalada. Puede ser Xuper u otra variante compatible; Z6 no instala aplicaciones ni copia cuentas.
 2. Habilita **Asistencia de TV de Z6** desde el acceso a Accesibilidad. Esta ayuda adicional reconoce controles de la app elegida únicamente mientras configuras o ejecutas el recorrido. El servicio principal del panel sigue sin leer contenido.
@@ -32,8 +32,10 @@ Aplicación, certificado, canal, recorrido y asignación del control pertenecen 
 
 ## Recuperación
 
-La recuperación firmada es **0.17.0/código 53**. Antes de restaurar, `z6.ps1 restaurar` guarda la configuración de TV privadamente, cancela los automatismos, comprueba el cierre de la escucha física del control y retira solo la ayuda nueva de Accesibilidad, conservando los otros servicios. Después aplica la restauración de HOME y ajustes que corresponda al mismo destino. No instales la recuperación manualmente sin cancelar primero los automatismos. Después de código 53, la siguiente actualización necesita código 54 o superior. Los archivos y preferencias personales no se desinstalan.
+La recuperación firmada es **0.18.0/código 55**. Antes de restaurar, `z6.ps1 restaurar` guarda la configuración de TV privadamente, cancela los automatismos, comprueba el cierre de la escucha física del control y retira solo la ayuda nueva de Accesibilidad, conservando los otros servicios. Después aplica la restauración de HOME y ajustes que corresponda al mismo destino. No instales la recuperación manualmente sin cancelar primero los automatismos. Después de código 55, la siguiente actualización necesita código 56 o superior. Los archivos y preferencias personales no se desinstalan.
 
-Las comprobaciones y sus límites se registran en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md).
+Las comprobaciones y sus límites se registran en [VERIFICACION-0.18.1.md](VERIFICACION-0.18.1.md).
 
 En reproductores que ocultan el nombre del canal, la verificación puede usar la selección semántica del canal y su transición fuera de la lista después de OK. La confirmación inicial de imagen y sonido sigue siendo necesaria: seleccionar un canal no demuestra que el proveedor esté transmitiendo.
+
+Desde 0.18.1, perder el auxiliar invalida inmediatamente la disponibilidad del boton. La recuperacion no apaga ni enciende la depuracion: reintenta al volver a estar disponible, al volver a Inicio y ante eventos de red o pantalla, con intentos limitados y sin sondeos en reposo. Si Android requiere autorizar la clave local, usa Equipo > Diagnostico > Recuperar control.

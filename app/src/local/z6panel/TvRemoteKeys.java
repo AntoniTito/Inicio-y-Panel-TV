@@ -18,7 +18,8 @@ final class TvRemoteKeys {
  private final String runtimeToken=UUID.randomUUID().toString();
  private String learnToken="",applied="",status="Sin detección ampliada";
  private volatile long revision;private volatile boolean blocked;
- private boolean active,busy,dirty,touched,listening,forcePending;
+ private boolean active,busy,dirty,touched,listening,forcePending;private int transientRetries;
+ private final Runnable retry=()->sync(false);
  private final Runnable deviceChanged=()->sync(true);
  private final InputManager.InputDeviceListener devices=new InputManager.InputDeviceListener(){public void onInputDeviceAdded(int id){changed();}public void onInputDeviceRemoved(int id){changed();}public void onInputDeviceChanged(int id){changed();}private void changed(){ui.removeCallbacks(deviceChanged);ui.postDelayed(deviceChanged,300);}};
  private TvRemoteKeys(Context c){context=c.getApplicationContext();worker.allowCoreThreadTimeOut(true);}
@@ -27,10 +28,12 @@ final class TvRemoteKeys {
  static void suspend(){if(instance!=null){instance.active=false;instance.blocked=true;instance.learnToken="";instance.configuration();}}
  static void changed(Context c){get(c).configuration();}
  static void ready(Context c){new Handler(Looper.getMainLooper()).post(()->{TvRemoteKeys m=get(c);m.applied="";m.configuration();});}
+ static void lost(){new Handler(Looper.getMainLooper()).post(()->{TvRemoteKeys m=instance;if(m!=null){m.revision++;m.applied="";m.status="Control auxiliar desconectado";m.ui.removeCallbacks(m.retry);TvRecoveryActivity.refresh();}});}
  static String begin(Context c){TvRemoteKeys m=get(c);m.blocked=false;m.learnToken=UUID.randomUUID().toString();m.revision++;m.sync(false);return m.learnToken;}
  static void end(Context c){TvRemoteKeys m=get(c);m.learnToken="";m.revision++;m.sync(false);}
  static void disable(Context c){TvRemoteKeys m=get(c);m.blocked=true;m.learnToken="";m.revision++;m.configuration();}
  private void configuration(){
+  transientRetries=0;ui.removeCallbacks(retry);
   TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);if(active&&s.button&&s.hardware())blocked=false;
   boolean needed=active&&s.button&&s.hardware();InputManager input=(InputManager)context.getSystemService(Context.INPUT_SERVICE);
   if(needed&&!listening){input.registerInputDeviceListener(devices,ui);listening=true;}else if(!needed&&listening){input.unregisterInputDeviceListener(devices);listening=false;ui.removeCallbacks(deviceChanged);}
@@ -49,7 +52,7 @@ final class TvRemoteKeys {
   final long epoch=revision;final String sent=canonical,token=request.optString("token");if(force)try{request.put("refresh",true);}catch(JSONException ignored){}
   busy=true;touched=true;
   worker.execute(()->{String reply; synchronized(RPC){reply=epoch!=revision||blocked&&!request.optString("mode").equals("stop")?"CANCELLED":SystemBridge.call(encode(request));}final String outcome=reply;
-   ui.post(()->{busy=false;applied=outcome.equals("CANCELLED")?"":sent;status=outcome;if(!token.isEmpty()&&token.equals(learnToken))TvRecoveryActivity.remoteReady(token,"OK".equals(outcome));TvRecoveryActivity.refresh();if(dirty||epoch!=revision){boolean forceAgain=forcePending;forcePending=false;dirty=false;sync(forceAgain);}});
+   ui.post(()->{busy=false;applied=epoch==revision&&outcome.equals("OK")?sent:"";if(epoch==revision){status=outcome;if(!token.isEmpty()&&token.equals(learnToken))TvRecoveryActivity.remoteReady(token,"OK".equals(outcome));}TvRecoveryActivity.refresh();if(dirty||epoch!=revision){boolean forceAgain=forcePending;forcePending=false;dirty=false;sync(forceAgain);}else if(outcome.contains("BUSY")&&!blocked&&++transientRetries<=3){ui.removeCallbacks(retry);ui.postDelayed(retry,750L*transientRetries);}});
   });
  }
  static void receive(String payload){new Handler(Looper.getMainLooper()).post(()->{if(instance!=null)instance.message(payload);});}
@@ -67,7 +70,8 @@ final class TvRemoteKeys {
   TvRemoteKeys m=instance;if(m!=null)m.blocked=true;
   synchronized(RPC){if(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive())return "OK";String version=SystemBridge.read("VERSION",1200);if(version.equals("0.11.0")||version.equals("0.18.0-tv1"))return "OK";try{return SystemBridge.call(encode(new JSONObject().put("mode","stop")));}catch(JSONException e){return "ERROR";}}
  }
- static JSONObject inspect()throws JSONException{TvRemoteKeys m=instance;return m==null?new JSONObject():new JSONObject().put("status",m.status).put("learning",!m.learnToken.isEmpty()).put("deviceListener",m.listening).put("syncPending",m.busy);}
- static String availability(){TvRemoteKeys m=instance;if(m==null||m.busy)return "Preparando botón";if(m.status.equals("OK"))return "Botón disponible";if(m.status.equals("NO_DEVICE"))return "Conecta el control asignado";if(m.status.equals("AMBIGUOUS_DEVICE"))return "Hay controles iguales; vuelve a asignar el botón";return "Botón pendiente; revisa el auxiliar o elige otra tecla";}
+ static JSONObject inspect()throws JSONException{TvRemoteKeys m=instance;return m==null?new JSONObject():new JSONObject().put("status",helperAlive()?m.status:"Control auxiliar desconectado").put("helperConnected",helperAlive()).put("learning",!m.learnToken.isEmpty()).put("deviceListener",m.listening).put("syncPending",m.busy);}
+ private static boolean helperAlive(){return SystemBridge.remote!=null&&SystemBridge.remote.isBinderAlive();}
+ static String availability(){if(!helperAlive())return "Control auxiliar desconectado";TvRemoteKeys m=instance;if(m==null||m.busy)return "Preparando botón";if(m.status.equals("OK"))return "Botón disponible";if(m.status.equals("NO_DEVICE"))return "Conecta el control asignado";if(m.status.equals("AMBIGUOUS_DEVICE"))return "Hay controles iguales; vuelve a asignar el botón";return "Botón pendiente; revisa el auxiliar o elige otra tecla";}
  static void fixture(String type,String device,int code){if(!("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)))throw new SecurityException("Emulator only");TvRemoteKeys m=instance;if(m==null)throw new IllegalStateException();try{m.message(new JSONObject().put("type",type).put("device",device).put("code",code).put("token",type.equals("learn")?m.learnToken:m.runtimeToken).toString());}catch(JSONException e){throw new IllegalArgumentException(e);}}
 }

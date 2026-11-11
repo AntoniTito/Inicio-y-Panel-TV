@@ -1,0 +1,13 @@
+{
+  "api": 29,
+  "seconds": 12,
+  "helperCpuMs": 0,
+  "appCpuMs": 0,
+  "helperProcessStable": true,
+  "navigationQueriesDelta": 0,
+  "helperReattachments": 0,
+  "watcherAlive": true,
+  "watchedDevices": 1,
+  "taskStayedIdle": true,
+  "passed": true
+}

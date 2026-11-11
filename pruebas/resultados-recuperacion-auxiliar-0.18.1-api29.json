@@ -1,0 +1,13 @@
+{
+  "api": 29,
+  "physical": true,
+  "version": "0.18.1",
+  "helperOnlyKilled": true,
+  "pcStartedHelper": false,
+  "helperProcessChanged": true,
+  "recoveryMs": 8429,
+  "disconnectedStatusObserved": true,
+  "remoteReaderRestored": true,
+  "adbEnabledUnchanged": true,
+  "passed": true
+}

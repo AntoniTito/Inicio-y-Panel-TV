@@ -1,6 +1,6 @@
 # Compatibilidad comprobada
 
-La entrega vigente es 0.18.0/código 52. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.
+La entrega vigente es 0.18.1/código 54. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.
 
 | Entorno | Estado |
 |---|---|
@@ -11,7 +11,7 @@ La entrega vigente es 0.18.0/código 52. La base histórica 0.10.4 y la firma es
 | Otro equipo Android 12/API 31 | Instalador admitido; las diferencias de firmware requieren validación propia. |
 | API distintas de 29/31 | Diagnóstico disponible; instalación automática bloqueada hasta adaptación y validación. |
 
-Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.17.0 con código 53 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 54 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
+Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.18.0 con código 55 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 56 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
 
 Mantener los valores propios del destino no significa inventar capacidades: Wi-Fi, Bluetooth, HDMI-CEC, suspensión, Home y recuperación autónoma dependen del firmware. Los ajustes nativos son la alternativa donde estén disponibles. No se eliminan confirmaciones de Android ni se promete apagar el televisor mediante CEC.
 
@@ -32,3 +32,7 @@ Se publican imágenes mediante MediaStore en API 29/31, sin acceso completo al a
 ## Recuperación de TV
 
 El recorrido se enseña en cada destino y variante. Requiere controles accesibles o una lista nativa con selección comprobable, además del auxiliar autorizado para cerrar procesos. La ayuda se habilita por separado; no modifica la app de TV ni sus cuentas. Android debe informar arranque o pantalla apagada/encendida para la ejecución automática. Apagar solo el televisor por HDMI puede no generar esos eventos. Las teclas de aplicaciones dependen de los eventos que entregue el firmware. El auxiliar admite funciones y colores ocultos por la política del fabricante cuando tiene acceso de lectura a ese dispositivo; una etiqueta Netflix/YouTube no garantiza que puedan interceptarse. Netflix quedó comprobado físicamente en el equipo original. Las comprobaciones reales se distinguen de las teclas sintéticas y del emulador.
+
+## Correccion 0.18.1
+
+La recuperacion del auxiliar y la tecla Netflix desde Inicio se comprobaron nuevamente en el TV fisico API 29. El cambio mantiene el APK comun a API 29/31; no se ha repetido su prueba de recuperacion autonoma en un equipo fisico API 31. Consulta VERIFICACION-0.18.1.md.

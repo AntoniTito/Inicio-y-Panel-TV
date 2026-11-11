@@ -11,7 +11,7 @@ public final class BridgeProvider extends ContentProvider {
    if("attach".equals(method)){
     if(extras==null)throw new IllegalArgumentException();IBinder binder=extras.getBinder("bridge");if(binder==null)throw new IllegalArgumentException();
     boolean changed=SystemBridge.remote==null||!SystemBridge.remote.equals(binder);
-    if(changed){SystemBridge.remote=binder;binder.linkToDeath(()->{if(SystemBridge.remote==binder){SystemBridge.remote=null;if(PanelService.active!=null)PanelService.active.bridgeLost();}},0);}
+    if(changed){SystemBridge.remote=binder;binder.linkToDeath(()->{if(SystemBridge.remote==binder){SystemBridge.remote=null;TvRemoteKeys.lost();if(PanelService.active!=null)PanelService.active.bridgeLost();}},0);}
     if(changed&&PanelService.active!=null)PanelService.active.bridgeAttached();
     if(changed)TvRemoteKeys.ready(getContext());
     result.putBinder("client_life",CLIENT_LIFE);

@@ -12,13 +12,9 @@ final class LocalAdb {
  static synchronized String start(Context context,boolean authorize)throws Exception {
   if(HELPER_VERSION.equals(bridgeRead("VERSION"))&&"OK".equals(bridgeRead("PING")))return "OK";
   if(android.os.Build.VERSION.SDK_INT<30)DebuggingRecovery.restorePending(context);
-  String result=startOnce(context,authorize);
-  if(!result.startsWith("ADB local no disponible"))return result;
-  if(android.os.Build.VERSION.SDK_INT>=30)return "ADB local no disponible en este firmware; usa Diagnóstico o la conexión autorizada del PC";
-  String recovery=DebuggingRecovery.cycle(context,authorize);
-  if(!"OK".equals(recovery))return recovery;
-  for(int retry=0;retry<6;retry++){Thread.sleep(500);result=startOnce(context,authorize);if(!result.startsWith("ADB local no disponible"))return result;}
-  return "Android no reabrió la depuración por red; revisa Opciones de desarrollador";
+  // Restarting adbd can kill the privileged helper and the shell intended to
+  // restore it. Availability events schedule a bounded retry instead.
+  return startOnce(context,authorize);
  }
  private static String startOnce(Context context,boolean authorize)throws Exception {
   KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);

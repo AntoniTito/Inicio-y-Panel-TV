@@ -37,6 +37,8 @@ public class PanelService extends AccessibilityService {
  private BluetoothControls bluetooth;
  private final Handler ui=new Handler(Looper.getMainLooper());
  private final Runnable recoverLostBridge=()->recoverBridgeIfLost();
+ private final android.database.ContentObserver debuggingChanges=new android.database.ContentObserver(ui){public void onChange(boolean self){controlEnvironmentChanged();}};
+ private final BroadcastReceiver controlAvailability=new BroadcastReceiver(){public void onReceive(Context c,Intent i){controlEnvironmentChanged();}};
  private final ExecutorService loader=Executors.newSingleThreadExecutor();
  private final ExecutorService catalogWorker=Executors.newSingleThreadExecutor(),bootstrapWorker=Executors.newSingleThreadExecutor();
  private final ExecutorService volumeWorker=Executors.newSingleThreadExecutor();
@@ -116,13 +118,15 @@ public class PanelService extends AccessibilityService {
   Action(String id,String label,String detail,Runnable run,boolean isDevice){this.id=id;this.label=label;this.detail=detail;this.run=run;this.device=isDevice;}
  }
  private final Runnable networkRefresh=()->{if(panel!=null&&!pages.isEmpty()&&pages.peek().name.equals("network"))render();};
- private final BroadcastReceiver networkChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){ui.removeCallbacks(networkRefresh);ui.postDelayed(networkRefresh,250);}};
+ private final BroadcastReceiver networkChanges=new BroadcastReceiver(){public void onReceive(Context c,Intent i){ui.removeCallbacks(networkRefresh);ui.postDelayed(networkRefresh,250);controlEnvironmentChanged();}};
  private final BroadcastReceiver changes=new BroadcastReceiver(){
   public void onReceive(Context c,Intent i){catalog.invalidate(i.getData()==null?null:i.getData().getSchemeSpecificPart());catalogDirty=true;refreshCatalog();}
  };
  protected void onServiceConnected(){
   active=this;wm=(WindowManager)getSystemService(WINDOW_SERVICE);prefs=getSharedPreferences("panel",0);catalog=new AppCatalog(this);
   PanelBackup.capture(this);
+  getContentResolver().registerContentObserver(Settings.Global.getUriFor(Settings.Global.ADB_ENABLED),false,debuggingChanges);
+  IntentFilter availability=new IntentFilter(Intent.ACTION_SCREEN_ON);availability.addAction(Intent.ACTION_USER_PRESENT);registerReceiver(controlAvailability,availability);
   TvRecovery.attach(this);
   try{DebuggingRecovery.restorePending(this);}catch(RuntimeException e){android.util.Log.w("Z6LocalAdb","Pending restore",e);}
   if(SystemBridge.remote!=null&&SystemBridge.remote.isBinderAlive())bridgeAttached();
@@ -163,6 +167,7 @@ public class PanelService extends AccessibilityService {
  public void onDestroy(){
   if(TvRecovery.instance!=null)TvRecovery.instance.suspend();
   destroyed=true;scanVersion++;ui.removeCallbacksAndMessages(null);loader.shutdownNow();catalogWorker.shutdownNow();bootstrapWorker.shutdownNow();volumeWorker.shutdownNow();synchronized(volumeRequests){volumeRequests.clear();}screens.clear();
+  getContentResolver().unregisterContentObserver(debuggingChanges);try{unregisterReceiver(controlAvailability);}catch(IllegalArgumentException ignored){}
   try{unregisterReceiver(changes);}catch(IllegalArgumentException ignored){}
   try{unregisterReceiver(networkChanges);}catch(IllegalArgumentException ignored){}
   try{unregisterReceiver(audioChanges);}catch(IllegalArgumentException ignored){}
@@ -180,7 +185,7 @@ public class PanelService extends AccessibilityService {
   if(panel!=null)hide();
  }
  public void openPage(String name){if(panel==null)show();if(name!=null)push(new Page(name,null));refreshForeground();}
- public void onHomeVisible(){if(panel!=null&&pages.isEmpty())hide();}
+ public void onHomeVisible(){controlEnvironmentChanged();if(panel!=null&&pages.isEmpty())hide();}
  public boolean restoreOverlayAfterHome(Intent intent){
   if(Build.VERSION.SDK_INT<30||intent==null||!intent.hasCategory(Intent.CATEGORY_HOME)||!prefs.getBoolean("home",true))return false;
   if(explicitHomeRequested){explicitHomeRequested=false;return false;}
@@ -390,9 +395,10 @@ public class PanelService extends AccessibilityService {
   });
  }
  private void startLocalControl(boolean authorize){
+  if(!authorize&&Settings.Global.getInt(getContentResolver(),Settings.Global.ADB_ENABLED,0)!=1){bridgeStatus="Depuración desactivada en Android";return;}
   if(localStarting||!authorize&&!prefs.getBoolean("local_adb_enabled",false))return;localStarting=true;bridgeStatus="Iniciando control…";final int token=localGeneration;if(authorize){if(!prefs.getBoolean("local_adb_enabled",false))hide();message("Esperando autorización en la Z6…");}
   bootstrapWorker.execute(()->{String result;try{result=LocalAdb.start(this,authorize);}catch(java.net.SocketTimeoutException e){result="Autorización o conexión pendiente";}catch(Exception e){android.util.Log.w("Z6LocalAdb","Bootstrap failed",e);result="Inicio local no disponible: "+e.getClass().getSimpleName();}final String status=result;
-   ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")||status.equals("STARTED")){localAttempts=0;ui.postDelayed(()->finishLocalControl(authorize,0),500);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3)ui.postDelayed(()->startLocalControl(false),30000);}});});
+   ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")||status.equals("STARTED")){localAttempts=0;ui.postDelayed(()->finishLocalControl(authorize,0),500);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3){ui.removeCallbacks(recoverLostBridge);ui.postDelayed(recoverLostBridge,30000);}}});});
  }
  private void finishLocalControl(boolean authorize,int attempt){if(destroyed)return;final int token=localGeneration;loader.execute(()->{String result=SystemBridge.read("PING",1200);ui.post(()->{if(destroyed||token!=localGeneration)return;bridgeReady="OK".equals(result);if(bridgeReady&&authorize)prefs.edit().putBoolean("local_adb_enabled",true).apply();if(bridgeReady)TvRecovery.readyChanged();bridgeStatus=bridgeReady?"Conectado":result;if(panel!=null&&!pages.isEmpty())renderSide();if(!bridgeReady&&attempt<5)ui.postDelayed(()->{if(token==localGeneration)finishLocalControl(authorize,attempt+1);},5000);else if(authorize)message(bridgeReady?"Control autónomo activo":result);});});}
  private void setTimezone(String zone){
@@ -437,6 +443,12 @@ public class PanelService extends AccessibilityService {
   catch(RuntimeException e){message("No se pudo volver al inicio");}
  }
  private boolean ready(){return bridgeReady&&SystemBridge.remote!=null&&SystemBridge.remote.isBinderAlive()&&!commandPending;}
+ void controlEnvironmentChanged(){
+  if(destroyed||prefs==null||!prefs.getBoolean("local_adb_enabled",false)||SystemBridge.remote!=null&&SystemBridge.remote.isBinderAlive())return;
+  ui.removeCallbacks(recoverLostBridge);
+  if(Settings.Global.getInt(getContentResolver(),Settings.Global.ADB_ENABLED,0)!=1){bridgeStatus="Depuración desactivada en Android";return;}
+  localAttempts=0;ui.postDelayed(recoverLostBridge,1500);
+ }
  private void recoverBridgeIfLost(){if(!destroyed&&prefs.getBoolean("local_adb_enabled",false)&&(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive()))startLocalControl(false);}
  private String appLabel(String pkg){AppCatalog.Entry entry=catalog.find(pkg);if(entry!=null)return entry.title;try{return getPackageManager().getApplicationInfo(pkg,0).loadLabel(getPackageManager()).toString();}catch(Exception e){return pkg==null?"Sin aplicación activa":pkg;}}
  private boolean restartable(String pkg){try{if(pkg==null||pkg.equals(getPackageName())||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return false;PackageManager pm=getPackageManager();ApplicationInfo a=pm.getApplicationInfo(pkg,0);String[] peers=pm.getPackagesForUid(a.uid);return a.enabled&&a.uid>=10000&&(a.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))==0&&catalog.find(pkg)!=null&&peers!=null&&peers.length==1&&pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg),0).isEmpty();}catch(Exception e){return false;}}
