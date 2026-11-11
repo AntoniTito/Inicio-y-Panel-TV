@@ -1,0 +1,13 @@
+{
+  "api": 29,
+  "physical": true,
+  "beforeBoot": 349,
+  "afterBoot": 350,
+  "helperPcStarted": false,
+  "appAutonomous": true,
+  "helperAutonomous": true,
+  "channelConfirmedByRoute": true,
+  "passed": true,
+  "automaticRetried": true,
+  "userConfirmedChannel": true
+}

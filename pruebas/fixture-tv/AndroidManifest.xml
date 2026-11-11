@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.z6qa.tvfixture" android:versionCode="1" android:versionName="1.0">
+ <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
+ <application android:label="Z6 TV de prueba" android:theme="@android:style/Theme.Material.NoActionBar">
+  <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/></intent-filter></activity>
+ </application>
+</manifest>

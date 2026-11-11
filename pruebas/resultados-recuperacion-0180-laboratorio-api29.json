@@ -1,0 +1,12 @@
+{
+  "api": 29,
+  "emulator": false,
+  "oldBehavior": "0.17.0",
+  "labVersionCode": 52,
+  "recoveryArtifactCode": 53,
+  "labSameCodeToAvoidDataRemoval": true,
+  "imagesPreserved": true,
+  "preferencesPreserved": true,
+  "inputStopAcknowledged": true,
+  "returnedTo0180": true
+}

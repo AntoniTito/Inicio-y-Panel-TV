@@ -1,0 +1,30 @@
+{
+  "phase": "despues",
+  "version": "0.18.0",
+  "api": 29,
+  "emulator": false,
+  "warmupCycles": 5,
+  "cycles": 20,
+  "beforePssKB": 29553,
+  "samples": [
+    {
+      "cycle": 5,
+      "pssKB": 30107
+    },
+    {
+      "cycle": 10,
+      "pssKB": 30214
+    },
+    {
+      "cycle": 15,
+      "pssKB": 30174
+    },
+    {
+      "cycle": 20,
+      "pssKB": 30280
+    }
+  ],
+  "growthKB": 727,
+  "processStable": true,
+  "passed": true
+}

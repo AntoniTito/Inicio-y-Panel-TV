@@ -1,0 +1,44 @@
+package local.z6panel;
+
+import android.content.*;
+import android.os.*;
+import android.util.Base64;
+import android.view.KeyEvent;
+import org.json.*;
+import java.nio.charset.StandardCharsets;
+
+/** Called only inside BridgeProvider's UID=2000 + DUMP gate and main-thread dispatch. */
+final class TvRecoveryDiagnostics {
+ static void call(Context c,String method,String arg,Bundle out)throws Exception {
+  TvRecovery t=TvRecovery.get(c);
+  if(method.equals("tv_inspect")){JSONObject state=t.inspect();if(TvNavigationService.active!=null)state.put("navigation",TvNavigationService.active.inspect());out.putString("json",state.toString());return;}
+  if(method.equals("tv_open")){c.startActivity(new Intent(c,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));out.putString("status","OK");return;}
+  if(method.equals("tv_export")){out.putString("base64",Base64.encodeToString(TvRecoveryConfig.get(c).json().toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
+  if(method.equals("tv_restore")){
+   if(arg==null||arg.length()>65536)throw new IllegalArgumentException("Invalid TV backup");
+   TvRecoveryConfig.Settings s=TvRecoveryConfig.parse(new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8)));
+   if(!s.pkg.isEmpty()&&!TvRecoveryConfig.sameApp(c,s))throw new IllegalArgumentException("TV backup app is unavailable or signature changed");
+   t.cancel("");TvRecoveryConfig.save(c,s);t.restored();out.putString("status","OK");return;
+  }
+  if(method.equals("tv_cancel")){t.disable();out.putString("status","OK");return;}
+  if(!method.equals("tv_control")||arg==null||arg.length()>65536)throw new IllegalArgumentException("Unsupported TV diagnostic");
+  JSONObject o=new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8));String op=o.getString("op");
+  switch(op){
+   case "select":t.choose(o.getString("package"));break;
+   case "teach":t.request("configuración",true,null);break;
+   case "test":TvRecoveryConfig.Settings trial=TvRecoveryConfig.get(c);if(!trial.verified)throw new IllegalArgumentException("No verified route");t.request("prueba",false,trial);break;
+   case "run":t.request("manual",false,null);break;
+   case "activate":t.activate();break;
+   case "toggle":t.toggle(o.getString("kind"));break;
+   case "assign":t.assignKey(o.getInt("key"),o.optInt("scan"),o.optString("name"));break;
+   case "learn_key":case "prepare_key":String label=o.optString("name","Otro botón");if(label.length()>40)throw new IllegalArgumentException();c.startActivity(new Intent(c,TvRecoveryActivity.class).putExtra(op.equals("prepare_key")?"prepare_remote":"learn_remote",label).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP));break;
+   case "cancel":t.cancel("Recuperación cancelada");break;
+   case "remote_fixture":TvRemoteKeys.fixture(o.getString("type"),o.optString("device","0003|ffff|0001|Z6 test remote"),o.optInt("code",88));break;
+   case "choose":if(TvNavigationService.active==null||!TvNavigationService.active.shellChoose(o.getString("id")))throw new IllegalArgumentException("Guide control unavailable");break;
+   case "key":int key=o.getInt("key"),repeat=o.optInt("repeat"),scan=o.optInt("scan");if(repeat<0||repeat>30||key<0||key>4095||scan<0||scan>65535)throw new IllegalArgumentException("Invalid key");long now=SystemClock.uptimeMillis();TvRecovery.handleKey(new KeyEvent(now,now,o.optBoolean("up")?KeyEvent.ACTION_UP:KeyEvent.ACTION_DOWN,key,repeat,0,0,scan));break;
+   case "event":t.testEvent(o.getString("event"));break;
+   default:throw new IllegalArgumentException("Unknown TV operation");
+  }
+  out.putString("status","OK");
+ }
+}

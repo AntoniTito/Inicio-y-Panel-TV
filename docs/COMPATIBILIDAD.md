@@ -1,17 +1,17 @@
 # Compatibilidad comprobada
 
-La entrega vigente es 0.17.0/código 50. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.17.0.md](VERIFICACION-0.17.0.md); no equivale a compatibilidad universal.
+La entrega vigente es 0.18.0/código 52. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.
 
 | Entorno | Estado |
 |---|---|
-| TV Box original, Android 10/API 29 | 0.17.0/código 50: filas circulares, edición confinada y regresos de Añadir app. Evidencia y límites en VERIFICACION-0.17.0.md. |
-| Otro Android 10/API 29 | Instalador admitido; cada firmware de destino requiere su propia validación de 0.16.0. |
-| Emulador Android TV 12/API 31 | 0.17.0/código 50: navegación, edición, menús activos y cambios de catálogo. Preferencias del AVD restauradas. |
+| TV Box original, Android 10/API 29 | 0.18.0/código 52: reapertura de Xuper y recorrido al canal solicitado, con imagen y sonido confirmados por el usuario. Arranque, despertar y control se registran por separado en VERIFICACION-0.18.0.md. |
+| Otro Android 10/API 29 | Instalador admitido; cada firmware de destino requiere su propia validación de la entrega vigente. |
+| Emulador Android TV 12/API 31 | 0.18.0/código 52: pruebas con app sintética de rutas, ListView nativo, teclas, navegación y estados de cancelación. No valida servicios comerciales de TV. |
 | Emulador Android TV 10/API 29 r3 | Fotos y recepción comprobadas. Su compositor falla con ciertas ventanas; el fallo se reprodujo con 0.10.4. Auxiliar iniciado desde PC para la integración. No valida control físico ni autonomía. |
 | Otro equipo Android 12/API 31 | Instalador admitido; las diferencias de firmware requieren validación propia. |
 | API distintas de 29/31 | Diagnóstico disponible; instalación automática bloqueada hasta adaptación y validación. |
 
-Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.16.5 con código 51 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 52 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
+Android 12 usa permisos BLUETOOTH_SCAN/CONNECT y acceso a alarmas exactas. Bluetooth se administra mediante ajustes nativos; no se promete conexión A2DP directa con interfaces de Android 10. El auxiliar adapta las llamadas internas de Android 12 y continúa autenticando por UID. Home recupera una tarea existente y abre el panel; el foco se comprobó mediante eventos nativos del emulador. La recuperación vigente conserva el comportamiento 0.17.0 con código 53 y compatibilidad con MediaStore y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 54 o superior para actualizar. La restauración permite también recuperar HOME y ajustes originales.
 
 Mantener los valores propios del destino no significa inventar capacidades: Wi-Fi, Bluetooth, HDMI-CEC, suspensión, Home y recuperación autónoma dependen del firmware. Los ajustes nativos son la alternativa donde estén disponibles. No se eliminan confirmaciones de Android ni se promete apagar el televisor mediante CEC.
 
@@ -28,3 +28,7 @@ La misma entrega admite API 29/31. La biblioteca usa ocho miniaturas por página
 ## 0.16.0: almacenamiento compartido
 
 Se publican imágenes mediante MediaStore en API 29/31, sin acceso completo al almacenamiento ni root. Las copias originales privadas solo se retiran tras verificar la publicación. Si el proveedor de un firmware falla, se conserva el archivo privado y se muestra la publicación pendiente. El instalador habilita la galería AOSP si existe, con estado original respaldado; otros visores y su papelera dependen del firmware. La ausencia de visor no impide gestionar Mis fotos. Ningún perfil copia URI, índices, archivos personales ni estados de migración de otro TV.
+
+## Recuperación de TV
+
+El recorrido se enseña en cada destino y variante. Requiere controles accesibles o una lista nativa con selección comprobable, además del auxiliar autorizado para cerrar procesos. La ayuda se habilita por separado; no modifica la app de TV ni sus cuentas. Android debe informar arranque o pantalla apagada/encendida para la ejecución automática. Apagar solo el televisor por HDMI puede no generar esos eventos. Las teclas de aplicaciones dependen de los eventos que entregue el firmware. El auxiliar admite funciones y colores ocultos por la política del fabricante cuando tiene acceso de lectura a ese dispositivo; una etiqueta Netflix/YouTube no garantiza que puedan interceptarse. Netflix quedó comprobado físicamente en el equipo original. Las comprobaciones reales se distinguen de las teclas sintéticas y del emulador.

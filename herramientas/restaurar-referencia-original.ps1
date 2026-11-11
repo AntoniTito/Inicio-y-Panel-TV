@@ -3,6 +3,7 @@
 param([Parameter(Mandatory=$true)][string]$Dispositivo,[string]$AdbPath,[switch]$Simular)
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'comun.ps1')
+. (Join-Path $PSScriptRoot 'tv-recuperacion.ps1')
 $saved=Join-Path $script:Z6Root 'privado\referencia\original'
 if($Simular){Write-Output 'SIMULACION: verify original TV identity and restore original package/animation states. No ADB executed.';return}
 $identityFile=Join-Path $script:Z6Root 'privado\referencia\identidad.json'
@@ -10,6 +11,7 @@ if(!(Test-Path -LiteralPath $identityFile)){throw 'Original TV identity was not 
 Connect-Z6 $Dispositivo $AdbPath
 $current=Get-Z6DeviceInfo;$expected=Read-Z6Json $identityFile
 if($current.id -ne $expected.id){throw 'This restoration belongs exclusively to the original TV Box.'}
+if(Test-Z6TvRecoverySupport){Stop-Z6TvRecovery (Join-Path $script:Z6Root 'privado\referencia\recuperacion-tv')}
 $home=Read-Z6Json (Join-Path $saved 'estado-inicio-anterior.json')
 $packages=Read-Z6Json (Join-Path $saved 'estado-anterior-paquetes.json')
 # Enable and validate a recoverable HOME first.

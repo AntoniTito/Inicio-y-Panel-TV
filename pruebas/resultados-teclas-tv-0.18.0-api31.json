@@ -1,0 +1,20 @@
+{
+  "api": 31,
+  "emulator": true,
+  "syntheticKeyEvents": true,
+  "physicalRemote": false,
+  "checks": [
+    "remote preparation waits for the user before starting timeout",
+    "capture does not assign before confirmation",
+    "native confirmation saves button identity without enabling it",
+    "different scan code retains its original handling",
+    "branded app key reopens chosen TV app",
+    "IR repeated down-up pairs produce one recovery",
+    "held button does not queue additional launches",
+    "unknown Android key requires the learned physical scan code",
+    "vendor unknown key can be recognized by scan code",
+    "scan code cannot bypass reserved Home key",
+    "Back cancels learning without changing assignment",
+    "remove assignment restores ordinary handling"
+  ]
+}

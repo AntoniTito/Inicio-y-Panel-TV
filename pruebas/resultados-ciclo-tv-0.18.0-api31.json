@@ -1,0 +1,15 @@
+{
+  "api": 31,
+  "emulator": true,
+  "fixture": true,
+  "actualVideo": false,
+  "coldBootHelperPcAssisted": true,
+  "processRebindPcAssisted": true,
+  "checks": [
+    "real emulator reboot advances Android boot count",
+    "boot preserves route and independent switches",
+    "boot broadcast duplicate does not reopen app",
+    "actual Android sleep-wake freshly reopens app and selects destination",
+    "PC-assisted panel process recreation does not duplicate boot recovery"
+  ]
+}

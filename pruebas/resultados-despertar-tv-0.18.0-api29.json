@@ -1,0 +1,12 @@
+{
+  "api": 29,
+  "physical": true,
+  "androidPowerEvents": true,
+  "tvHdmiCecTested": false,
+  "helperPcStarted": false,
+  "bootUnchanged": true,
+  "freshProcess": true,
+  "channelReached": true,
+  "automaticRetried": true,
+  "passed": true
+}

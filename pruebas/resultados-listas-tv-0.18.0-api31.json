@@ -1,0 +1,14 @@
+{
+  "api": 31,
+  "emulator": true,
+  "fixture": true,
+  "actualVideo": false,
+  "checks": [
+    "guided native list selection uses stable labels",
+    "native focus and verified directional navigation replay",
+    "native list route saved only after confirmation",
+    "native list route restarts app and reaches player",
+    "alternate native channel-row layout matches the exact taught channel",
+    "duplicate channel labels fail without selecting a guessed row"
+  ]
+}

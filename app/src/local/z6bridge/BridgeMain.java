@@ -3,7 +3,7 @@ import android.os.*;import android.content.*;import android.content.pm.*;import 
 /** ADB shell helper. Binder authenticates the app UID. No network listener or arbitrary commands. */
 public final class BridgeMain {
  static final String DESCRIPTOR="local.z6panel.system.v1";
- static final String VERSION="0.11.0";
+ static final String VERSION="0.18.0-tv2";
  static final java.util.concurrent.atomic.AtomicLong attachAttempts=new java.util.concurrent.atomic.AtomicLong();
  static volatile boolean clientLinked;
  static final class Attacher implements Runnable {
@@ -23,8 +23,8 @@ public final class BridgeMain {
     final IBinder next=answer.getBinder("client_life");
     retries=0;
     if(next==null){clientLinked=false;later(30000);return;} // Old client compatibility only.
-    client=next;
-    next.linkToDeath(()->{if(client==next){client=null;clientLinked=false;later(500);}},0);
+    client=next;RemoteKeys.client(next);
+    next.linkToDeath(()->{if(client==next){RemoteKeys.clientDied(next);client=null;clientLinked=false;later(500);}},0);
     clientLinked=true;
    }catch(Exception e){client=null;clientLinked=false;later(Math.min(15000,500L<<Math.min(retries++,5)));android.util.Log.w("Z6Bridge","Attach pending",e);}
    finally{if(acquired)try{managerType.getMethod("removeContentProviderExternalAsUser",String.class,IBinder.class,int.class).invoke(manager,"local.z6panel.bridge",token,0);}catch(Exception ignored){}}
@@ -66,7 +66,7 @@ public final class BridgeMain {
  }
  static String executeBounded(final String op)throws Exception {
   // Health checks remain read-only and responsive while a command is running.
-  if("VERSION".equals(op)||"PING".equals(op)||"STATS".equals(op))return execute(op);
+  if("VERSION".equals(op)||"PING".equals(op)||"STATS".equals(op)||RemoteKeys.isStop(op))return execute(op);
   if(recoveryRequired)return "ERROR: RECOVERY_REQUIRED; restart local control";
   Future<String> result;
   try{result=COMMANDS.submit(()->execute(op));}catch(RejectedExecutionException e){return "ERROR: BUSY; retry";}
@@ -74,9 +74,12 @@ public final class BridgeMain {
  }
  static String execute(String op)throws Exception {
   if("VERSION".equals(op))return VERSION;
-  if("STATS".equals(op))return "{\"attachAttempts\":"+attachAttempts.get()+",\"clientLinked\":"+clientLinked+"}";
+  if("STATS".equals(op))return new org.json.JSONObject().put("attachAttempts",attachAttempts.get()).put("clientLinked",clientLinked).put("remote",RemoteKeys.stats()).toString();
   if("PING".equals(op))return recoveryRequired?"ERROR: RECOVERY_REQUIRED; restart local control":"OK";
+  if(op!=null&&op.startsWith("REMOTE:"))return RemoteKeys.command(op.substring(7));
   if("FOREGROUND_APP".equals(op))return foregroundApp();
+  if(op!=null&&op.startsWith("TV_NAV:")){String[] a=op.substring(7).split(":",-1);return a.length==2?tvKey(a[0],Integer.parseInt(a[1])):"DENIED";}
+  if(op!=null&&op.startsWith("TV_FOCUS:"))return tvFocus(op.substring(9));
   if(op!=null&&op.startsWith("RESTART_APP:"))return restartApp(op.substring(12));
   if(op!=null&&op.startsWith("RESUME_APP:"))return resumeApp(op.substring(11));
   if("RECENTS_TRIM".equals(op))return trimRecentTasks();
@@ -152,17 +155,17 @@ public final class BridgeMain {
  static List<?> listSlice(Object value)throws Exception {if(value instanceof List)return (List<?>)value;return value==null?Collections.emptyList():(List<?>)value.getClass().getMethod("getList").invoke(value);}
  /** Contract: OK means force-stop completed. The app MUST launch its explicit MAIN
   * component afterwards (LAUNCHER/LEANBACK_LAUNCHER). No monkey or helper-side launch. */
- static String restartApp(String pkg)throws Exception {
-  if(!validPackage(pkg)||pkg.equals("local.z6panel")||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return "DENIED";
+ static boolean safeTarget(String pkg)throws Exception {
+  if(!validPackage(pkg)||pkg.equals("local.z6panel")||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return false;
   Object pm=packageManager();ApplicationInfo app=applicationInfo(pm,pkg);
-  if(app==null||!app.enabled||app.uid<10000||app.uid==allowedUid||(app.flags&ApplicationInfo.FLAG_INSTALLED)==0||(app.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))!=0)return "DENIED";
+  if(app==null||!app.enabled||app.uid<10000||app.uid==allowedUid||(app.flags&ApplicationInfo.FLAG_INSTALLED)==0||(app.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))!=0)return false;
   Class<?> type=Class.forName("android.content.pm.IPackageManager");
   // Deny shared-UID packages: stopping one could also kill critical companions.
   String[] peers=(String[])type.getMethod("getPackagesForUid",int.class).invoke(pm,app.uid);
-  if(peers==null||peers.length!=1||!pkg.equals(peers[0]))return "DENIED";
+  if(peers==null||peers.length!=1||!pkg.equals(peers[0]))return false;
   // HOME-capable apps are critical even when installed by the user.
   Object homes=type.getMethod("queryIntentActivities",Intent.class,String.class,int.class,int.class).invoke(pm,new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg),null,0,0);
-  if(!listSlice(homes).isEmpty())return "DENIED";
+  if(!listSlice(homes).isEmpty())return false;
   boolean launchable=false;
   for(String category:new String[]{Intent.CATEGORY_LEANBACK_LAUNCHER,Intent.CATEGORY_LAUNCHER}){
    Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(category).setPackage(pkg);
@@ -171,9 +174,39 @@ public final class BridgeMain {
     if(activity!=null&&pkg.equals(activity.packageName)&&activity.enabled&&activity.exported&&activity.permission==null){launchable=true;break;}
    }
   }
-  if(!launchable)return "DENIED";
-  return runCommand(false,"/system/bin/am","force-stop","--user","0",pkg);
+  return launchable;
  }
+ static String restartApp(String pkg)throws Exception {
+  return safeTarget(pkg)?runCommand(false,"/system/bin/am","force-stop","--user","0",pkg):"DENIED";
+ }
+ static String tvKey(String pkg,int key)throws Exception {
+  if(key!=19&&key!=20&&key!=23||!safeTarget(pkg)||!pkg.equals(foregroundApp()))return "DENIED";
+  Class<?> type=Class.forName("android.hardware.input.InputManager");Object input=type.getMethod("getInstance").invoke(null);
+  java.lang.reflect.Method inject=type.getMethod("injectInputEvent",Class.forName("android.view.InputEvent"),int.class);
+  long now=SystemClock.uptimeMillis();
+  android.view.KeyEvent down=new android.view.KeyEvent(now,now,0,key,0,0,-1,0,android.view.KeyEvent.FLAG_FROM_SYSTEM,android.view.InputDevice.SOURCE_DPAD);
+  android.view.KeyEvent up=android.view.KeyEvent.changeAction(down,1);
+  boolean sent=Boolean.TRUE.equals(inject.invoke(input,down,2));
+  boolean released=Boolean.TRUE.equals(inject.invoke(input,up,2));
+  return sent&&released?"OK":"ERROR: TV key unavailable";
+ }
+ private static Object focusSession;
+ static String tvFocus(String pkg)throws Exception {
+  if(!safeTarget(pkg)||!pkg.equals(foregroundApp()))return "DENIED";
+  Class<?> sessionType=Class.forName("android.view.IWindowSession");
+  if(focusSession==null){
+   IBinder service=(IBinder)Class.forName("android.os.ServiceManager").getMethod("getService",String.class).invoke(null,"window");
+   Object manager=Class.forName("android.view.IWindowManager$Stub").getMethod("asInterface",IBinder.class).invoke(null,service);
+   Class<?> callback=Class.forName("android.view.IWindowSessionCallback");final Binder life=new Binder();
+   Object client=java.lang.reflect.Proxy.newProxyInstance(callback.getClassLoader(),new Class[]{callback},(proxy,method,args)->method.getName().equals("asBinder")?life:null);
+   focusSession=Class.forName("android.view.IWindowManager").getMethod("openSession",callback).invoke(manager,client);
+  }
+  if(!Boolean.TRUE.equals(sessionType.getMethod("getInTouchMode").invoke(focusSession)))return "OK";
+  if(!pkg.equals(foregroundApp()))return "DENIED";
+  sessionType.getMethod("setInTouchMode",boolean.class).invoke(focusSession,false);
+  return Boolean.FALSE.equals(sessionType.getMethod("getInTouchMode").invoke(focusSession))?"OK":"ERROR: remote focus unavailable";
+ }
+
  static String trimRecentTasks()throws Exception {
   Object manager=taskManager();
   Class<?> type=Class.forName("android.app.IActivityTaskManager");

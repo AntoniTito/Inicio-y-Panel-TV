@@ -1,0 +1,85 @@
+{
+  "api": 31,
+  "emulator": true,
+  "beforeBehavior": "0.17.0",
+  "afterBehavior": "0.18.0",
+  "sameSession": false,
+  "before": {
+    "phase": "antes",
+    "api": 31,
+    "emulator": true,
+    "method": "Three rounds of 60 paired arrow events through protected bridge, 40ms spacing; app CPU ticks and gfxinfo p95 only with at least 30 frames",
+    "rounds": [
+      {
+        "round": 1,
+        "moves": 60,
+        "cpuMs": 210,
+        "frames": 61,
+        "p95FrameMs": 18,
+        "catalogScans": 0,
+        "fullRenders": 0
+      },
+      {
+        "round": 2,
+        "moves": 60,
+        "cpuMs": 140,
+        "frames": 61,
+        "p95FrameMs": 17,
+        "catalogScans": 0,
+        "fullRenders": 0
+      },
+      {
+        "round": 3,
+        "moves": 60,
+        "cpuMs": 140,
+        "frames": 61,
+        "p95FrameMs": 17,
+        "catalogScans": 0,
+        "fullRenders": 0
+      }
+    ],
+    "medianCpuMs": 140,
+    "medianP95Ms": 17
+  },
+  "after": {
+    "phase": "despues",
+    "api": 31,
+    "emulator": true,
+    "method": "Three rounds of 60 paired arrow events through protected bridge, 40ms spacing; app CPU ticks and gfxinfo p95 only with at least 30 frames",
+    "rounds": [
+      {
+        "round": 1,
+        "moves": 60,
+        "cpuMs": 130,
+        "frames": 61,
+        "p95FrameMs": 18,
+        "catalogScans": 0,
+        "fullRenders": 0
+      },
+      {
+        "round": 2,
+        "moves": 60,
+        "cpuMs": 120,
+        "frames": 61,
+        "p95FrameMs": 18,
+        "catalogScans": 0,
+        "fullRenders": 0
+      },
+      {
+        "round": 3,
+        "moves": 60,
+        "cpuMs": 120,
+        "frames": 61,
+        "p95FrameMs": 18,
+        "catalogScans": 0,
+        "fullRenders": 0
+      }
+    ],
+    "medianCpuMs": 120,
+    "medianP95Ms": 18
+  },
+  "maxP95Ms": 25,
+  "memoryGrowthKB": -9498,
+  "processStable": true,
+  "passed": true
+}

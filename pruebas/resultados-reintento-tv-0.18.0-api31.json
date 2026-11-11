@@ -1,0 +1,10 @@
+{
+  "api": 31,
+  "emulator": true,
+  "fixture": true,
+  "checks": [
+    "one automatic fresh launch recovers a transient missing channel",
+    "second missing menu does not queue repeated app launches",
+    "second failure expires and leaves the app available for manual use"
+  ]
+}

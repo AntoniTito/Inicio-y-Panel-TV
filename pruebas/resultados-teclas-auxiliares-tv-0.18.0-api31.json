@@ -1,0 +1,15 @@
+{
+  "api": 31,
+  "emulator": true,
+  "syntheticBinderCallback": true,
+  "physicalKernelInput": false,
+  "checks": [
+    "auxiliary learning ignores volume and other essential keys",
+    "special function key awaits explicit confirmation",
+    "confirmed special key is saved without enabling automatic behavior",
+    "device identity and exact function key must both match",
+    "matching auxiliary callback freshly launches the app and completes the route",
+    "rollback waits for auxiliary stop acknowledgement",
+    "disabled auxiliary has no input watcher"
+  ]
+}

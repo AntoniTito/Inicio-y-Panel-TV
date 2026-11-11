@@ -1,0 +1,15 @@
+{
+  "api": 29,
+  "physical": true,
+  "version": "0.18.0",
+  "date": "2026-11-11",
+  "remoteButton": "Netflix",
+  "auxiliaryFunctionKey": true,
+  "freshProcessVerified": true,
+  "channelReached": true,
+  "userConfirmedInitialVideoAudio": true,
+  "userConfirmedPhysicalButtonVideoAudio": true,
+  "finalManualRecheckPending": true,
+  "finalApkManualChannelRouteCompleted": true,
+  "personalImagesPreserved": true
+}

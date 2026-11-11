@@ -2,7 +2,7 @@ package local.z6panel;
 import android.content.*;import android.database.Cursor;import android.net.Uri;import android.os.*;
 /** Only the authenticated ADB shell can supply the privileged Binder. No data access. */
 public final class BridgeProvider extends ContentProvider {
- private static final IBinder CLIENT_LIFE=new Binder();
+ private static final IBinder CLIENT_LIFE=new Binder(){protected boolean onTransact(int code,Parcel data,Parcel reply,int flags)throws RemoteException{if(code!=2)return super.onTransact(code,data,reply,flags);if(Binder.getCallingUid()!=2000)throw new SecurityException("Shell callback required");data.enforceInterface("local.z6panel.remote.v1");String message=data.readString();if(message==null||message.length()>4096)throw new IllegalArgumentException();TvRemoteKeys.receive(message);return true;}};
  public boolean onCreate(){return true;}
  public Bundle call(String method,String arg,Bundle extras){
   if(Binder.getCallingUid()!=2000)throw new SecurityException("ADB shell required");
@@ -13,9 +13,11 @@ public final class BridgeProvider extends ContentProvider {
     boolean changed=SystemBridge.remote==null||!SystemBridge.remote.equals(binder);
     if(changed){SystemBridge.remote=binder;binder.linkToDeath(()->{if(SystemBridge.remote==binder){SystemBridge.remote=null;if(PanelService.active!=null)PanelService.active.bridgeLost();}},0);}
     if(changed&&PanelService.active!=null)PanelService.active.bridgeAttached();
+    if(changed)TvRemoteKeys.ready(getContext());
     result.putBinder("client_life",CLIENT_LIFE);
     result.putBoolean("attached",true);return result;
    }
+   if("tv_remote_stop".equals(method)){result.putString("status",TvRemoteKeys.stopAndWait());return result;}
    if("prefs_export".equals(method)||"prefs_original".equals(method)){result.putString("base64",PanelBackup.encoded(getContext(),"prefs_original".equals(method)));return result;}
    if("wallpaper_emulator_fixture".equals(method)){result.putString("json",WallpaperEmulatorFixtures.run(getContext(),arg).toString());return result;}
    if("wallpaper_media_status".equals(method)){result.putString("json",WallpaperOnline.inspect(getContext()).toString());return result;}
@@ -28,7 +30,8 @@ public final class BridgeProvider extends ContentProvider {
    PanelService service=PanelService.active;if(service==null){result.putString("error","Panel service is not active");return result;}
    java.util.concurrent.CountDownLatch latch=new java.util.concurrent.CountDownLatch(1);
    new Handler(Looper.getMainLooper()).post(()->{try{
-    if("prefs_restore".equals(method)){service.prepareForRestore();PanelBackup.restore(getContext(),arg);HomeActivity.refreshPreferences();result.putString("status","OK");}
+    if(method.startsWith("tv_")){TvRecoveryDiagnostics.call(getContext(),method,arg,result);}
+    else if("prefs_restore".equals(method)){service.prepareForRestore();PanelBackup.restore(getContext(),arg);HomeActivity.refreshPreferences();result.putString("status","OK");}
     else if("inspect".equals(method))result.putString("json",service.inspectForShell());
     else if("home_inspect".equals(method))result.putString("json",HomeActivity.inspectHome());
     else if("wallpaper_inspect".equals(method))result.putString("json",WallpaperActivity.inspect());

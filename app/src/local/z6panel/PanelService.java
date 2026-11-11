@@ -123,6 +123,7 @@ public class PanelService extends AccessibilityService {
  protected void onServiceConnected(){
   active=this;wm=(WindowManager)getSystemService(WINDOW_SERVICE);prefs=getSharedPreferences("panel",0);catalog=new AppCatalog(this);
   PanelBackup.capture(this);
+  TvRecovery.attach(this);
   try{DebuggingRecovery.restorePending(this);}catch(RuntimeException e){android.util.Log.w("Z6LocalAdb","Pending restore",e);}
   if(SystemBridge.remote!=null&&SystemBridge.remote.isBinderAlive())bridgeAttached();
   if(prefs.getInt("visual_revision",0)<4)prefs.edit().putBoolean("compact",true).putInt("opacity",80).putInt("visual_revision",4).apply();
@@ -153,12 +154,14 @@ public class PanelService extends AccessibilityService {
   CharSequence packageName=e.getPackageName();
   if(packageName==null)return;
   String pkg=packageName.toString();
+  if(TvRecovery.instance!=null)TvRecovery.instance.foreground(pkg);
   if(pkg.equals(getPackageName())||pkg.equals("android")||pkg.equals("com.android.systemui"))return;
   foregroundGeneration++;foregroundPackage=catalog.find(pkg)==null?null:pkg;if(foregroundPackage!=null)lastForegroundCheck=SystemClock.elapsedRealtime();
   if(foregroundPackage!=null)lastExternalPackage=foregroundPackage;
  }
  public void onInterrupt(){hide();}
  public void onDestroy(){
+  if(TvRecovery.instance!=null)TvRecovery.instance.suspend();
   destroyed=true;scanVersion++;ui.removeCallbacksAndMessages(null);loader.shutdownNow();catalogWorker.shutdownNow();bootstrapWorker.shutdownNow();volumeWorker.shutdownNow();synchronized(volumeRequests){volumeRequests.clear();}screens.clear();
   try{unregisterReceiver(changes);}catch(IllegalArgumentException ignored){}
   try{unregisterReceiver(networkChanges);}catch(IllegalArgumentException ignored){}
@@ -391,7 +394,7 @@ public class PanelService extends AccessibilityService {
   bootstrapWorker.execute(()->{String result;try{result=LocalAdb.start(this,authorize);}catch(java.net.SocketTimeoutException e){result="Autorización o conexión pendiente";}catch(Exception e){android.util.Log.w("Z6LocalAdb","Bootstrap failed",e);result="Inicio local no disponible: "+e.getClass().getSimpleName();}final String status=result;
    ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")||status.equals("STARTED")){localAttempts=0;ui.postDelayed(()->finishLocalControl(authorize,0),500);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3)ui.postDelayed(()->startLocalControl(false),30000);}});});
  }
- private void finishLocalControl(boolean authorize,int attempt){if(destroyed)return;final int token=localGeneration;loader.execute(()->{String result=SystemBridge.read("PING",1200);ui.post(()->{if(destroyed||token!=localGeneration)return;bridgeReady="OK".equals(result);if(bridgeReady&&authorize)prefs.edit().putBoolean("local_adb_enabled",true).apply();bridgeStatus=bridgeReady?"Conectado":result;if(panel!=null&&!pages.isEmpty())renderSide();if(!bridgeReady&&attempt<5)ui.postDelayed(()->{if(token==localGeneration)finishLocalControl(authorize,attempt+1);},5000);else if(authorize)message(bridgeReady?"Control autónomo activo":result);});});}
+ private void finishLocalControl(boolean authorize,int attempt){if(destroyed)return;final int token=localGeneration;loader.execute(()->{String result=SystemBridge.read("PING",1200);ui.post(()->{if(destroyed||token!=localGeneration)return;bridgeReady="OK".equals(result);if(bridgeReady&&authorize)prefs.edit().putBoolean("local_adb_enabled",true).apply();if(bridgeReady)TvRecovery.readyChanged();bridgeStatus=bridgeReady?"Conectado":result;if(panel!=null&&!pages.isEmpty())renderSide();if(!bridgeReady&&attempt<5)ui.postDelayed(()->{if(token==localGeneration)finishLocalControl(authorize,attempt+1);},5000);else if(authorize)message(bridgeReady?"Control autónomo activo":result);});});}
  private void setTimezone(String zone){
   if(!canSecure()){message("Permiso de sistema pendiente");return;}int old=Settings.Global.getInt(getContentResolver(),Settings.Global.AUTO_TIME_ZONE,0);
   if(!Settings.Global.putInt(getContentResolver(),Settings.Global.AUTO_TIME_ZONE,0)){message("No se pudo desactivar la zona automática");return;}
@@ -442,7 +445,7 @@ public class PanelService extends AccessibilityService {
   final int token=++foregroundGeneration;
   foregroundInFlight=true;PerfStats.foregroundQueries.incrementAndGet();catalogWorker.execute(()->{String pkg=SystemBridge.read("FOREGROUND_APP",1500);ui.post(()->{foregroundInFlight=false;if(destroyed||token!=foregroundGeneration)return;lastForegroundCheck=SystemClock.elapsedRealtime();foregroundPackage=pkg!=null&&catalog.find(pkg)!=null?pkg:null;if(panel!=null&&!pages.isEmpty()&&pages.peek().name.equals("settings")){if(foregroundPackage!=null&&!HomeActivity.visible&&!pages.peek().interacted)pages.peek().selectedId="current";renderSide();}});});
  }
- void bridgeAttached(){ui.post(()->{if(destroyed||bridgeReady||bridgeChecking||SystemClock.elapsedRealtime()-lastHealthCheck<2500)return;bridgeChecking=true;lastHealthCheck=SystemClock.elapsedRealtime();final IBinder binder=SystemBridge.remote;loader.execute(()->{String status=SystemBridge.read("PING",1200);ui.post(()->{bridgeChecking=false;if(destroyed||SystemBridge.remote!=binder)return;bridgeReady="OK".equals(status);bridgeStatus=bridgeReady?"Conectado":"Control pendiente de recuperación";if(bridgeReady)refreshForeground();if(panel!=null&&!pages.isEmpty())renderSide();});});});}
+ void bridgeAttached(){ui.post(()->{if(destroyed||bridgeReady||bridgeChecking||SystemClock.elapsedRealtime()-lastHealthCheck<2500)return;bridgeChecking=true;lastHealthCheck=SystemClock.elapsedRealtime();final IBinder binder=SystemBridge.remote;loader.execute(()->{String status=SystemBridge.read("PING",1200);ui.post(()->{bridgeChecking=false;if(destroyed||SystemBridge.remote!=binder)return;bridgeReady="OK".equals(status);bridgeStatus=bridgeReady?"Conectado":"Control pendiente de recuperación";if(bridgeReady){refreshForeground();TvRecovery.readyChanged();}if(panel!=null&&!pages.isEmpty())renderSide();});});});}
  void bridgeLost(){ui.post(()->{if(destroyed)return;bridgeReady=false;bridgeStatus="Control desconectado";if(panel!=null&&!pages.isEmpty())renderSide();ui.removeCallbacks(recoverLostBridge);if(prefs.getBoolean("local_adb_enabled",false))ui.postDelayed(recoverLostBridge,1000);});}
  private void invalidateControl(String result){if(result!=null&&(result.contains("TIMEOUT")||result.contains("RECOVERY_REQUIRED")||result.contains("desconectado"))){bridgeReady=false;bridgeStatus="Recupera el control en Diagnóstico";}}
  private void togglePreference(String key,boolean defaultValue){prefs.edit().putBoolean(key,!prefs.getBoolean(key,defaultValue)).apply();HomeActivity.refreshPreferences();renderSide();}
@@ -562,6 +565,7 @@ public class PanelService extends AccessibilityService {
     title.setText("Información del equipo");subtitle.setText("Datos consultados a Android");info("Android "+Build.VERSION.RELEASE+" · API "+Build.VERSION.SDK_INT);info("Modelo: "+Build.MODEL);info(storageSummary());
     addKey("display","Pantalla","Resolución y frecuencia declaradas",()->push(new Page("display",null)));addKey("diagnostics","Diagnóstico y permisos",bridgeStatus,()->push(new Page("diagnostics",null)));return true;
    case "manage":
+    addKey("tvRecovery","Inicio y recuperación de TV","App, canal y botón del control",()->nativePage("Inicio y recuperación de TV",new Intent(this,TvRecoveryActivity.class)));
     title.setText("Aplicaciones");subtitle.setText("Apps que pueden abrirse · "+managerFilter);
     adjustable("filter","Mostrar: "+managerFilter,"← → cambiar filtro",()->cycleFilter(1),()->cycleFilter(-1),()->cycleFilter(1));
     for(AppCatalog.Entry e:catalog.all()){if(managerFilter.equals("Usuario")&&e.system||managerFilter.equals("Sistema")&&!e.system||managerFilter.equals("Ocultas")&&catalog.visible(e))continue;addKey("app:"+e.pkg,e.title,(catalog.visible(e)?"Visible en el panel":"Oculta del panel")+(e.system?" · sistema":""),()->push(new Page("app",e.pkg)));}
@@ -611,7 +615,8 @@ public class PanelService extends AccessibilityService {
  }
  String actionForShell(String id){if(panel!=null&&pages.isEmpty()&&(id.equals("close")||id.equals("back"))){if(id.equals("close"))hide();else back();return "OK";}for(int i=0;i<actions.size();i++)if(actions.get(i).id.equals(id)){if(actions.get(i).run==null)return "DISABLED";if(!pages.isEmpty()){pages.peek().selected=i;pages.peek().selectedId=id;pages.peek().interacted=true;}runAction(i);return "OK";}return "NOT_FOUND";}
  void keyForShell(int key,int duration){if(!Arrays.asList(3,4,19,20,21,22,23,176).contains(key)||duration<0||duration>1500||duration>30&&key!=KeyEvent.KEYCODE_DPAD_CENTER&&key!=KeyEvent.KEYCODE_BACK)throw new IllegalArgumentException("Unsupported key or duration");long now=SystemClock.uptimeMillis();onKeyEvent(new KeyEvent(now,now,KeyEvent.ACTION_DOWN,key,0));onKeyEvent(new KeyEvent(now,now+duration,KeyEvent.ACTION_UP,key,0));}
- void prepareForRestore(){localGeneration++;foregroundGeneration++;localStarting=false;localAttempts=0;hide();}
+ void hideForTvRecovery(){hide();}
+ void prepareForRestore(){if(TvRecovery.instance!=null)TvRecovery.instance.cancel("");localGeneration++;foregroundGeneration++;localStarting=false;localAttempts=0;hide();}
  private android.graphics.drawable.StateListDrawable focusSelector(){android.graphics.drawable.StateListDrawable d=new android.graphics.drawable.StateListDrawable();d.addState(new int[]{android.R.attr.state_selected},focusBackground(true));d.addState(new int[0],focusBackground(false));return d;}
  private void updatePanelLayout(WindowManager.LayoutParams desired){android.view.ViewGroup.LayoutParams p=panel.getLayoutParams();if(p instanceof WindowManager.LayoutParams){WindowManager.LayoutParams old=(WindowManager.LayoutParams)p;if(old.width==desired.width&&old.height==desired.height&&old.gravity==desired.gravity&&old.x==desired.x&&old.y==desired.y)return;}wm.updateViewLayout(panel,desired);}
  private void scheduleTimerTick(){ui.removeCallbacks(tickSettings);long left=SleepTimer.remainingMillis(this);if(panel!=null&&left>0)ui.postDelayed(tickSettings,Math.max(250,left%60000+50));}
@@ -779,6 +784,8 @@ public class PanelService extends AccessibilityService {
   if(id.equals(BottomNavigation.ADD)){push(new Page("panelAddApp",null));return;}if(!id.startsWith("app:"))return;AppCatalog.Entry e=catalog.find(id.substring(4));if(e==null)return;if(longer)beginEditMode();else launch(e);
  }
  protected boolean onKeyEvent(KeyEvent e){
+  if(TvNavigationService.injectedKey(e))return false;
+  if(TvRecovery.handleKey(e))return true;
   if(HomeActivity.isApplicationDialogOpen())return false;
   int k=e.getKeyCode();boolean down=e.getAction()==KeyEvent.ACTION_DOWN;
   if(k==KeyEvent.KEYCODE_VOLUME_UP||k==KeyEvent.KEYCODE_VOLUME_DOWN||k==KeyEvent.KEYCODE_VOLUME_MUTE){

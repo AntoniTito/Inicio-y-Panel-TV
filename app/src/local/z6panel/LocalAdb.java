@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 /** Loopback-only ADB bootstrap, fixed command, private key stays in Android Keystore. */
 final class LocalAdb {
  private static final String ALIAS="z6panel.local.adb.v1";
- private static final String HELPER_VERSION="0.11.0";
+ private static final String HELPER_VERSION="0.18.0-tv2";
  private static final ThreadPoolExecutor BRIDGE_READS=new ThreadPoolExecutor(0,1,30,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(1),r->{Thread t=new Thread(r,"Z6LocalAdb-version");t.setDaemon(true);return t;});
  private static final int CNXN=0x4e584e43,AUTH=0x48545541,OPEN=0x4e45504f,OKAY=0x59414b4f,WRTE=0x45545257,CLSE=0x45534c43;
  static final class Packet {int command,a,b;byte[] data;}
@@ -26,6 +26,7 @@ final class LocalAdb {
   PrivateKey key=(PrivateKey)store.getKey(ALIAS,null);RSAPublicKey pub=(RSAPublicKey)store.getCertificate(ALIAS).getPublicKey();
   if(authorize){byte[] digest=MessageDigest.getInstance("MD5").digest(publicBytes(pub));StringBuilder fingerprint=new StringBuilder();for(byte b:digest){if(fingerprint.length()>0)fingerprint.append(":");fingerprint.append(String.format(java.util.Locale.ROOT,"%02X",b&255));}android.util.Log.i("Z6LocalAdb","Public key fingerprint "+fingerprint);}
   String apk=context.getApplicationInfo().sourceDir;if(!apk.matches("/[A-Za-z0-9_./=+~-]+"))throw new SecurityException("APK path");
+  if(!HELPER_VERSION.equals(bridgeRead("VERSION")))TvRemoteKeys.stopAndWait();
   String replace=HELPER_VERSION.equals(bridgeRead("VERSION"))&&"OK".equals(bridgeRead("PING"))?"":"for p in $(pidof z6panel_bridge); do kill $p; done; sleep 1; ";
   String command=replace+"if ! pidof z6panel_bridge >/dev/null; then CLASSPATH='"+apk+"' nohup app_process /system/bin --nice-name=z6panel_bridge local.z6bridge.BridgeMain "+Process.myUid()+" >/data/local/tmp/z6-bridge.log 2>&1 </dev/null & fi; for n in 1 2 3 4 5; do pidof z6panel_bridge && break; sleep 1; done";
   try(Socket socket=new Socket()){

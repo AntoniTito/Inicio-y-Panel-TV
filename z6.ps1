@@ -7,6 +7,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'herramientas\comun.ps1')
+. (Join-Path $PSScriptRoot 'herramientas\tv-recuperacion.ps1')
 if($Operacion -eq 'compilar'){
  if($Simular -or $WhatIfPreference){Write-Output 'SIMULACION: compilar y verificar sin reemplazar entregas.';return}
  & (Join-Path $PSScriptRoot 'herramientas\compilar.ps1') -Jdk $Jdk -Keystore $Keystore -Salida $Salida
@@ -56,6 +57,7 @@ function Save-Original {
  $prefs=$null
  if($panelPath){$prefs=Get-Z6PanelPreferences}
  $snapshot=[ordered]@{schema=1;createdUtc=[DateTime]::UtcNow.ToString('o');device=$device;home=$device.home;homePackage=$homePackage;homeEnabled=(Get-Z6PackageState $homePackage);panelPresent=[bool]$panelPath;panelCode=(Get-PanelCode);preferences=$prefs;settings=$settings;permissions=$permissions}
+ if(Test-Z6TvRecoverySupport){$snapshot.tvRecovery=Get-Z6TvPreferences}
  if($device.api -ge 31){$op=Invoke-Z6Shell @('cmd','appops','get','local.z6panel','SCHEDULE_EXACT_ALARM') -AllowFailure;$mode=[regex]::Match($op,'SCHEDULE_EXACT_ALARM:\s*(allow|default|ignore|deny)');$snapshot.alarmMode=if($mode.Success){$mode.Groups[1].Value}else{'default'}}
  if($panelPath){New-Item -ItemType Directory -Force -Path $deviceDir|Out-Null;Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'pull',$panelPath,(Join-Path $deviceDir 'panel-anterior.apk'))|Out-Null}
  Write-Z6Json $snapshot $snapshotPath
@@ -88,7 +90,7 @@ function Configure-Panel {
  }
  if($device.api -ge 31){$null=Invoke-Z6Shell @('cmd','appops','set','local.z6panel','SCHEDULE_EXACT_ALARM','allow') -AllowFailure}
  $enabled=Get-Z6Setting 'secure' 'enabled_accessibility_services'
- $services=@($enabled -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/'})
+ $services=@($enabled -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/(local\.z6panel\.|\.)?PanelService$'})
  if($services -notcontains 'local.z6panel/local.z6panel.PanelService'){$services+='local.z6panel/local.z6panel.PanelService'}
  Set-Z6Setting 'secure' 'enabled_accessibility_services' (($services|Select-Object -Unique)-join ':')
  Set-Z6Setting 'secure' 'accessibility_enabled' '1'
@@ -193,6 +195,7 @@ try{
    if(!(Test-Path -LiteralPath $snapshotPath)){throw 'No original snapshot. Provide -Respaldo from this device.'}
    $original=Read-Z6Json $snapshotPath
    if($original.device.id -ne $device.id){throw 'Backup belongs to a different TV Box; restoration refused'}
+   if(Test-Z6TvRecoverySupport){Stop-Z6TvRecovery $deviceDir;$steps.Add('TV automation cancelled; private route backed up; only navigation helper removed')}
    $partialRecovery=$null
    if($RecuperarVersion -and (Get-PanelPath) -and ((Get-Z6Artifact -Recovery -Api $device.api).code -le 35)){
     $existing=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json
@@ -205,6 +208,7 @@ try{
    Invoke-Z6Shell @('cmd','package','set-home-activity','--user','0',$original.home)|Out-Null
    if((Normalize-Component (Get-Z6Home)) -ne (Normalize-Component $original.home)){throw 'Original HOME restoration failed'}
    if($original.preferences){Set-Z6PanelPreferences $original.preferences}
+   if(!$RecuperarVersion -and (Test-Z6TvRecoverySupport) -and $original.PSObject.Properties['tvRecovery']){$tv=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','tv_restore','--arg',$original.tvRecovery);if($tv -notmatch 'status=OK'){throw 'TV settings could not be restored for this device'}}
    if($partialRecovery){$restored=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json;foreach($entry in $partialRecovery.GetEnumerator()){$restored|Add-Member -NotePropertyName $entry.Key -NotePropertyValue $entry.Value -Force};$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($restored|ConvertTo-Json -Depth 20 -Compress)));Set-Z6PanelPreferences $encoded;$steps.Add('Partial slideshow preserved; original background selected for older APK compatibility')}
    $current=@((Get-Z6Setting 'secure' 'enabled_accessibility_services') -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/'})
    $prior=@($original.settings.secure.enabled_accessibility_services -split ':'|Where-Object {$_ -and $_ -ne 'null'})
