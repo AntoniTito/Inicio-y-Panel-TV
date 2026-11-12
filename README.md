@@ -1,8 +1,8 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box. La actualización **0.19.0, código 56**, incorpora [Mi control y arranque](docs/MI-CONTROL.md): botones independientes, configuración del destino navegando en la app y reapertura verificada mediante Android cuando el firmware lo permite. Conserva carrusel, fondos y optimizaciones. Consulta la [verificación de la entrega](docs/VERIFICACION-0.19.0.md).
+Inicio y paneles superpuestos para TV Box. **0.20.0, código 58**, incorpora [destinos reutilizables, borradores recuperables y botones con etiqueta editable](docs/DESTINOS-Y-BOTONES.md). Conserva la navegación directa en la app, el arranque sin doble apertura, carrusel, fondos y optimizaciones. Consulta la [verificación de la entrega](docs/VERIFICACION-0.20.0.md).
 
-La rama `main` contiene 0.19.0. El usuario confirmó el arranque automático sin doble apertura en el TV original. Netflix y YouTube se configuran por separado en Mi control y arranque; el selector reconoce variantes instaladas según sus capacidades, sin una lista fija de nombres.
+La rama `main` contiene 0.20.0. Un destino probado se puede asignar a varios botones y al arranque/despertar. El nombre visible se edita sin cambiar la tecla detectada. El selector reconoce variantes instaladas según sus capacidades, sin una lista fija de nombres.
 
 ## Uso rápido en Windows
 
@@ -32,7 +32,7 @@ El asistente identifica y respalda el destino, instala, aplica preferencias, con
 .\z6.ps1 compilar
 ```
 
-`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.18.1/código 57 para API 29 y 31. Después se necesita código 58 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
+`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.19.0/código 59 para API 29 y 31. Después se necesita código 60 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
 
 Para aplicaciones externas, proporciona APK de procedencia verificada mediante `-CarpetaApks RUTA`, nombrados por paquete, por ejemplo `com.xuper.netxxus.apk`. Se valida el identificador con las build-tools antes de instalar. No se incluyen cuentas, licencias ni APK de terceros en Git. Usa `-SoloPanel` si las instalarás después, como en el emulador actual.
 

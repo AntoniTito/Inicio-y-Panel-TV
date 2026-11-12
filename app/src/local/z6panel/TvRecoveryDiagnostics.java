@@ -13,6 +13,7 @@ final class TvRecoveryDiagnostics {
   TvRecovery t=TvRecovery.get(c);
   if(method.equals("tv_ui_inspect")){out.putString("json",TvRecoveryActivity.inspect().toString());return;}
   if(method.equals("tv_apps_inspect")){JSONArray apps=new JSONArray();for(AppCatalog.Entry e:new AppCatalog(c).all())apps.put(new JSONObject().put("package",e.pkg).put("name",e.title).put("openable",TvRecoveryConfig.openable(c,e.pkg)).put("restartable",TvRecoveryConfig.eligible(c,e.pkg)));out.putString("json",new JSONObject().put("apps",apps).toString());return;}
+  if(method.equals("tv_destinations_inspect")){out.putString("json",new JSONObject().put("destinations",SavedDestinations.export(c)).put("pending",SavedDestinations.pending(c)==null?JSONObject.NULL:SavedDestinations.pending(c)).toString());return;}
   if(method.equals("tv_buttons_export")){out.putString("base64",Base64.encodeToString(RemoteActions.export(c).toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
   if(method.equals("tv_buttons_inspect")){JSONObject o=RemoteActions.export(c);o.put("nativeRestart",NativeAppRestart.available(c)).put("nativeState",NativeAppRestart.lastState);out.putString("json",o.toString());return;}
   if(method.equals("tv_buttons_restore")){if(arg==null||arg.length()>524288)throw new IllegalArgumentException();t.cancel("");RemoteActions.restore(c,new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8)));t.changed();out.putString("status","OK");return;}
@@ -32,6 +33,11 @@ final class TvRecoveryDiagnostics {
   switch(op){
    case "ui_choose":if(!TvRecoveryActivity.shellChoose(o.getString("id")))throw new IllegalArgumentException("UI control unavailable");break;
    case "button_run":RemoteActions.Action action=RemoteActions.find(c,o.getString("id"));if(action==null)throw new IllegalArgumentException();t.execute(action);break;
+   case "button_label":RemoteActions.Action named=RemoteActions.find(c,o.getString("id"));if(named==null)throw new IllegalArgumentException();named=named.copy();named.label=o.getString("label").trim();RemoteActions.save(c,named);TvRecoveryActivity.refresh();break;
+   case "destination_use":t.useDestination(o.getString("id"),o.optString("button"));break;
+   case "pending_retry":t.retryPending();break;
+   case "pending_save":t.savePending();break;
+   case "pending_discard":SavedDestinations.discard(c);break;
    case "button_teach":RemoteActions.Action teach=RemoteActions.find(c,o.getString("id"));if(teach==null)throw new IllegalArgumentException();t.requestProfile(teach,true,false);break;
    case "record_done":if(TvNavigationService.active!=null)TvNavigationService.active.reviewRecording();break;
    case "select":t.choose(o.getString("package"));break;

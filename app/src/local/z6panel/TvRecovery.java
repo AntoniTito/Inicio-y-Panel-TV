@@ -221,7 +221,7 @@ final class TvRecovery {
    if(routeIndex>=job.steps.length()){
     if(SystemClock.elapsedRealtime()-lastClick<400){scheduleProbe(450);return;}
     if(nav.matchesEndpoint(snapshot,job.endpoint)){
-     if(testing){clearDeadline();phase="confirming";deadline=()->{if(token==generation)fail("La prueba quedó sin confirmar; el recorrido no se guardó",false);};ui.postDelayed(deadline,300000);setStatus("Comprueba que se reproduce el canal elegido");nav.showConfirmation(job.channel);}
+     if(testing){try{SavedDestinations.passed(context,job,profileId,saveProfile);}catch(RuntimeException e){fail("No se pudo conservar la prueba. El destino anterior sigue guardado.",false);return;}clearDeadline();phase="confirming";deadline=()->{if(token==generation)fail("Prueba pendiente de guardar en Mi control → Destino pendiente",false);};ui.postDelayed(deadline,300000);setStatus("Prueba completada · confirma Guardar destino");nav.showConfirmation(job.channel);}
      else finish("Canal preparado: "+job.channel,false);
     }
     return;
@@ -266,16 +266,26 @@ final class TvRecovery {
    JSONObject endpoint=nav.endpoint(snapshot,draft.channel,learnSource);
    if(endpoint==null){notice("No se puede verificar esta pantalla; prueba cuando el canal ya se vea");nav.recording(true);return;}
    draft.endpoint=endpoint;draft.verified=true;TvRecoveryConfig.Settings trial=draft.copy();
+   try{SavedDestinations.stage(context,trial,profileId,saveProfile);}catch(RuntimeException e){notice("No se pudo guardar el borrador; no se inició la prueba");nav.recording(true);return;}
    String id=profileId;boolean personal=saveProfile;finish("Probando el recorrido desde cero…",false);start("prueba",false,trial,true,"route",id,personal);
   });
  }
  void confirmTest(boolean yes){
   if(!phase.equals("confirming"))return;
-  if(!yes){finish("Recorrido sin guardar. Puedes configurarlo otra vez",true);return;}
-  if(saveProfile){RemoteActions.Action a=RemoteActions.find(context,profileId);if(a==null){finish("El botón ya no existe; no se guardó el destino",true);return;}a=a.copy();a.target=job.copy();a.kind="route";RemoteActions.save(context,a);}
-  else TvRecoveryConfig.save(context,job);finish("Destino guardado: "+job.channel,false);
+  if(!yes){finish("Borrador conservado. Puedes reintentar o descartarlo en Mi control",true);return;}
+  try{savePending();}catch(RuntimeException e){notice(e.getMessage()==null?"No se pudo guardar; se conserva el borrador":e.getMessage());}
+ }
+ void retryPending(){JSONObject p=SavedDestinations.pending(context);if(p==null)throw new IllegalStateException("No hay un destino pendiente");try{TvRecoveryConfig.Settings target=TvRecoveryConfig.parse(p.getJSONObject("target"));String id=p.optString("profileId");boolean personal=p.optBoolean("personal");cancel("");SavedDestinations.stage(context,target,id,personal);start("prueba",false,target,true,"route",id,personal);}catch(JSONException e){throw new IllegalStateException("El borrador no es válido",e);}}
+ void savePending(){
+  JSONObject p=SavedDestinations.pending(context);if(p==null||!p.optBoolean("passed"))throw new IllegalStateException("Prueba primero el destino pendiente");
+  try{TvRecoveryConfig.Settings target=TvRecoveryConfig.parse(p.getJSONObject("target"));if(!TvRecoveryConfig.sameApp(context,target))throw new IllegalStateException("La app cambió; conserva el borrador y vuelve a probarla");SavedDestinations.save(context,target);
+   if(p.optBoolean("personal")){RemoteActions.Action a=RemoteActions.find(context,p.optString("profileId"));if(a!=null){a=a.copy();a.target=SavedDestinations.apply(a.target,target);a.kind="route";RemoteActions.save(context,a);}}
+   else TvRecoveryConfig.save(context,SavedDestinations.apply(TvRecoveryConfig.get(context),target));
+   SavedDestinations.discard(context);finish("Destino guardado: "+target.channel+" · disponible para botones y arranque",false);
+  }catch(JSONException e){throw new IllegalStateException("No se pudo guardar el destino; se conserva el borrador",e);}
   context.startActivity(new Intent(context,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));changed();
  }
+ void useDestination(String id,String button){SavedDestinations.Entry e=SavedDestinations.find(context,id);if(e==null||!TvRecoveryConfig.sameApp(context,e.target))throw new IllegalStateException("La app de este destino no está instalada o cambió de firma");cancel("");if(button.isEmpty()){TvRecoveryConfig.save(context,SavedDestinations.apply(TvRecoveryConfig.get(context),e.target));restored();}else{RemoteActions.Action a=RemoteActions.find(context,button);if(a==null)throw new IllegalStateException("El botón ya no existe");a=a.copy();a.target=SavedDestinations.apply(a.target,e.target);a.kind="route";RemoteActions.save(context,a);}setStatus("Destino asignado: "+e.target.channel);changed();}
  void cancel(String message){if(!busy()){generation++;return;}finish(message,false);}
  private void fail(String message,boolean invalidRoute){
   if(invalidRoute&&!testing&&!guide&&profileId.isEmpty()){TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context).copy();s.verified=false;TvRecoveryConfig.save(context,s);}

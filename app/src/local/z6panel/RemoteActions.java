@@ -9,12 +9,13 @@ import org.json.*;
 final class RemoteActions {
  static final String STORE="remote_actions_v1";
  static final class Action {
-  String id=UUID.randomUUID().toString(),kind="route";
+  String id=UUID.randomUUID().toString(),kind="route",label="";
   boolean enabled=true;
   TvRecoveryConfig.Settings target=new TvRecoveryConfig.Settings();
-  JSONObject json()throws JSONException{return new JSONObject().put("id",id).put("kind",kind).put("enabled",enabled).put("target",target.json());}
+  JSONObject json()throws JSONException{return new JSONObject().put("id",id).put("kind",kind).put("label",label).put("enabled",enabled).put("target",target.json());}
   Action copy(){try{return parse(json());}catch(JSONException e){throw new IllegalStateException(e);}}
-  String label(){return target.keyName.isEmpty()?"Otro botón":target.keyName;}
+  String label(){return !label.isEmpty()?label:target.hardware()?"Función "+target.remoteCode:target.key!=0?KeyEvent.keyCodeToString(target.key):target.scan!=0?"Scan "+target.scan:"Botón sin tecla";}
+  String keyDescription(){return target.hardware()?"Función del control: "+target.remoteCode:target.hasBinding()?"Android: "+KeyEvent.keyCodeToString(target.key)+" ("+target.key+") · Scan: "+target.scan:"Sin tecla asignada";}
   String description(){return kind.equals("home")?"Inicio de Z6":kind.equals("settings")?"Ajustes de Android":kind.equals("mute")?"Silenciar / activar sonido":(kind.equals("open")?"Abrir ":"Reabrir ")+target.name+(kind.equals("route")?" · "+(target.verified?target.channel:"Elegir destino"):"");}
  }
  private static List<Action> cache;
@@ -27,6 +28,7 @@ final class RemoteActions {
  }
  static Action parse(JSONObject o)throws JSONException{
   Action a=new Action();a.id=o.getString("id");a.kind=o.getString("kind");a.enabled=o.optBoolean("enabled");a.target=TvRecoveryConfig.parse(o.getJSONObject("target"));
+  a.label=o.optString("label",!a.target.keyName.startsWith("KEYCODE_")&&!a.target.keyName.equals("Otro botón")?a.target.keyName:"");if(a.label.length()>40||a.label.matches("(?s).*[\\p{Cntrl}].*"))throw new JSONException("Invalid button label");
   if(!a.id.matches("[A-Za-z0-9-]{1,50}")||!Arrays.asList("open","reopen","route","home","settings","mute").contains(a.kind))throw new JSONException("Invalid button");return a;
  }
  static synchronized void persist(Context c,List<Action> list){
@@ -49,6 +51,6 @@ final class RemoteActions {
   if(!youtube){String pkg="";for(String p:new String[]{"io.gh.reisxd.tizentube.fortaleza","com.google.android.youtube.tv"})if(TvRecoveryConfig.eligible(c,p)){pkg=p;break;}Action a=new Action();a.kind="reopen";a.target.keyName="YouTube";a.target.key=188;a.target.scan=87;a.target.pkg=pkg;a.target.name=pkg.isEmpty()?"Elegir YouTube":"YouTube";a.target.signature=TvRecoveryConfig.signature(c,pkg);a.enabled=!pkg.isEmpty();list.add(a);}
   persist(c,list);TvRecoveryConfig.Settings old=TvRecoveryConfig.get(c).copy();old.button=false;TvRecoveryConfig.save(c,old);TvRemoteKeys.changed(c);
  }
- static JSONObject export(Context c)throws JSONException{get(c);return new JSONObject().put("schema",1).put("actions",new JSONArray(c.getSharedPreferences(STORE,0).getString("actions","[]"))).put("layout",new JSONObject(c.getSharedPreferences(STORE,0).getString("layout","{}")));}
- static void restore(Context c,JSONObject value)throws JSONException{JSONArray rows=value.getJSONArray("actions");ArrayList<Action> list=new ArrayList<>();for(int i=0;i<rows.length();i++)list.add(parse(rows.getJSONObject(i)));persist(c,list);c.getSharedPreferences(STORE,0).edit().putString("layout",value.optJSONObject("layout")==null?"{}":value.getJSONObject("layout").toString()).commit();}
+ static JSONObject export(Context c)throws JSONException{get(c);return new JSONObject().put("schema",1).put("actions",new JSONArray(c.getSharedPreferences(STORE,0).getString("actions","[]"))).put("layout",new JSONObject(c.getSharedPreferences(STORE,0).getString("layout","{}"))).put("destinations",SavedDestinations.export(c)).put("pendingDestination",SavedDestinations.pending(c)==null?JSONObject.NULL:SavedDestinations.pending(c));}
+ static void restore(Context c,JSONObject value)throws JSONException{SavedDestinations.validateRestore(value);JSONArray rows=value.getJSONArray("actions");ArrayList<Action> list=new ArrayList<>();for(int i=0;i<rows.length();i++)list.add(parse(rows.getJSONObject(i)));persist(c,list);SavedDestinations.restore(c,value);c.getSharedPreferences(STORE,0).edit().putString("layout",value.optJSONObject("layout")==null?"{}":value.getJSONObject("layout").toString()).commit();}
 }

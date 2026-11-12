@@ -319,8 +319,8 @@ public final class TvNavigationService extends AccessibilityService {
  void showConfirmation(String channel){
   ensureGuide();rendered="confirm";rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;selection=0;
   heading.setText("¿Es el canal elegido?");hint.setText("Comprueba imagen y sonido de «"+channel+"». Guardar no activa todavía el inicio automático.");
-  addRow("confirm_yes","Sí · guardar este recorrido",()->TvRecovery.get(this).confirmTest(true));
-  addRow("confirm_no","No · dejarlo sin guardar",()->TvRecovery.get(this).confirmTest(false));paint();
+  addRow("confirm_yes","Guardar destino",()->TvRecovery.get(this).confirmTest(true));
+  addRow("confirm_no","Ahora no · conservar borrador",()->TvRecovery.get(this).confirmTest(false));paint();
  }
  private void paint(){
   if(painted>=0&&painted<rowViews.size())rowViews.get(painted).setSelected(false);

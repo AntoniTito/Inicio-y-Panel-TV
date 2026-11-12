@@ -1,6 +1,6 @@
-# Compatibilidad de 0.19.0
+# Compatibilidad de 0.20.0
 
-Un APK para API 29 y 31. Consulta [MI-CONTROL.md](MI-CONTROL.md) y [VERIFICACION-0.19.0.md](VERIFICACION-0.19.0.md) para las pruebas actuales. El mapa nativo exige el modelo de control comprobado; otros controles usan detección de teclas de Android. Reapertura y navegación dependen de las capacidades del firmware. No se promete soporte universal ni funcionamiento sin auxiliar en todas las apps.
+Un APK para API 29 y 31. Consulta [DESTINOS-Y-BOTONES.md](DESTINOS-Y-BOTONES.md) y [VERIFICACION-0.20.0.md](VERIFICACION-0.20.0.md) para las pruebas actuales. Se conserva el mapa y protocolo del control comprobado, con etiquetas independientes. Otros controles usan detección de teclas de Android. Reapertura y navegación dependen de las capacidades del firmware; un destino de otra variante o firma no se reutiliza automáticamente.
 
 Los apartados siguientes conservan el registro de las versiones anteriores.
 

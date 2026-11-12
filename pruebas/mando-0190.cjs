@@ -41,5 +41,6 @@ async function record(mode,id){
   c({op:'button_teach',id:'qa-route'});await q.wait(()=>p().phase==='teaching');c({op:'cancel'});check(p().phase==='idle'&&!p().navigation.active,'cancel clears recording windows and task');
   }
  }finally{c({op:'cancel'});q.panel(s,'tv_restore',originalTv);q.panel(s,'tv_buttons_restore',originalButtons);}
- q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-mando-0.19.0-api31'+(process.argv[3]==='list'?'-list':'')+'.json'),JSON.stringify({api:31,emulator:true,fixture:true,physicalRemote:false,actualVideo:false,checks},null,2)+'\n');
+ const version=q.command(s,'shell','dumpsys','package','local.z6panel').match(/versionName=(\d+\.\d+\.\d+)/)[1];
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-mando-'+version+'-api31'+(process.argv[3]==='list'?'-list':'')+'.json'),JSON.stringify({api:31,emulator:true,fixture:true,physicalRemote:false,actualVideo:false,checks},null,2)+'\n');
 })().catch(e=>{console.error(e);process.exitCode=1});

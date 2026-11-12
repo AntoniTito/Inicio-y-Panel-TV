@@ -1,6 +1,6 @@
 # Mi control y arranque
 
-Z6 0.19.0/c56 separa los botones del control y el inicio automático. Un solo APK para API 29 y 31; las capacidades se comprueban en cada firmware.
+Z6 0.20.0/c58 añade [Destinos y botones](DESTINOS-Y-BOTONES.md): rutas reutilizables, borrador persistente, nombres editables y códigos internos de la tecla. Un solo APK para API 29 y 31; las capacidades se comprueban en cada firmware. La navegación y permisos se explican abajo.
 
 Entra en **Ajustes → Aplicaciones → Mi control y arranque**. Cada botón tiene su propia tarjeta, acción, aplicación, destino e interruptor. Cambiar YouTube no modifica Netflix ni el arranque. Las acciones disponibles son abrir app, cerrar y reabrir, reabrir y llegar al destino, Inicio de Z6, Ajustes de Android y silencio.
 
@@ -8,7 +8,7 @@ Entra en **Ajustes → Aplicaciones → Mi control y arranque**. Cada botón tie
 
 Si sustituyes una app por otra variante: abre la tarjeta del botón → **Aplicación** → elige la nueva. Para llegar a un canal, usa **Reabrir y llegar al destino** y vuelve a enseñar su recorrido. El arranque se cambia por separado. No se copia el recorrido de una app distinta ni se acepta automáticamente una firma nueva.
 
-Para otro botón: **Añadir botón → Comenzar → pulsa la tecla → Asignar**. Después elige su acción. Home, Atrás, flechas, OK, volumen y encendido están protegidos. Una tecla que el fabricante no entrega a Android puede requerir una preparación específica; no se promete compatibilidad con cualquier tecla o control. Mantener una tecla pulsada no acumula reinicios.
+Para otro botón: **Añadir botón → Comenzar → pulsa la tecla → Asignar**. Después elige su acción. Puedes editar su Etiqueta y ver el keycode y scan code reales; Eliminar botón está disponible también en la detección. Home, Atrás, flechas, OK, volumen y encendido están protegidos. Una tecla que el fabricante no entrega a Android puede requerir una preparación específica; no se promete compatibilidad con cualquier tecla o control. Mantener una tecla pulsada no acumula reinicios.
 
 ## Elegir un canal o pantalla
 
@@ -44,7 +44,7 @@ La reapertura intenta primero el cierre normal de procesos en segundo plano de A
 
 El asistente identifica el destino y conserva asignaciones y permiso originales en `privado/dispositivos/`. La preparación del mapa exige un Remoter ATV3 conectado y comprobable; no copia MAC, números de serie, cuentas ni recorridos de otro TV. Despiértalo con una flecha si está en reposo.
 
-La recuperación 0.18.1/c57 conserva fotos y datos. Antes de instalarla, el restaurador exporta los botones, detiene automatismos y escucha física y retira el mapa nativo mientras el APK compatible sigue instalado. Las nuevas asignaciones permanecen privadas para una futura actualización; 0.18.1 solo entiende su configuración anterior de un botón. Después de usar c57 se requiere c58 o superior para actualizar. No recuperes instalando un APK antiguo a mano sin retirar antes el mapa.
+La recuperación 0.19.0/c59 conserva fotos y recorridos asignados. El restaurador exporta privadamente botones, biblioteca y borrador antes de detener automatismos y devolver HOME, permisos y mapa a sus estados originales. La interfaz de 0.19.0 no ofrece las nuevas etiquetas ni la biblioteca común; su exportación permite recuperarlas posteriormente. Después de usar c59 se requiere c60 o superior para actualizar. No recuperes instalando un APK antiguo a mano sin revisar el mapa y los permisos.
 
 ## Referencias técnicas
 

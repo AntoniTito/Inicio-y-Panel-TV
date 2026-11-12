@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.z6panel" android:versionCode="56" android:versionName="0.19.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.z6panel" android:versionCode="58" android:versionName="0.20.0">
  <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
  <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
