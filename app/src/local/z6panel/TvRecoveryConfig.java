@@ -91,9 +91,16 @@ final class TvRecoveryConfig {
   catch(PackageManager.NameNotFoundException e){return null;}
   return i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
  }
+ static boolean openable(Context c,String pkg){
+  try{
+   if(pkg==null||pkg.equals(c.getPackageName()))return false;
+   ApplicationInfo a=c.getPackageManager().getApplicationInfo(pkg,0);
+   return a.enabled&&(a.flags&ApplicationInfo.FLAG_SUSPENDED)==0&&launchIntent(c,pkg)!=null;
+  }catch(Exception unavailable){return false;}
+ }
  static boolean eligible(Context c,String pkg){
   try{
-   if(pkg==null||pkg.equals(c.getPackageName())||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return false;
+   if(!openable(c,pkg))return false;
    PackageManager pm=c.getPackageManager();ApplicationInfo a=pm.getApplicationInfo(pkg,0);String[] peers=pm.getPackagesForUid(a.uid);
    return a.enabled&&a.uid>=10000&&(a.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))==0
     &&peers!=null&&peers.length==1&&pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg),0).isEmpty()
@@ -108,5 +115,6 @@ final class TvRecoveryConfig {
    Collections.sort(hashes);return String.join(":",hashes);
   }catch(Exception unavailable){return "";}
  }
- static boolean sameApp(Context c,Settings s){return eligible(c,s.pkg)&&!s.signature.isEmpty()&&s.signature.equals(signature(c,s.pkg));}
+ static boolean sameApp(Context c,Settings s){return sameApp(c,s,true);}
+ static boolean sameApp(Context c,Settings s,boolean restarting){return (restarting?eligible(c,s.pkg):openable(c,s.pkg))&&!s.signature.isEmpty()&&s.signature.equals(signature(c,s.pkg));}
 }

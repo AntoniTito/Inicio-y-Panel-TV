@@ -451,7 +451,7 @@ public class PanelService extends AccessibilityService {
  }
  private void recoverBridgeIfLost(){if(!destroyed&&prefs.getBoolean("local_adb_enabled",false)&&(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive()))startLocalControl(false);}
  private String appLabel(String pkg){AppCatalog.Entry entry=catalog.find(pkg);if(entry!=null)return entry.title;try{return getPackageManager().getApplicationInfo(pkg,0).loadLabel(getPackageManager()).toString();}catch(Exception e){return pkg==null?"Sin aplicación activa":pkg;}}
- private boolean restartable(String pkg){try{if(pkg==null||pkg.equals(getPackageName())||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return false;PackageManager pm=getPackageManager();ApplicationInfo a=pm.getApplicationInfo(pkg,0);String[] peers=pm.getPackagesForUid(a.uid);return a.enabled&&a.uid>=10000&&(a.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))==0&&catalog.find(pkg)!=null&&peers!=null&&peers.length==1&&pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg),0).isEmpty();}catch(Exception e){return false;}}
+ private boolean restartable(String pkg){return catalog.find(pkg)!=null&&TvRecoveryConfig.eligible(this,pkg);}
  private void refreshForeground(){
   if(!ready()||foregroundInFlight)return;if(HomeActivity.visible){foregroundPackage=null;return;}if(foregroundPackage!=null&&SystemClock.elapsedRealtime()-lastForegroundCheck<3000)return;
   final int token=++foregroundGeneration;

@@ -1,0 +1,50 @@
+const q=require('./adb-fondos.cjs'),s=process.argv[2],pkg='com.android.z6qa.fixture';
+if(!s||q.command(s,'shell','getprop','ro.kernel.qemu')!=='1')throw Error('Explicit emulator required');
+const c=o=>q.panel(s,'tv_control',Buffer.from(JSON.stringify(o)).toString('base64'));
+const state=()=>q.json(s,'tv_inspect'),apps=()=>q.json(s,'tv_apps_inspect').apps;
+const read=m=>q.panel(s,m).match(/base64=([A-Za-z0-9+/=]+)/)[1];
+const write=(m,o)=>q.panel(s,m,Buffer.from(JSON.stringify(o)).toString('base64'));
+const checks=[],check=(ok,name)=>{if(!ok)throw Error(name);checks.push(name);console.log('OK '+name);};
+(async()=>{
+ if(q.command(s,'shell','pm','list','packages',pkg).includes('package:'+pkg))throw Error('Disposable fixture must not already be installed');
+ const original=read('tv_export'),buttons=read('tv_buttons_export');
+ const usage=q.command(s,'shell','cmd','appops','get','local.z6panel','GET_USAGE_STATS').match(/GET_USAGE_STATS:\s*(allow|default|deny|ignore)/)?.[1]||'default';
+ try{
+  const before=apps();check(!before.some(a=>a.package===pkg),'fixture absent from warm catalogue');
+  q.command(s,'install',q.path.join(q.root,'.local/fixture-tv-'+pkg+'/fixture.apk'));
+  const app=await q.wait(()=>apps().find(a=>a.package===pkg),15000);
+  check(app.openable&&app.restartable,'newly installed third-party com.android app appears without restarting Z6');
+  check(apps().some(a=>a.openable&&!a.restartable),'real protected apps remain open-only');
+  let denied=false;try{c({op:'select',package:'local.z6panel'});}catch(e){denied=true;}check(denied,'panel cannot be selected for recovery');
+  const protectedApp=apps().find(a=>a.openable&&!a.restartable);denied=false;try{c({op:'select',package:protectedApp.package});}catch(e){denied=true;}check(denied,'protected app cannot be selected for restart');
+  c({op:'select',package:pkg});const target=JSON.parse(Buffer.from(read('tv_export'),'base64'));
+  check(target.package===pkg&&target.signature.length>0,'prefixed app can be chosen with its own signature');
+  q.command(s,'shell','cmd','appops','set','local.z6panel','GET_USAGE_STATS','allow');
+  const action={id:'qa-installed-app',kind:'open',enabled:true,target:{...target,key:183,keyName:'Test'}};
+  write('tv_buttons_restore',{schema:1,actions:[action],layout:{}});c({op:'button_run',id:action.id});
+  await q.wait(()=>state().phase==='idle'&&state().appLaunches===1,10000);
+  const pid=q.command(s,'shell','pidof',pkg);check(!!pid,'prefixed installed app opens from its button');
+  action.kind='reopen';write('tv_buttons_restore',{schema:1,actions:[action],layout:{}});c({op:'button_run',id:action.id});
+  await q.wait(()=>state().phase==='idle'&&state().appLaunches===1,15000);
+  check(state().restartBackend==='android'&&q.command(s,'shell','pidof',pkg)!==pid,'prefixed app closes and reopens through Android');
+  action.kind='open';write('tv_buttons_restore',{schema:1,actions:[action],layout:{}});
+  q.panel(s,'tv_open');c({op:'ui_choose',id:'button:'+action.id});c({op:'ui_choose',id:'app'});await q.sleep(400);
+  const choices=apps().filter(a=>a.openable),index=choices.findIndex(a=>a.package===protectedApp.package);
+  if(index>0)q.command(s,'shell','input','keyevent',...Array(index).fill('20'));q.command(s,'shell','input','keyevent','23');
+  await q.wait(()=>q.json(s,'tv_buttons_inspect').actions[0].target.package===protectedApp.package,5000);
+  check(true,'open-only app can be selected through the actual application picker');
+  c({op:'button_run',id:action.id});await q.wait(()=>state().phase==='idle');
+  check(state().appLaunches===1&&state().status==='App abierta','protected app opens normally without a restart request');
+  action.kind='reopen';
+  const activePid=q.command(s,'shell','pidof',pkg);action.target.signature='0'.repeat(64);
+  write('tv_buttons_restore',{schema:1,actions:[action],layout:{}});c({op:'button_run',id:action.id});await q.wait(()=>state().phase==='idle');
+  check(state().appLaunches===0&&q.command(s,'shell','pidof',pkg)===activePid,'signature mismatch cannot close or launch the app');
+  q.command(s,'uninstall',pkg);await q.wait(()=>!apps().some(a=>a.package===pkg),15000);
+  check(!apps().some(a=>a.package===pkg),'uninstall removes entry through package events');
+ }finally{
+  c({op:'cancel'});q.panel(s,'tv_restore',original);q.panel(s,'tv_buttons_restore',buttons);
+  q.command(s,'shell','cmd','appops','set','local.z6panel','GET_USAGE_STATS',usage);
+  if(q.command(s,'shell','pm','list','packages',pkg).includes('package:'+pkg))q.command(s,'uninstall',pkg);
+ }
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-apps-instaladas-0.19.0-api31.json'),JSON.stringify({api:31,emulator:true,physicalRemote:false,checks},null,2)+'\n');
+})().catch(e=>{console.error(e);process.exitCode=1});

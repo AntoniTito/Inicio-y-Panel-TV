@@ -13,7 +13,14 @@
   "automaticBootOpensChannelConfirmed": true,
   "duplicateAutomaticLaunchObserved": true,
   "singleLaunchFixInstalledSha256": "46FE8A028FAA1B3B6FED9FEE251CCE2086A930A3DCBD02C23ACEEEEB11768239",
-  "singleLaunchBootConfirmationPending": true,
+  "singleLaunchBootConfirmationPending": false,
   "initialHomePhotoLoadedBeforeFirstContentDraw": true,
-  "homeReturnsWithoutEarlyFrame": true
+  "homeReturnsWithoutEarlyFrame": true,
+  "singleLaunchBootConfirmedByUser": true,
+  "installedAppPickerFixSha256": "1F897356DA00616DC3019A0AC974A6F8BDB22FC0FA9753EB9DA34B8DFBC03E11",
+  "newVariantVisibleInActualPicker": true,
+  "newVariantRestartEligibilityVerified": true,
+  "helperVersion": "0.19.0-tv4",
+  "newVariantChannelRouteConfigured": false,
+  "photosPreservedAfterPickerUpdate": 2
 }

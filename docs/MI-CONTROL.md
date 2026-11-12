@@ -4,6 +4,10 @@ Z6 0.19.0/c56 separa los botones del control y el inicio automático. Un solo AP
 
 Entra en **Ajustes → Aplicaciones → Mi control y arranque**. Cada botón tiene su propia tarjeta, acción, aplicación, destino e interruptor. Cambiar YouTube no modifica Netflix ni el arranque. Las acciones disponibles son abrir app, cerrar y reabrir, reabrir y llegar al destino, Inicio de Z6, Ajustes de Android y silencio.
 
+**Aplicación** muestra las apps instaladas que tienen un acceso de inicio. Las instalaciones y desinstalaciones actualizan el catálogo mediante eventos, sin reiniciar Z6 ni consultar periódicamente. No hay una lista fija de variantes: un nombre de paquete que empiece por `com.android.`, `com.google.android.` o `android.` no convierte por sí solo una app instalada por el usuario en un componente del sistema. Para reiniciar se comprueban sus atributos reales, UID propio y ausencia de función HOME; los componentes protegidos pueden aparecer al elegir **Abrir app**, pero no al elegir una acción que los reinicie. Servicios sin pantalla de inicio no son accesos seleccionables.
+
+Si sustituyes una app por otra variante: abre la tarjeta del botón → **Aplicación** → elige la nueva. Para llegar a un canal, usa **Reabrir y llegar al destino** y vuelve a enseñar su recorrido. El arranque se cambia por separado. No se copia el recorrido de una app distinta ni se acepta automáticamente una firma nueva.
+
 Para otro botón: **Añadir botón → Comenzar → pulsa la tecla → Asignar**. Después elige su acción. Home, Atrás, flechas, OK, volumen y encendido están protegidos. Una tecla que el fabricante no entrega a Android puede requerir una preparación específica; no se promete compatibilidad con cualquier tecla o control. Mantener una tecla pulsada no acumula reinicios.
 
 ## Elegir un canal o pantalla

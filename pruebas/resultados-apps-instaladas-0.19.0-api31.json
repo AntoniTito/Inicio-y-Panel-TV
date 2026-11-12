@@ -1,0 +1,20 @@
+{
+  "api": 31,
+  "emulator": true,
+  "physicalRemote": false,
+  "checks": [
+    "fixture absent from warm catalogue",
+    "newly installed third-party com.android app appears without restarting Z6",
+    "real protected apps remain open-only",
+    "panel cannot be selected for recovery",
+    "protected app cannot be selected for restart",
+    "prefixed app can be chosen with its own signature",
+    "prefixed installed app opens from its button",
+    "prefixed app closes and reopens through Android",
+    "open-only app can be selected through the actual application picker",
+    "protected app opens normally without a restart request",
+    "signature mismatch cannot close or launch the app",
+    "uninstall removes entry through package events"
+  ],
+  "apkSha256": "1F897356DA00616DC3019A0AC974A6F8BDB22FC0FA9753EB9DA34B8DFBC03E11"
+}

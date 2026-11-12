@@ -146,11 +146,11 @@ final class TvRecovery {
    try{if(PanelService.active!=null)PanelService.active.hideForTvRecovery();if(!HomeActivity.visible)context.startActivity(new Intent(context,HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));coverRequested=true;}
    catch(RuntimeException e){fail("Android no permitió preparar la reapertura; la app sigue disponible",false);return;}
   }
-  final long token=generation;final TvRecoveryConfig.Settings taskJob=job;working=true;
+  final long token=generation;final TvRecoveryConfig.Settings taskJob=job;final boolean restarting=!jobKind.equals("open");working=true;
   submit(()->{
    String result;
    if(token!=generation)result="CANCELLED";
-   else if(!TvRecoveryConfig.sameApp(context,taskJob))result="APP_CHANGED";
+   else if(!TvRecoveryConfig.sameApp(context,taskJob,restarting))result="APP_CHANGED";
    else if(jobKind.equals("open"))result="OK";
    else if(token!=generation||!interactive())result="CANCELLED";
    else{

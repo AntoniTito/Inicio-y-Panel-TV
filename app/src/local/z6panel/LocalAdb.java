@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 /** Loopback-only ADB bootstrap, fixed command, private key stays in Android Keystore. */
 final class LocalAdb {
  private static final String ALIAS="z6panel.local.adb.v1";
- private static final String HELPER_VERSION="0.19.0-tv3";
+ private static final String HELPER_VERSION="0.19.0-tv4";
  private static final ThreadPoolExecutor BRIDGE_READS=new ThreadPoolExecutor(0,1,30,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(1),r->{Thread t=new Thread(r,"Z6LocalAdb-version");t.setDaemon(true);return t;});
  private static final int CNXN=0x4e584e43,AUTH=0x48545541,OPEN=0x4e45504f,OKAY=0x59414b4f,WRTE=0x45545257,CLSE=0x45534c43;
  static final class Packet {int command,a,b;byte[] data;}

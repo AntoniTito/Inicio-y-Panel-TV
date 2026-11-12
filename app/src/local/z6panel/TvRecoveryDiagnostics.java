@@ -12,6 +12,7 @@ final class TvRecoveryDiagnostics {
  static void call(Context c,String method,String arg,Bundle out)throws Exception {
   TvRecovery t=TvRecovery.get(c);
   if(method.equals("tv_ui_inspect")){out.putString("json",TvRecoveryActivity.inspect().toString());return;}
+  if(method.equals("tv_apps_inspect")){JSONArray apps=new JSONArray();for(AppCatalog.Entry e:new AppCatalog(c).all())apps.put(new JSONObject().put("package",e.pkg).put("name",e.title).put("openable",TvRecoveryConfig.openable(c,e.pkg)).put("restartable",TvRecoveryConfig.eligible(c,e.pkg)));out.putString("json",new JSONObject().put("apps",apps).toString());return;}
   if(method.equals("tv_buttons_export")){out.putString("base64",Base64.encodeToString(RemoteActions.export(c).toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
   if(method.equals("tv_buttons_inspect")){JSONObject o=RemoteActions.export(c);o.put("nativeRestart",NativeAppRestart.available(c)).put("nativeState",NativeAppRestart.lastState);out.putString("json",o.toString());return;}
   if(method.equals("tv_buttons_restore")){if(arg==null||arg.length()>524288)throw new IllegalArgumentException();t.cancel("");RemoteActions.restore(c,new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8)));t.changed();out.putString("status","OK");return;}

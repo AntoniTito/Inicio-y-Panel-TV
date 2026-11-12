@@ -1,6 +1,6 @@
 # Verificación de Z6 Panel 0.19.0
 
-Actualización preparada: 0.19.0/c56, un APK para API 29 y 31. Recuperación: comportamiento original de v0.18.1, código 57 y firma original. Después de instalar c57 se requiere c58 o superior. Los hashes exactos se registran en `entregas/manifest.json`.
+Actualización: 0.19.0/c56, un APK para API 29 y 31. Recuperación: comportamiento original de v0.18.1, código 57 y firma original. Después de instalar c57 se requiere c58 o superior. Los hashes exactos se registran en `entregas/manifest.json`.
 
 ## Cambios comprobables
 
@@ -21,7 +21,9 @@ La inyección ADB no reproduce por sí sola la entrada de Accesibilidad del cont
 
 `arranque-mando-0190.cjs` añade siete comprobaciones de orden de inicialización: asistencia tardía, pantalla apagada, continuación por eventos y deduplicación del arranque. Son eventos controlados del emulador, no un reinicio físico.
 
-`apertura-unica-0190.cjs` añade once comprobaciones: controles que tardan siete segundos, lista de canales restaurada sin menú intermedio, destino nombrado ya reproduciéndose y reproductor genérico que no identifica el canal. Cada solicitud abre un solo proceso; un vencimiento deja la app abierta sin anunciar un destino no comprobado. Esta prueba usó el APK identificado en su JSON, anterior únicamente al aumento del plazo máximo del primer dibujo en frío. Las 25 comprobaciones de botones y las siete de inicialización se repitieron con el APK final registrado en el manifiesto.
+`apertura-unica-0190.cjs` añade once comprobaciones: controles que tardan siete segundos, lista de canales restaurada sin menú intermedio, destino nombrado ya reproduciéndose y reproductor genérico que no identifica el canal. Cada solicitud abre un solo proceso; un vencimiento deja la app abierta sin anunciar un destino no comprobado. Esta prueba usó el APK identificado en su JSON, anterior al aumento del plazo máximo del primer dibujo en frío y a la corrección del selector. Las siete comprobaciones de inicialización se repitieron tras ajustar ese plazo; su JSON identifica el APK probado.
+
+`apps-instaladas-0190.cjs`: doce comprobaciones con el APK final. Se instala una app sintética con prefijo `com.android.` después de calentar el catálogo y aparece mediante eventos sin reiniciar Z6; se selecciona, abre y reabre con cambio de proceso. Se prueba el selector real con una app protegida para abrirla sin solicitar reinicio; se rechazan reinicios del panel y de componentes protegidos, se conserva la comprobación de firma y se retira la entrada al desinstalar. Preparar la variante de prueba requiere `preparar-fixture-tv.ps1 -Paquete com.android.z6qa.fixture`. Las 25 comprobaciones de botones y recorridos se repitieron también con el APK final. No se añadieron consultas periódicas ni se cambiaron permisos para ampliar el catálogo.
 
 ## TV original Android 10 / API 29
 
@@ -44,7 +46,11 @@ El usuario confirmó que el arranque automático alcanzó el canal, pero inform�
 
 Se instaló la corrección con el hash final del manifiesto, conservando preferencias, dos botones y los hashes de ambas imágenes. En la primera carga de Inicio después de actualizar y en dos retornos desde Ajustes de Android, el fondo local estuvo preparado antes del primer dibujo de contenido: contador de vencimientos cero, imagen 1280 × 720. Esta muestra no demuestra el resultado visual del encendido en frío.
 
-**Pendiente:** configuración de un nuevo recorrido con el control real y confirmación de una sola apertura tras el último reinicio físico. Las pruebas controladas anteriores no sustituyen estas comprobaciones. No se extrapola el resultado del TV original a otros firmwares.
+El usuario confirmó el último arranque correcto después de retirar el reintento. Más adelante desinstaló esa app e instaló otra variante; el recorrido anterior queda vinculado a la app retirada y no demuestra el funcionamiento del canal en la nueva.
+
+La nueva variante estaba en el catálogo, pero el selector la excluía porque su paquete comenzaba por `com.android.`. Se sustituyó ese filtro por atributos reales de Android en Z6 y el auxiliar. Las acciones de abrir y reiniciar ahora distinguen capacidades; las comprobaciones de firma, UID compartido, sistema y HOME permanecen. El auxiliar instalado informa `0.19.0-tv4`. En el TV original se verificaron los atributos de la nueva app y su presencia en el selector real, conservando las dos imágenes y las asignaciones existentes. No se aplicó el recorrido de la variante retirada a la nueva.
+
+**Pendiente:** configuración de un nuevo recorrido con el control real en la app de reemplazo. No se extrapola el resultado del TV original a otros firmwares.
 
 ## Rendimiento
 

@@ -3,7 +3,7 @@ import android.os.*;import android.content.*;import android.content.pm.*;import 
 /** ADB shell helper. Binder authenticates the app UID. No network listener or arbitrary commands. */
 public final class BridgeMain {
  static final String DESCRIPTOR="local.z6panel.system.v1";
- static final String VERSION="0.19.0-tv3";
+ static final String VERSION="0.19.0-tv4";
  static final java.util.concurrent.atomic.AtomicLong attachAttempts=new java.util.concurrent.atomic.AtomicLong();
  static volatile boolean clientLinked;
  static final class Attacher implements Runnable {
@@ -157,7 +157,7 @@ public final class BridgeMain {
  /** Contract: OK means force-stop completed. The app MUST launch its explicit MAIN
   * component afterwards (LAUNCHER/LEANBACK_LAUNCHER). No monkey or helper-side launch. */
  static boolean safeTarget(String pkg)throws Exception {
-  if(!validPackage(pkg)||pkg.equals("local.z6panel")||pkg.startsWith("com.android.")||pkg.startsWith("com.google.android.")||pkg.startsWith("android."))return false;
+  if(!validPackage(pkg)||pkg.equals("local.z6panel"))return false;
   Object pm=packageManager();ApplicationInfo app=applicationInfo(pm,pkg);
   if(app==null||!app.enabled||app.uid<10000||app.uid==allowedUid||(app.flags&ApplicationInfo.FLAG_INSTALLED)==0||(app.flags&(ApplicationInfo.FLAG_SYSTEM|ApplicationInfo.FLAG_UPDATED_SYSTEM_APP|ApplicationInfo.FLAG_PERSISTENT|ApplicationInfo.FLAG_SUSPENDED))!=0)return false;
   Class<?> type=Class.forName("android.content.pm.IPackageManager");
