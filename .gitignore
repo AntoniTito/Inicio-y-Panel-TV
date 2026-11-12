@@ -3,6 +3,7 @@
 /.local/
 /entregas/*.apk
 /entregas/*.idsig
+/perfiles/*-local.json
 *.p12
 *.jks
 *.keystore

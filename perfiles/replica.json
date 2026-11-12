@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "name": "replica",
-  "reference": "0.13.0",
+  "reference": "0.20.1",
   "validatedApi": [
     29,
     31
   ],
-  "description": "Android 10/12: revisar evidencia por firmware; fondos opcionales con valores locales.",
+  "description": "Apariencia de referencia 0.20.1 para Android 10/12; apps, control, destinos y fondos se verifican en el equipo de destino.",
   "panel": {
     "compact": {
       "type": "boolean",
@@ -14,17 +14,22 @@
     },
     "app_order": {
       "type": "string",
-      "value": "io.gh.reisxd.tizentube.fortaleza|com.xuper.netxxus|com.esaba.downloader|gov.nasa|com.softwinner.update|org.cyanogenmod.appdrawer|com.softwinner.TvdFileManager|com.android.vending"
+      "value": "io.gh.reisxd.tizentube.fortaleza|org.cyanogenmod.appdrawer|com.softwinner.TvdFileManager|com.android.mgstv|gov.nasa|com.android.vending|com.softwinner.update|com.android.gallery3d|com.esaba.downloader"
     },
     "hidden_apps": {
       "type": "set",
       "value": [
-        "com.esaba.downloader",
         "gov.nasa",
-        "com.android.vending",
         "com.softwinner.update",
         "org.cyanogenmod.appdrawer",
         "com.softwinner.TvdFileManager"
+      ]
+    },
+    "shown_apps": {
+      "type": "set",
+      "value": [
+        "com.esaba.downloader",
+        "com.android.vending"
       ]
     },
     "show_greeting": {
@@ -41,7 +46,7 @@
     },
     "opacity": {
       "type": "int",
-      "value": 70
+      "value": 80
     },
     "animate": {
       "type": "boolean",
@@ -67,7 +72,7 @@
   },
   "apps": [
     {
-      "package": "com.xuper.netxxus",
+      "package": "com.android.mgstv",
       "name": "Xuper",
       "source": "provided-apk"
     },

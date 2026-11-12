@@ -1,6 +1,6 @@
 # Fondos del inicio
 
-Z6 Panel 0.16.1 mantiene los cuatro modos en una fila: Fondo original, Foto fija, Presentación y Paisaje diario. Los fondos aparecen solo en Inicio; el video y el panel superpuesto conservan su comportamiento. Las flechas previsualizan y OK utiliza una elección.
+Z6 Panel 0.20.1 conserva los cuatro modos en una fila: Fondo original, Foto fija, Presentación y Paisaje diario. Los fondos aparecen solo en Inicio; el video y el panel superpuesto conservan su comportamiento. Las flechas previsualizan y OK utiliza una elección. Para configurar otro TV, seguir [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md); la entrega no incluye las fotos individuales ni el catálogo del original.
 
 ## Fotos y presentación
 
@@ -58,4 +58,4 @@ La migración conserva IDs, orden y preferencias: publicación pendiente, verifi
 
 Actualizar sin desinstalar conserva las fotos. Exportar preferencias no incluye imágenes y sus URI no sirven en otro TV. Fotos, sesiones, índices individuales y respaldos quedan fuera de Git y del portable.
 
-La recuperación vigente conserva el comportamiento 0.16.0 con código 41, incluido su botón de galería y el almacenamiento compartido. No instalar el APK histórico código 36 sobre una biblioteca migrada. La receta reproducible es herramientas/recuperacion-0161.ps1, usando la etiqueta v0.16.0 con Git, SDK/JDK y firma original. Tras usar la recuperación, una actualización necesita código 42 o superior.
+La recuperación vigente es 0.20.0/código 61 con el arreglo de reentrada a Mi control, conservación del almacenamiento compartido y formatos de destinos. La receta reproducible es herramientas/recuperacion-0201.ps1; requiere Git, SDK/JDK y firma original, no son necesarios para instalar el APK ya firmado. No usar un APK histórico anterior a MediaStore sobre una biblioteca migrada. Tras instalar c61, una actualización necesita c62 o superior.

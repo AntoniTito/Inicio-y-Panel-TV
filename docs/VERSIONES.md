@@ -21,13 +21,15 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 | `v0.17.0` | Etiqueta histórica | Filas circulares independientes del panel y edición confinada a Apps, con limpieza de código inaccesible. Código 50; recuperación 0.16.5/código 51. |
 | `v0.18.0` | Etiqueta historica | Inicio y recuperación de TV: app y canal elegibles, recorrido guiado, arranque y despertar optativos, tecla configurable y datos privados por dispositivo. Código 52; recuperación 0.17.0/código 53. |
 | `v0.18.1` | Etiqueta histórica | Recuperacion del auxiliar por eventos sin reiniciar depuracion, estado real del boton y reintentos limitados. Codigo 54; recuperacion 0.18.0/codigo 55. |
-| `v0.19.0` | `main` | Botones independientes, destino en la app, arranque sin doble apertura y selector por capacidades reales. APK c56; recuperación 0.18.1/c57. Evidencia y límites en MI-CONTROL.md y VERIFICACION-0.19.0.md. |
+| `v0.19.0` | Etiqueta histórica | Botones independientes, destino en la app, arranque sin doble apertura y selector por capacidades reales. APK c56; recuperación 0.18.1/c57. Evidencia y límites en MI-CONTROL.md y VERIFICACION-0.19.0.md. |
 | `0.20.0` | Commit histórico `96c622f` | Guardado confirmado por el usuario. El regreso a Mi control y la gestión se corrigen en 0.20.1; no se recomienda esta interfaz anterior. APK c58 y recuperación histórica 0.19.0/c59. |
 | `v0.20.1` | `main` | Regreso a Mi control, gestor visible de rutas, borrado con usos y destinos genéricos opcionales. APK c60 instalado y comprobado mediante ADB en el TV API 29; pruebas de emulador API 31 separadas. Recuperación 0.20.0/c61 con arreglo singleTask. Ver VERIFICACION-0.20.1.md. |
 
 Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado y las pruebas físicas pendientes están en VERIFICACION-0.20.1.md. La recuperación vigente conserva la interfaz 0.20.0 con el arreglo singleTask y código 61, con la firma original para API 29 y 31. Tras instalarla se necesita código 62 o superior para actualizar. Las recuperaciones anteriores y etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
+
+Para replicar **el desarrollo completo vigente**, usa `main` tanto para Android 10 como para 12 y sigue [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md). La rama `android10` solo sirve si se pide expresamente la base histórica 0.10.4; no contiene las mejoras posteriores. Las instrucciones siguientes explican esa elección histórica.
 
 Primero revisa `git status`: guarda cualquier trabajo pendiente antes de cambiar de rama. Git debe permitir el cambio sin descartar modificaciones; no uses opciones de fuerza.
 

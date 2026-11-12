@@ -1,6 +1,8 @@
 # Trabajo en Z6 Panel
 
-Lee README.md y docs/COMPATIBILIDAD.md. Usa z6.ps1 como interfaz común; no reconstruyas instrucciones de memoria ni ejecutes scripts históricos del equipo original sobre otro TV.
+Lee README.md y docs/COMPATIBILIDAD.md. Para instalar y replicar el entorno, lee primero docs/REPLICAR-ENTORNO.md y usa docs/PROMPT-REPLICA.md como encargo completo. Usa z6.ps1 como interfaz común; no reconstruyas instrucciones de memoria ni ejecutes scripts históricos del equipo original sobre otro TV.
+
+Replicar la entrega vigente usa main y entregas/manifest.json tanto en API 29 como en 31; no selecciones android10 por el nombre del sistema. El perfil contiene apariencia, orden y visibilidad transferibles; Mi control, recorridos, arranque/despertar, fotos y autorizaciones se configuran en el destino según la guía. Las copias de perfil *-local.json son privadas. No hace falta modificar ni recompilar el APK para instalarlo. No declares que quedó idéntico hasta verificar el resultado y documentar diferencias.
 
 Consulta docs/VERSIONES.md: v0.10.4/android10 es la base anterior y v0.11.0 conserva la adaptación anterior y v0.12.0 conserva los fondos iniciales y v0.12.1 corrige su cobertura de borde a borde. v0.12.2 conserva la recepción confirmada. v0.13.0 conserva la biblioteca visual y fotos adaptadas. v0.14.0 conserva el rediseño anterior y v0.15.0 conserva modos en fila, fotos integradas, borrado sin papelera y elección de paisajes. La base anterior rediseñó Fondos con vista previa, aplicación directa y presentaciones seleccionadas. Selecciona la linea conforme al encargo; no muevas etiquetas existentes ni cambies la rama con trabajo pendiente. Cambiar de version en Git no actualiza ni restaura un dispositivo.
 

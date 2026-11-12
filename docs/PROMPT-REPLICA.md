@@ -1,15 +1,19 @@
-# Prompt para un agente
+# Un solo prompt para replicar el entorno
+
+Copia el siguiente texto al agente que abra la descarga del proyecto. El procedimiento completo está en [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md); no depende de este chat ni de archivos privados del equipo original.
 
 ```text
-Usa este repositorio para reproducir Z6 Panel en el TV Box de destino. Lee README.md, AGENTS.md y docs/COMPATIBILIDAD.md. Identifica el dispositivo inequívocamente y utiliza siempre su serial o IP:puerto real.
+Instala y configura el entorno vigente de Z6 Panel en el Android TV de destino, conservando su diseño, funciones y optimizaciones. No desarrolles otra app ni cambies el APK para instalarlo.
 
-1. Comprueba los APK firmados y herramientas; instala ADB si falta.
-2. Ejecuta z6.ps1 instalar -Dispositivo DESTINO -Simular y diagnosticar.
-3. En API 29 o 31, ejecuta instalar -Dispositivo DESTINO -Perfil replica. Añade -SoloPanel si el usuario instalará otras aplicaciones después. Conserva el respaldo inicial.
-4. Solicita solo las autorizaciones de Android y los APK o datos indispensables que falten. No copies identidades, cuentas ni conexiones del original.
-5. Verifica según docs/PRUEBAS-FISICAS.md y entrega el informe y método de restauración.
+1. Lee AGENTS.md, README.md, docs/REPLICAR-ENTORNO.md y COMPATIBILIDAD.md. Usa main y entregas/manifest.json para identificar el APK firmado y su recuperación; no elijas android10 ni una versión histórica por el Android del equipo. La entrega de referencia es 0.20.1/c60, común a API 29/31.
+2. Prepara ADB si falta, identifica inequívocamente el destino y autoriza ese PC. Consigue los APK de la misma entrega si la descarga de Git no los incluye. Valida hashes y firma. Empieza por z6.ps1 instalar -Dispositivo DESTINO -Perfil replica -Simular y diagnosticar; las API distintas de 29/31 requieren adaptación y validación antes de instalar.
+3. Revisa los paquetes reales de las apps elegidas. Si hay otra variante, adapta una copia local del perfil, sin heredar rutas por el nombre. Ejecuta instalar con el perfil correcto y -SoloPanel si las apps se instalarán después; si se suministran APK coincidentes, usa -CarpetaApks. Conserva el respaldo inicial del destino y comprueba Z6 como HOME antes de retirar reversiblemente el launcher anterior.
+4. Completa la configuración descrita en REPLICAR-ENTORNO.md: apps visibles y orden, reloj y aspecto, nombre, fondo, permisos y auxiliar. No copies cuentas, redes, autorizaciones, URI de fotos, borradores, códigos del control ni respaldos del original. No cambies HDMI o paquetes de otros fabricantes por suposición.
+5. Configura Mi control y arranque en el nuevo equipo: identifica cada tecla y su etiqueta; el acceso de TV reabre la app y llega al destino elegido, y el de YouTube cierra y reabre YouTube sin pedir canal. Para otras teclas, permite las acciones elegidas. Enseña y prueba una sola vez cada destino y reutilízalo en los botones y en arranque/despertar. Confirma los interruptores deseados. Usa la preparación nativa solo si se verifica el control compatible; no edites Generic.kl ni uses root.
+6. Comprueba con el control físico el panel sobre video, edición/Añadir/Atrás, carrusel por filas, fondos sin parpadeo, permisos, botones, destinos guardados y borrado, arranque y despertar. Distingue las pruebas realizadas de las pendientes y las restricciones del firmware. No reinicies adbd para reparar el auxiliar ni exijas reactivar depuración para cada uso de un botón.
+7. Entrega un informe privado por destino con versión, diferencias, pendientes, respaldo y restauración. No declares una réplica idéntica sin comprobarla. No publiques datos privados ni claves. No desinstales Z6 para recuperar: usa el restaurador y la recuperación de manifest.json; tras c61 una actualización requiere c62 o superior.
 
-La entrega vigente es 0.16.1/código 40. Lee FONDOS.md: mantén el fondo actual inicialmente, no copies fotos ni IDs del origen y abre recepción por QR solo a petición del usuario. Revisa la evidencia y las limitaciones por API en COMPATIBILIDAD.md. Consulta el estado del TV original en VERIFICACION-0.16.1.md y distingue sus comprobaciones de las pruebas pendientes en cada destino. Las API distintas de 29/31 están bloqueadas hasta validación. Lee EMULADOR-TV12.md si corresponde. No cambies firmware ni apliques listas de paquetes de otros modelos. No publiques privado/ ni .local/. Usa las mismas herramientas que una persona, sin depender de instrucciones guardadas en otro chat.
+Solicita únicamente datos o acciones indispensables que no puedas resolver en el proyecto. Sigue hasta completar la configuración y las verificaciones autorizadas, sin repetir preguntas ya respondidas.
 ```
 
-En 0.16.0 las imágenes se optimizan y publican en álbumes de MediaStore. El instalador respalda las fotos antes de liberar una migración antigua y conserva el estado de la galería nativa. No copies la biblioteca, URI de MediaStore, IDs, catálogo, créditos locales ni marcas wallpaper_publish_hold entre equipos. La rotación diaria empieza desactivada. Usa 0.16.0/código 41 con adaptador de almacenamiento para recuperación, no un APK histórico anterior a la migración.
+El catálogo diario, las fotos y la configuración individual no se distribuyen. El instalador, las funciones incluidas en el APK y las configuraciones que deben completarse se distinguen en la guía de réplica.

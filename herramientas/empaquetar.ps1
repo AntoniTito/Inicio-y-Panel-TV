@@ -8,7 +8,9 @@ $version=([xml](Get-Content -LiteralPath (Join-Path $script:Z6Root 'app\AndroidM
 if(!$Salida){$Salida=Join-Path $script:Z6Root ('.local\Z6-Panel-'+$version+'-portable.zip')}
 $staging=Join-Path $script:Z6Root ('.local\package\'+[guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force -Path $staging|Out-Null
-foreach($folder in @('app','herramientas','perfiles','pruebas')){Copy-Item -LiteralPath (Join-Path $script:Z6Root $folder) -Destination $staging -Recurse}
+foreach($folder in @('app','herramientas','pruebas')){Copy-Item -LiteralPath (Join-Path $script:Z6Root $folder) -Destination $staging -Recurse}
+$profileTarget=Join-Path $staging 'perfiles';New-Item -ItemType Directory -Force -Path $profileTarget|Out-Null
+Get-ChildItem -LiteralPath (Join-Path $script:Z6Root 'perfiles') -File|Where-Object {$_.Name -notlike '*-local.json'}|ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination $profileTarget}
 $docTarget=Join-Path $staging 'docs';New-Item -ItemType Directory -Force -Path $docTarget|Out-Null
 Get-ChildItem -LiteralPath (Join-Path $script:Z6Root 'docs') -File|ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination $docTarget}
 foreach($name in @('README.md','AGENTS.md','CLAUDE.md','z6.ps1','.gitignore','.gitattributes')){Copy-Item -LiteralPath (Join-Path $script:Z6Root $name) -Destination $staging}

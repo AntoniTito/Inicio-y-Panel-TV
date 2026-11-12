@@ -2,11 +2,13 @@
 
 Un APK para API 29 y 31. Consulta [DESTINOS-Y-BOTONES.md](DESTINOS-Y-BOTONES.md) y [VERIFICACION-0.20.1.md](VERIFICACION-0.20.1.md) para las pruebas actuales. Se conserva el mapa y protocolo del control comprobado, con etiquetas independientes. Otros controles usan detección de teclas de Android. Abrir una app no requiere un canal. Reapertura y navegación dependen de las capacidades del firmware; un destino de otra variante o firma no se reutiliza automáticamente.
 
-Los apartados siguientes conservan el registro de las versiones anteriores.
+Para instalar la entrega vigente en otro TV, seguir [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md). El asistente admite API 29/31 y bloquea automáticamente otras API. La recuperación vigente es 0.20.0/c61 con singleTask, para ambas API; tras usarla requiere c62 o superior. Botones, firma/variante de cada app, destinos y autonomía del auxiliar se verifican en el nuevo equipo.
 
-# Compatibilidad comprobada
+Los apartados siguientes conservan el registro histórico de las versiones anteriores, incluidas sus recuperaciones de entonces. No sustituyen al manifiesto ni a las guías vigentes.
 
-La entrega vigente es 0.18.1/código 54. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.
+# Registro histórico de compatibilidad
+
+El registro siguiente corresponde a 0.18.1/código 54 y anteriores. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.
 
 | Entorno | Estado |
 |---|---|

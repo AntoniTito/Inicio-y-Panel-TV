@@ -1,0 +1,25 @@
+﻿{
+    "date":  "2026-11-12",
+    "version":  "0.20.1",
+    "code":  60,
+    "recoveryCode":  61,
+    "physicalDeviceContacted":  false,
+    "apkChanged":  false,
+    "transferablePreferencesMatchVerifiedReference":  true,
+    "transferablePreferenceCount":  12,
+    "currentAppPackageInProfile":  true,
+    "individualStateExcluded":  true,
+    "documentationLocalLinksChecked":  29,
+    "installerChecksPassed":  79,
+    "portableContainsGuidesAndBothVerifiedApks":  true,
+    "privateProfileProbeExcludedFromGitAndPortable":  true,
+    "certificateSha256":  "1446d3adb55774747cadf9c8f7c814652fb2d0a97e0368094d1c251572dfe2d5",
+    "apkSha256":  "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07",
+    "recoverySha256":  "F80CE2927AAC2A7DAC530092E0D5A5BDD93B96FDBB0F876947F89C2FFD041E2A",
+    "githubPublished":  false,
+    "limitations":  [
+                        "No new device installed or physically tested",
+                        "Same hardware/firmware/apps and local configuration are needed to assess identical behavior",
+                        "Signed APKs must accompany a GitHub source download; private signing key is not distributed"
+                    ]
+}
