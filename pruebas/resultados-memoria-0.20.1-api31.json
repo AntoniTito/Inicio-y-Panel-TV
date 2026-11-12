@@ -1,0 +1,32 @@
+{
+  "api": 31,
+  "emulator": true,
+  "cyclesAfterWarmup": 20,
+  "samples": [
+    {
+      "cycles": 5,
+      "pssKb": 38473
+    },
+    {
+      "cycles": 10,
+      "pssKb": 36629
+    },
+    {
+      "cycles": 15,
+      "pssKb": 31783
+    },
+    {
+      "cycles": 20,
+      "pssKb": 31215
+    },
+    {
+      "cycles": 25,
+      "pssKb": 31063
+    }
+  ],
+  "deltaPssKb": -7410,
+  "idleQueriesUnchanged": true,
+  "actualVideo": false,
+  "frameLatencyMeasured": false,
+  "apkSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07"
+}

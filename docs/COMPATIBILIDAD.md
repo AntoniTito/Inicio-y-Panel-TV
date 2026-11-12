@@ -1,6 +1,6 @@
-# Compatibilidad de 0.20.0
+# Compatibilidad de 0.20.1
 
-Un APK para API 29 y 31. Consulta [DESTINOS-Y-BOTONES.md](DESTINOS-Y-BOTONES.md) y [VERIFICACION-0.20.0.md](VERIFICACION-0.20.0.md) para las pruebas actuales. Se conserva el mapa y protocolo del control comprobado, con etiquetas independientes. Otros controles usan detección de teclas de Android. Reapertura y navegación dependen de las capacidades del firmware; un destino de otra variante o firma no se reutiliza automáticamente.
+Un APK para API 29 y 31. Consulta [DESTINOS-Y-BOTONES.md](DESTINOS-Y-BOTONES.md) y [VERIFICACION-0.20.1.md](VERIFICACION-0.20.1.md) para las pruebas actuales. Se conserva el mapa y protocolo del control comprobado, con etiquetas independientes. Otros controles usan detección de teclas de Android. Abrir una app no requiere un canal. Reapertura y navegación dependen de las capacidades del firmware; un destino de otra variante o firma no se reutiliza automáticamente.
 
 Los apartados siguientes conservan el registro de las versiones anteriores.
 

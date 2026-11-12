@@ -51,5 +51,6 @@ async function teach(){
   c({op:'ui_choose',id:'key_delete'});c({op:'ui_choose',id:'delete_confirm'});check(b().actions.length===1,'new unassigned button can be deleted from capture dialog');
   const exported=JSON.parse(Buffer.from(read('tv_buttons_export'),'base64'));write('tv_buttons_restore',exported);check(b().actions[0].label==='Otra tecla'&&d().destinations.length===1,'export restore preserves labels and reusable destinations');
  }finally{c({op:'cancel'});q.panel(s,'tv_restore',original);q.panel(s,'tv_buttons_restore',buttons);}
- q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-destinos-0.20.0-api31.json'),JSON.stringify({api:31,emulator:true,actualVideo:false,processRecreation:true,checks},null,2)+'\n');
+ const version=q.command(s,'shell','dumpsys','package','local.z6panel').match(/versionName=(\d+\.\d+\.\d+)/)[1];
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-destinos-'+version+'-api31.json'),JSON.stringify({api:31,emulator:true,actualVideo:false,processRecreation:true,checks},null,2)+'\n');
 })().catch(e=>{console.error(e);process.exitCode=1});

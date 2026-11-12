@@ -16,12 +16,14 @@ public final class MainActivity extends Activity {
  private void button(int id,String title,Runnable run){Button b=new Button(this);b.setId(id);b.setText(title);root.addView(b,new LinearLayout.LayoutParams(500,80));b.setOnClickListener(v->run.run());}
  private void home(){
   screen("Inicio TV de prueba");
+  if(mode.equals("library")){screen("Biblioteca de prueba");button(R.id.television,"Biblioteca",this::library);return;}
   if(mode.equals("early-player")||mode.equals("other-player")){player();return;}
   if(mode.equals("login")){EditText secret=new EditText(this);secret.setId(R.id.password);secret.setInputType(0x81);secret.setText("secret-fixture-never-record");root.addView(secret);button(0,"Iniciar sesión",()->{});return;}
   if(mode.equals("inaccessible")){View canvas=new View(this);canvas.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);root.addView(canvas,new LinearLayout.LayoutParams(600,300));return;}
   button(R.id.television,mode.equals("changed")?"Contenido nuevo":"Televisión",this::countries);
   if(mode.equals("ambiguous"))button(R.id.television,"Televisión",this::countries);
  }
+ private void library(){screen("Mi biblioteca");button(R.id.peru,"Mis listas",()->{screen("Mis listas");TextView marker=new TextView(this);marker.setId(R.id.playing);marker.setText("Mis listas · sección de prueba");marker.setTextColor(-1);root.addView(marker);});}
  private void list(String[] labels,int chosen,Runnable action){ListView list=new ListView(this);list.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,labels));root.addView(list,new LinearLayout.LayoutParams(600,300));list.setOnItemClickListener((p,v,i,id)->{if(list.hasFocus()&&i==chosen)action.run();});}
  private void countries(){if(mode.equals("advanced")){channels();return;}screen("Países");if(mode.startsWith("list")){list(new String[]{"Argentina","Perú"},1,this::channels);return;}button(R.id.peru,"Perú",this::channels);button(0,"Chile",()->{});}
  private void channels(){screen("Canales de Perú");if(mode.equals("delayed")&&!delayedReady){button(0,"Cargando canales",()->{});new Handler(Looper.getMainLooper()).postDelayed(()->{if(!isFinishing()){delayedReady=true;channels();}},7000);return;}if(wrongChannels){button(R.id.channel,"Canal no disponible todavía",()->{});return;}if(mode.equals("list-alt")){

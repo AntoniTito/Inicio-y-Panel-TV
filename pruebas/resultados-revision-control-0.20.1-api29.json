@@ -1,0 +1,12 @@
+{
+  "api": 29,
+  "physicalDevice": true,
+  "installedVersionAtReproduction": "0.20.0",
+  "routeSaveConfirmedByUser": true,
+  "controlEntryFailureReproduced": true,
+  "controlBelowHomeInSameTask": true,
+  "fixedApkSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07",
+  "fixInstalled": false,
+  "installationPendingReason": "ADB port closed before installation",
+  "physicalVerificationOfFixPending": true
+}

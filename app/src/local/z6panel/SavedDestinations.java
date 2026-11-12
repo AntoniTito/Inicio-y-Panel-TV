@@ -20,6 +20,14 @@ final class SavedDestinations {
  static TvRecoveryConfig.Settings apply(TvRecoveryConfig.Settings binding,TvRecoveryConfig.Settings source){
   TvRecoveryConfig.Settings s=route(source);s.key=binding.key;s.scan=binding.scan;s.remoteCode=binding.remoteCode;s.keyName=binding.keyName;s.remoteDevice=binding.remoteDevice;s.boot=binding.boot;s.wake=binding.wake;s.button=binding.button;return s;
  }
+ static TvRecoveryConfig.Settings withoutRoute(TvRecoveryConfig.Settings source){TvRecoveryConfig.Settings s=source.copy();s.verified=false;s.channel="";s.steps=new JSONArray();s.endpoint=new JSONObject();return s;}
+ static boolean sameRoute(TvRecoveryConfig.Settings a,TvRecoveryConfig.Settings b){return a.verified&&b.verified&&fingerprint(a).equals(fingerprint(b));}
+ static JSONObject usage(Context c,String id){Entry e=find(c,id);JSONArray names=new JSONArray();boolean startup=false;if(e!=null){for(RemoteActions.Action a:RemoteActions.get(c))if(a.kind.equals("route")&&sameRoute(a.target,e.target))names.put(a.label());startup=sameRoute(TvRecoveryConfig.get(c),e.target);}try{return new JSONObject().put("buttons",names).put("startup",startup);}catch(JSONException failure){throw new IllegalStateException(failure);}}
+ static void erase(Context c,String id,boolean assignments){
+  Entry e=find(c,id);if(e==null)throw new IllegalArgumentException("El destino ya no existe");JSONObject before;try{before=RemoteActions.export(c);}catch(JSONException failure){throw new IllegalStateException("No se pudo preparar el borrado",failure);}TvRecoveryConfig.Settings startup=TvRecoveryConfig.get(c).copy();
+  try{if(assignments){List<RemoteActions.Action> actions=new ArrayList<>();for(RemoteActions.Action a:RemoteActions.get(c)){a=a.copy();if(a.kind.equals("route")&&sameRoute(a.target,e.target)){a.kind="reopen";a.target=withoutRoute(a.target);}actions.add(a);}RemoteActions.persist(c,actions);if(sameRoute(startup,e.target)){TvRecoveryConfig.Settings cleared=withoutRoute(startup);cleared.boot=cleared.wake=cleared.button=false;TvRecoveryConfig.save(c,cleared);}JSONObject p=pending(c);if(p!=null&&sameRoute(TvRecoveryConfig.parse(p.getJSONObject("target")),e.target))discard(c);}remove(c,id);TvRecovery.get(c).changed();}
+  catch(Exception failure){try{RemoteActions.restore(c,before);TvRecoveryConfig.save(c,startup);}catch(Exception rollback){failure.addSuppressed(rollback);}throw new IllegalStateException("No se pudo completar el borrado. Revisa el almacenamiento.",failure);}
+ }
  private static String fingerprint(TvRecoveryConfig.Settings s){try{return route(s).json().toString();}catch(JSONException e){throw new IllegalArgumentException(e);}}
  static synchronized List<Entry> all(Context c){
   if(cache!=null)return new ArrayList<>(cache);

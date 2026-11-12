@@ -27,3 +27,7 @@ El usuario informó que el destino no quedaba guardado después de probarlo, no 
 No se incorporan consultas periódicas, dependencias gráficas o procesos nuevos. La biblioteca tiene un máximo de 64 destinos y un solo borrador, ambos privados. La recepción de teclas conserva su caché y la navegación conserva las optimizaciones anteriores. Las medidas de rendimiento de versiones previas no se atribuyen a esta versión.
 
 `resultados-memoria-0.20.0-api31.json`: cinco ciclos de calentamiento y veinte aperturas/cierres adicionales de Mi control, PSS 33 358 → 32 306 KB (−1052 KB), consultas de navegación estables en reposo. No se midió latencia de cuadros ni una comparación con la versión anterior bajo condiciones equivalentes; esta muestra no demuestra una aceleración ni garantiza el uso de memoria en todos los equipos.
+
+## Seguimiento posterior
+
+El usuario confirmó que el destino se guarda, pero encontró un bloqueo al volver a Mi control y dificultades para gestionar rutas y otras apps. El acceso se reprodujo físicamente; su causa y las correcciones de gestión se registran en VERIFICACION-0.20.1.md. Esta entrega histórica no incorpora esos arreglos.

@@ -1,8 +1,8 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box. **0.20.0, código 58**, incorpora [destinos reutilizables, borradores recuperables y botones con etiqueta editable](docs/DESTINOS-Y-BOTONES.md). Conserva la navegación directa en la app, el arranque sin doble apertura, carrusel, fondos y optimizaciones. Consulta la [verificación de la entrega](docs/VERIFICACION-0.20.0.md).
+Inicio y paneles superpuestos para TV Box. **0.20.1, código 60**, corrige el regreso a Mi control, añade gestión visible de rutas y distingue abrir apps de elegir una sección opcional. Conserva [destinos reutilizables, borradores y etiquetas editables](docs/DESTINOS-Y-BOTONES.md). Consulta la [verificación de la entrega](docs/VERIFICACION-0.20.1.md), incluido el estado de la instalación física.
 
-La rama `main` contiene 0.20.0. Un destino probado se puede asignar a varios botones y al arranque/despertar. El nombre visible se edita sin cambiar la tecla detectada. El selector reconoce variantes instaladas según sus capacidades, sin una lista fija de nombres.
+La rama `main` contiene 0.20.1. Abrir o cerrar y abrir una app no requiere elegir un destino. Una sección probada se puede asignar a varios botones y al arranque/despertar. El nombre visible se edita sin cambiar la tecla detectada. El selector reconoce variantes instaladas según sus capacidades, sin una lista fija de nombres.
 
 ## Uso rápido en Windows
 
@@ -32,7 +32,7 @@ El asistente identifica y respalda el destino, instala, aplica preferencias, con
 .\z6.ps1 compilar
 ```
 
-`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.19.0/código 59 para API 29 y 31. Después se necesita código 60 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
+`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.20.0/código 61 para API 29 y 31, con el arreglo de acceso a Mi control. Después se necesita código 62 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
 
 Para aplicaciones externas, proporciona APK de procedencia verificada mediante `-CarpetaApks RUTA`, nombrados por paquete, por ejemplo `com.xuper.netxxus.apk`. Se valida el identificador con las build-tools antes de instalar. No se incluyen cuentas, licencias ni APK de terceros en Git. Usa `-SoloPanel` si las instalarás después, como en el emulador actual.
 

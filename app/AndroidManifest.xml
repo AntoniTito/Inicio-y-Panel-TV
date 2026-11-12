@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.z6panel" android:versionCode="58" android:versionName="0.20.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.z6panel" android:versionCode="60" android:versionName="0.20.1">
  <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
  <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -28,7 +28,7 @@
  <application android:label="Z6 Panel" android:theme="@style/Z6Theme" android:allowBackup="false" android:supportsRtl="true">
   <provider android:name=".BridgeProvider" android:authorities="local.z6panel.bridge" android:exported="true" android:permission="android.permission.DUMP" />
   <activity android:name=".HomeActivity" android:exported="true" android:launchMode="singleTask"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.HOME"/><category android:name="android.intent.category.DEFAULT"/></intent-filter></activity>
-  <activity android:name=".TvRecoveryActivity" android:exported="false" />
+  <activity android:name=".TvRecoveryActivity" android:exported="false" android:launchMode="singleTask" />
   <receiver android:name=".RemoteLayoutReceiver" android:exported="true"><intent-filter><action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" /></intent-filter><meta-data android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS" android:resource="@xml/remote_layouts" /></receiver>
   <receiver android:name=".TvBootReceiver" android:exported="false"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/></intent-filter></receiver>
   <activity android:name=".PersonalizeActivity" android:exported="false" />

@@ -1,6 +1,6 @@
 # Mi control y arranque
 
-Z6 0.20.0/c58 añade [Destinos y botones](DESTINOS-Y-BOTONES.md): rutas reutilizables, borrador persistente, nombres editables y códigos internos de la tecla. Un solo APK para API 29 y 31; las capacidades se comprueban en cada firmware. La navegación y permisos se explican abajo.
+Z6 0.20.1/c60 corrige la reapertura de Mi control y ofrece [gestión visible de destinos y botones](DESTINOS-Y-BOTONES.md), borrador persistente, nombres editables y códigos internos de la tecla. Abrir/reabrir sin recorrido y una sección opcional son elecciones distintas. Un solo APK para API 29 y 31; las capacidades se comprueban en cada firmware.
 
 Entra en **Ajustes → Aplicaciones → Mi control y arranque**. Cada botón tiene su propia tarjeta, acción, aplicación, destino e interruptor. Cambiar YouTube no modifica Netflix ni el arranque. Las acciones disponibles son abrir app, cerrar y reabrir, reabrir y llegar al destino, Inicio de Z6, Ajustes de Android y silencio.
 
@@ -44,7 +44,7 @@ La reapertura intenta primero el cierre normal de procesos en segundo plano de A
 
 El asistente identifica el destino y conserva asignaciones y permiso originales en `privado/dispositivos/`. La preparación del mapa exige un Remoter ATV3 conectado y comprobable; no copia MAC, números de serie, cuentas ni recorridos de otro TV. Despiértalo con una flecha si está en reposo.
 
-La recuperación 0.19.0/c59 conserva fotos y recorridos asignados. El restaurador exporta privadamente botones, biblioteca y borrador antes de detener automatismos y devolver HOME, permisos y mapa a sus estados originales. La interfaz de 0.19.0 no ofrece las nuevas etiquetas ni la biblioteca común; su exportación permite recuperarlas posteriormente. Después de usar c59 se requiere c60 o superior para actualizar. No recuperes instalando un APK antiguo a mano sin revisar el mapa y los permisos.
+La recuperación 0.20.0/c61 conserva fotos, biblioteca y recorridos asignados e incorpora la declaración singleTask para poder entrar de nuevo a Mi control. El restaurador exporta privadamente botones, biblioteca y borrador antes de detener automatismos y devolver HOME, permisos y mapa a sus estados originales. Mantiene la interfaz anterior de 0.20.0; después de usar c61 se requiere c62 o superior para actualizar. No recuperes instalando un APK antiguo a mano sin revisar el mapa y los permisos.
 
 ## Referencias técnicas
 

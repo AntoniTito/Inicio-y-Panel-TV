@@ -21,8 +21,8 @@ const named={activity:'local.z6qa.tvfixture.MainActivity',marker:selector('playi
    await q.wait(()=>p().phase==='navigating',15000);const pid=q.command(s,'shell','pidof','local.z6qa.tvfixture');
    if(mode==='other-player'){
     await q.sleep(11000);check(p().phase==='navigating'&&p().step===0,'generic video surface never claims the chosen channel');
-    await q.wait(()=>p().phase==='idle',65000);check(!p().status.startsWith('Canal preparado:')&&q.command(s,'shell','pidof','local.z6qa.tvfixture')===pid,'unverified player remains open after timeout');
-   }else{await q.wait(()=>p().phase==='idle',45000);check(p().status.startsWith('Canal preparado:'),'correct endpoint '+mode);}
+    await q.wait(()=>p().phase==='idle',65000);check(!/^(Canal|Destino) preparado:/.test(p().status)&&q.command(s,'shell','pidof','local.z6qa.tvfixture')===pid,'unverified player remains open after timeout');
+   }else{await q.wait(()=>p().phase==='idle',45000);check(/^(Canal|Destino) preparado:/.test(p().status),'correct endpoint '+mode);}
    check(p().appLaunches===1&&!p().automaticRetried&&q.command(s,'shell','pidof','local.z6qa.tvfixture')===pid,'one process launch without reopening '+mode);
    if(mode==='advanced')check(p().routeResumes===1,'already exposed exact destination skips missing intermediate menu');
    if(mode==='early-player')check(p().routeResumes===0,'named playing endpoint needs no extra menu clicks');

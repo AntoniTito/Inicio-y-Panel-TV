@@ -109,7 +109,7 @@ public final class TvNavigationService extends AccessibilityService {
  private Selector focusedControl(){AccessibilityNodeInfo r=root(target,epoch);if(r==null)return null;try{AccessibilityNodeInfo f=r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);if(f==null)return null;try{if(nativeContainer(f)){for(int i=0;i<Math.min(64,f.getChildCount());i++){AccessibilityNodeInfo n=f.getChild(i);if(n!=null)try{if(n.isSelected())return recordSelector(n,target);}finally{n.recycle();}}return null;}return recordSelector(f,target);}finally{f.recycle();}}finally{r.recycle();}}
  void reviewRecording(){
   recording=false;hideBadge();ensureGuide();rendered="review";rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;selection=0;
-  heading.setText("¿Ya estás en tu destino?");hint.setText("Si el canal se ve y se oye, prueba el recorrido desde cero antes de guardarlo.");
+  heading.setText("¿Ya estás en tu destino?");hint.setText("Si esta es la pantalla o sección que deseas, prueba el recorrido antes de guardarlo.");
   addRow("done","Probar y guardar este destino",()->{hideGuide();TvRecovery.get(this).taught();});
   addRow("continue","Seguir navegando",()->{hideGuide();recording(true);});
   addRow("cancel","Cancelar configuración",()->TvRecovery.get(this).cancel("Configuración cancelada"));paint();
@@ -275,7 +275,7 @@ public final class TvNavigationService extends AccessibilityService {
    JSONObject endpoint=new JSONObject().put("activity",snapshot.activity);
    Selector marker=null;
    for(Selector s:snapshot.markers)if(videoType(s.type)){marker=s;break;}
-   if(marker==null)for(Selector s:snapshot.markers)if(!channel.isEmpty()&&(channelLabel(s.text,channel)||channelLabel(s.description,channel))){marker=s;break;}
+   if(marker==null){int best=-1;for(Selector s:snapshot.markers)if(!channel.isEmpty()&&(channelLabel(s.text,channel)||channelLabel(s.description,channel))){int score=(s.id.isEmpty()?0:8)+(s.text.equalsIgnoreCase(channel)||s.description.equalsIgnoreCase(channel)?4:0);if(score>best){marker=s;best=score;}}}
    if(marker!=null)endpoint.put("marker",marker.json());
    if(marker==null&&(snapshot.activity.isEmpty()||snapshot.activity.equals(source))){
     Selector confirmed=lastConfirmed;
@@ -304,8 +304,8 @@ public final class TvNavigationService extends AccessibilityService {
  private void ensureGuide(){
   if(overlay!=null)return;
   overlay=new LinearLayout(this);overlay.setOrientation(1);overlay.setPadding(dp(12),dp(10),dp(12),dp(10));GradientDrawable bg=new GradientDrawable();bg.setColor(0xF0121720);bg.setCornerRadius(dp(12));overlay.setBackground(bg);
-  heading=text("Configurar canal",18,Color.WHITE);overlay.addView(heading);
-  hint=text("Elige los controles de la app hasta llegar a tu canal. Atrás cancela.",11,0xFFB8BFC5);overlay.addView(hint);
+  heading=text("Configurar destino",18,Color.WHITE);overlay.addView(heading);
+  hint=text("Elige los controles de la app hasta llegar a tu destino. Atrás cancela.",11,0xFFB8BFC5);overlay.addView(hint);
   scroll=new ScrollView(this);rows=new LinearLayout(this);rows.setOrientation(1);scroll.addView(rows);overlay.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
   if(Build.VERSION.SDK_INT>=30){overlay.setFocusableInTouchMode(true);overlay.setDescendantFocusability(android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS);overlay.setOnKeyListener((v,k,e)->TvRecovery.handleKey(e));}
   WindowManager.LayoutParams lp=new WindowManager.LayoutParams(Math.min(dp(500),getResources().getDisplayMetrics().widthPixels*60/100),Math.min(dp(270),getResources().getDisplayMetrics().heightPixels*70/100),WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|(Build.VERSION.SDK_INT<30?WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE:0),PixelFormat.TRANSLUCENT);
@@ -318,7 +318,7 @@ public final class TvNavigationService extends AccessibilityService {
  }
  void showConfirmation(String channel){
   ensureGuide();rendered="confirm";rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;selection=0;
-  heading.setText("¿Es el canal elegido?");hint.setText("Comprueba imagen y sonido de «"+channel+"». Guardar no activa todavía el inicio automático.");
+  heading.setText("¿Llegó al destino elegido?");hint.setText("Comprueba que esta es la pantalla o sección «"+channel+"». Guardar no activa todavía el inicio automático.");
   addRow("confirm_yes","Guardar destino",()->TvRecovery.get(this).confirmTest(true));
   addRow("confirm_no","Ahora no · conservar borrador",()->TvRecovery.get(this).confirmTest(false));paint();
  }

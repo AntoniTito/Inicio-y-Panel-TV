@@ -578,7 +578,7 @@ public class PanelService extends AccessibilityService {
     title.setText("Información del equipo");subtitle.setText("Datos consultados a Android");info("Android "+Build.VERSION.RELEASE+" · API "+Build.VERSION.SDK_INT);info("Modelo: "+Build.MODEL);info(storageSummary());
     addKey("display","Pantalla","Resolución y frecuencia declaradas",()->push(new Page("display",null)));addKey("diagnostics","Diagnóstico y permisos",bridgeStatus,()->push(new Page("diagnostics",null)));return true;
    case "manage":
-    addKey("tvRecovery","Mi control y arranque","Botones independientes, apps y destinos",()->nativePage("Mi control y arranque",new Intent(this,TvRecoveryActivity.class)));
+    addKey("tvRecovery","Mi control y arranque","Botones independientes, apps y destinos",()->nativePage("Mi control y arranque",TvRecoveryActivity.openIntent(this)));
     title.setText("Aplicaciones");subtitle.setText("Apps que pueden abrirse · "+managerFilter);
     adjustable("filter","Mostrar: "+managerFilter,"← → cambiar filtro",()->cycleFilter(1),()->cycleFilter(-1),()->cycleFilter(1));
     for(AppCatalog.Entry e:catalog.all()){if(managerFilter.equals("Usuario")&&e.system||managerFilter.equals("Sistema")&&!e.system||managerFilter.equals("Ocultas")&&catalog.visible(e))continue;addKey("app:"+e.pkg,e.title,(catalog.visible(e)?"Visible en el panel":"Oculta del panel")+(e.system?" · sistema":""),()->push(new Page("app",e.pkg)));}

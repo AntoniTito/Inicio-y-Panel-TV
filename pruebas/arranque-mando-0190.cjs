@@ -21,12 +21,12 @@ const checks=[],check=(v,label)=>{if(!v)throw Error(label+' '+JSON.stringify(p()
   c({op:'event',event:'boot_waiting'});check(p().phase==='waiting','boot accepted while navigation service is not connected');
   await q.sleep(1200);check(p().phase==='waiting','boot remains pending instead of consuming the request');
   q.command(s,'shell','settings','put','secure','enabled_accessibility_services',base+':'+nav);
-  await q.wait(()=>p().phase==='idle'&&p().status.startsWith('Canal preparado:'),45000);check(p().step===3,'late navigation service resumes the same boot request');
+  await q.wait(()=>p().phase==='idle'&&/^(Canal|Destino) preparado:/.test(p().status),45000);check(p().step===3,'late navigation service resumes the same boot request');
   const before=q.command(s,'shell','pidof','local.z6qa.tvfixture');
   q.command(s,'shell','input','keyevent','223');await q.sleep(350);c({op:'event',event:'boot_waiting'});
   check(p().phase==='waiting','automatic boot waits while display is off');
   check(q.command(s,'shell','pidof','local.z6qa.tvfixture')===before,'no target app restart before wake');
-  q.command(s,'shell','input','keyevent','224');await q.wait(()=>p().phase==='idle'&&p().status.startsWith('Canal preparado:'),45000);
+  q.command(s,'shell','input','keyevent','224');await q.wait(()=>p().phase==='idle'&&/^(Canal|Destino) preparado:/.test(p().status),45000);
   check(p().step===3,'screen-on event resumes automatic preparation');
   const after=q.command(s,'shell','pidof','local.z6qa.tvfixture');c({op:'event',event:'boot'});await q.sleep(700);check(q.command(s,'shell','pidof','local.z6qa.tvfixture')===after,'duplicate boot does not restart the app twice');
  }finally{q.command(s,'shell','input','keyevent','224');c({op:'cancel'});q.panel(s,'tv_restore',original);q.panel(s,'tv_buttons_restore',buttons);q.command(s,'shell','settings','put','secure','enabled_accessibility_services',services);q.command(s,'shell','cmd','appops','set','local.z6panel','GET_USAGE_STATS',usage);}

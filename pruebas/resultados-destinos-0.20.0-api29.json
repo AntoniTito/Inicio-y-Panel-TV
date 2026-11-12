@@ -7,5 +7,7 @@
   "photosHashPreserved": 2,
   "sharedRoutesMigrated": 1,
   "physicalRouteSaveAndReuseConfirmationPending": true,
-  "physicalRenameDeleteConfirmationPending": true
+  "physicalRenameDeleteConfirmationPending": true,
+  "routeSaveConfirmedByUser": true,
+  "controlReentryFailureReported": true
 }

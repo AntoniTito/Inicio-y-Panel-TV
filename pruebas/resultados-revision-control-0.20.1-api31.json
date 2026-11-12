@@ -1,0 +1,28 @@
+{
+  "api": 31,
+  "emulator": true,
+  "actualVideo": false,
+  "checks": [
+    "home and control task coexist before reopening",
+    "real panel entry opens configuration after HOME",
+    "repeated entry returns to main with no stale editor",
+    "reopening dismisses capture dialog and releases key interception",
+    "route deletion is directly visible in manager",
+    "cancel route deletion preserves all assignments",
+    "library-only deletion keeps button and startup copies",
+    "complete route deletion removes library and matching draft",
+    "complete deletion keeps button identity and normal reopen action",
+    "complete deletion disables matching automatic route",
+    "deletion preserves unrelated app button",
+    "empty route manager retains a way back",
+    "route instructions describe a generic screen rather than television",
+    "choosing a different app resets stale route to normal opening",
+    "normal opening exposes no compulsory destination",
+    "another app opens without teaching a channel or section",
+    "automatic startup works without route or navigation permission",
+    "generic destination confirmation contains no video requirement",
+    "optional non-TV section records tests and saves successfully",
+    "configuration remains accessible after saving generic destination"
+  ],
+  "apkSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07"
+}

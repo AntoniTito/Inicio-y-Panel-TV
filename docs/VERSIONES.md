@@ -22,9 +22,10 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 | `v0.18.0` | Etiqueta historica | Inicio y recuperación de TV: app y canal elegibles, recorrido guiado, arranque y despertar optativos, tecla configurable y datos privados por dispositivo. Código 52; recuperación 0.17.0/código 53. |
 | `v0.18.1` | Etiqueta histórica | Recuperacion del auxiliar por eventos sin reiniciar depuracion, estado real del boton y reintentos limitados. Codigo 54; recuperacion 0.18.0/codigo 55. |
 | `v0.19.0` | `main` | Botones independientes, destino en la app, arranque sin doble apertura y selector por capacidades reales. APK c56; recuperación 0.18.1/c57. Evidencia y límites en MI-CONTROL.md y VERIFICACION-0.19.0.md. |
-| `0.20.0` | `main`, comprobación física pendiente | Borrador persistente, destinos reutilizables y etiquetas independientes de los códigos de la tecla. APK c58; recuperación 0.19.0/c59. Ver DESTINOS-Y-BOTONES.md y VERIFICACION-0.20.0.md. |
+| `0.20.0` | Commit histórico `96c622f` | Guardado confirmado por el usuario. El regreso a Mi control y la gestión se corrigen en 0.20.1; no se recomienda esta interfaz anterior. APK c58 y recuperación histórica 0.19.0/c59. |
+| `0.20.1` | `main`, validación física de la actualización pendiente | Regreso a Mi control, gestor visible de rutas, borrado con usos y destinos genéricos opcionales. APK c60; recuperación 0.20.0/c61 con arreglo singleTask. Ver VERIFICACION-0.20.1.md. |
 
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado y las pruebas físicas pendientes están en VERIFICACION-0.20.0.md. La recuperación vigente conserva el comportamiento 0.19.0 con código 59 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 60 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
+Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado y las pruebas físicas pendientes están en VERIFICACION-0.20.1.md. La recuperación vigente conserva la interfaz 0.20.0 con el arreglo singleTask y código 61, con la firma original para API 29 y 31. Tras instalarla se necesita código 62 o superior para actualizar. Las recuperaciones anteriores y etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 

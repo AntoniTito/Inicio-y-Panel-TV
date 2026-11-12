@@ -1,0 +1,29 @@
+{
+  "api": 31,
+  "emulator": true,
+  "actualVideo": false,
+  "processRecreation": true,
+  "checks": [
+    "completed test persists a recoverable pending destination",
+    "previous assignment stays unchanged before confirmation",
+    "Home interruption retains completed test",
+    "pending destination survives real process recreation",
+    "saving recovered test updates original button",
+    "confirmed destination enters common library once",
+    "another button reuses the tested destination",
+    "reusing a destination preserves key and custom label",
+    "startup and wake reuse same tested route",
+    "reuse creates no duplicate destinations",
+    "renaming leaves physical binding unchanged",
+    "interrupted incomplete test keeps draft and previous verified assignment",
+    "incomplete test cannot be saved as verified",
+    "retry reuses captured route and confirmed save deduplicates it",
+    "editor exposes internal key identity, rename and delete",
+    "cancelled deletion preserves button",
+    "confirmed button deletion preserves reusable destination",
+    "new generic button needs no fixed Netflix or YouTube name",
+    "new unassigned button can be deleted from capture dialog",
+    "export restore preserves labels and reusable destinations"
+  ],
+  "apkSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07"
+}

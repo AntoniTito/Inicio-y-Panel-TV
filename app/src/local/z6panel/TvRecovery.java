@@ -80,13 +80,13 @@ final class TvRecovery {
   s.pkg=pkg;s.key=old.key;s.scan=old.scan;s.keyName=old.keyName;s.remoteDevice=old.remoteDevice;s.remoteCode=old.remoteCode;s.signature=TvRecoveryConfig.signature(context,pkg);
   try{s.name=context.getPackageManager().getApplicationLabel(context.getPackageManager().getApplicationInfo(pkg,0)).toString();}catch(Exception e){s.name=pkg;}
   TvRecoveryConfig.save(context,s);runtime.edit().putInt("last_boot",bootCount()).putBoolean("asleep",false).apply();
-  setStatus("App elegida. Configura el recorrido al canal");changed();
+  setStatus("App elegida. La sección de destino es opcional");changed();
  }
  void toggle(String kind){
   TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context).copy();
   if(kind.equals("boot"))s.boot=!s.boot;else if(kind.equals("wake"))s.wake=!s.wake;else if(kind.equals("button"))s.button=!s.button;else throw new IllegalArgumentException();
   boolean enabling=kind.equals("boot")?s.boot:kind.equals("wake")?s.wake:s.button;
-  if(enabling&&(!TvRecoveryConfig.sameApp(context,s)||!s.verified||TvNavigationService.active==null))throw new IllegalStateException("Primero habilita la ayuda y prueba el recorrido al canal");
+  if(enabling&&(!TvRecoveryConfig.sameApp(context,s)||s.verified&&TvNavigationService.active==null))throw new IllegalStateException("Elige una aplicación disponible; para un destino, habilita la asistencia y prueba su recorrido");
   if(enabling&&kind.equals("button")&&!s.hasBinding())throw new IllegalStateException("Asigna una tecla libre primero");
   if(!enabling)cancel("");TvRecoveryConfig.save(context,s);runtime.edit().putInt("last_boot",bootCount()).apply();changed();
  }
@@ -100,13 +100,13 @@ final class TvRecovery {
  void assignHardware(String device,int code,String name){if(device.isEmpty()||device.length()>256||!local.z6bridge.RemoteKeyFormat.allowed(code))throw new IllegalArgumentException("Tecla física no admitida");cancel("");lastShortcutEvent=0;TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context).copy();s.key=s.scan=0;s.remoteDevice=device;s.remoteCode=code;s.keyName=name;s.button=false;TvRecoveryConfig.save(context,s);changed();}
  void activate(){
   TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context).copy();
-  if(!s.verified||!TvRecoveryConfig.sameApp(context,s)||TvNavigationService.active==null)throw new IllegalStateException("Prueba primero el recorrido y habilita Asistencia de TV");
+  if(!TvRecoveryConfig.sameApp(context,s)||s.verified&&TvNavigationService.active==null)throw new IllegalStateException("Elige una aplicación disponible y prueba el destino si lo utilizas");
   s.boot=true;s.wake=true;s.button=s.hasBinding();TvRecoveryConfig.save(context,s);
   runtime.edit().putInt("last_boot",bootCount()).putBoolean("asleep",false).apply();setStatus("Activado: se reabrirá la app al arrancar y al despertar");changed();
  }
  void disable(){cancel("");TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context).copy();s.boot=s.wake=s.button=false;TvRecoveryConfig.save(context,s);List<RemoteActions.Action> list=new ArrayList<>();for(RemoteActions.Action a:RemoteActions.get(context)){a=a.copy();a.enabled=false;list.add(a);}RemoteActions.persist(context,list);TvRemoteKeys.disable(context);TvRecoveryActivity.stopLearning();setStatus("Inicio automático y botones desactivados");changed();}
  void request(String why,boolean teach,TvRecoveryConfig.Settings trial){
-  start(why,teach,trial,trial!=null,"route","",false);
+  TvRecoveryConfig.Settings selected=trial==null?TvRecoveryConfig.get(context):trial;start(why,teach,trial,trial!=null,teach||selected.verified?"route":"reopen","",false);
  }
  void requestProfile(RemoteActions.Action action,boolean teach,boolean test){
   if(busy())cancel("");
@@ -117,7 +117,7 @@ final class TvRecovery {
   boolean automatic=why.equals("arranque")||why.equals("despertar");
   if(!interactive()&&!automatic){setStatus("La pantalla está apagada; no se abrirá la app");return;}
   job=(trial==null?TvRecoveryConfig.get(context):trial).copy();
-  if(job.pkg.isEmpty()){notice("Elige primero la aplicación de TV");return;}
+  if(job.pkg.isEmpty()){notice("Elige primero una aplicación");return;}
   if((teach||!automatic&&kind.equals("route")&&job.verified)&&TvNavigationService.active==null){notice("Activa Asistencia de TV para configurar el destino");return;}
   generation++;guide=teach;testing=trialTest;draft=teach?job.copy():trial;reason=why;phase="waiting";
   jobKind=kind;profileId=id;saveProfile=saveToProfile;
@@ -129,7 +129,7 @@ final class TvRecovery {
   prepareAfter=why.equals("arranque")?SystemClock.elapsedRealtime()+5000:0;
   if(prepareAfter!=0)ui.postDelayed(()->{if(token==generation)ready();},5000);
   deadline=()->{if(token==generation)fail("No se pudo preparar la app: revisa Internet y el control auxiliar",false);};ui.postDelayed(deadline,90000);
-  if(why.equals("arranque")||why.equals("despertar")){
+  if((why.equals("arranque")||why.equals("despertar"))&&job.verified){
    network=new ConnectivityManager.NetworkCallback(){public void onAvailable(Network n){ui.post(TvRecovery.this::ready);}public void onCapabilitiesChanged(Network n,NetworkCapabilities c){ui.post(TvRecovery.this::ready);}};
    try{((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE)).registerDefaultNetworkCallback(network);}catch(RuntimeException e){network=null;}
   }
@@ -139,7 +139,7 @@ final class TvRecovery {
  private void ready(){
   if(!phase.equals("waiting")||working||!interactive()||!unlocked()||SystemClock.elapsedRealtime()<prepareAfter)return;
   final boolean automatic=reason.equals("arranque")||reason.equals("despertar");
-  if(automatic&&!internet())return;
+  if(automatic&&job.verified&&!internet())return;
   if(automatic&&job.verified&&TvNavigationService.active==null)return;
   if(!jobKind.equals("open")&&!NativeAppRestart.available(context)&&(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive())){if(!automatic)fail("Prepara el acceso para reabrir apps en Mi control. Abrir una app no requiere el auxiliar.",false);return;}
   if(!coverRequested&&NativeAppRestart.available(context)&&!jobKind.equals("open")){
@@ -189,9 +189,9 @@ final class TvRecovery {
    runtime.edit().putBoolean("inflight",false).apply();
    if(!guide&&!jobKind.equals("route")){finish(jobKind.equals("open")?"App abierta":"App cerrada y reabierta",false);return;}
    if(!guide&&(!job.verified||job.steps.length()==0)){finish("App reabierta. El destino necesita configuración",true);return;}
-   if(TvNavigationService.active==null){finish("App reabierta. Activa Asistencia de TV para llegar al canal",true);return;}
+   if(TvNavigationService.active==null){finish("App reabierta. Activa la asistencia para llegar a una sección",true);return;}
    if(guide){draft.steps=new JSONArray();draft.verified=false;setStatus("Navega en la app con tu control. Home termina; Atrás vuelve dentro de la app.");TvNavigationService.active.recording(true);}
-   deadline=()->{if(token==generation)fail(guide?"Terminó el tiempo de configuración; vuelve a intentarlo":"App abierta; no se pudo confirmar el canal. Puedes continuar manualmente",false);};
+   deadline=()->{if(token==generation)fail(guide?"Terminó el tiempo de configuración; vuelve a intentarlo":"App abierta; no se pudo confirmar el destino. Puedes continuar manualmente",false);};
    ui.postDelayed(deadline,guide?600000:60000);if(!guide)scheduleProbe(500);
   }catch(RuntimeException e){fail("Android no permitió abrir la app: "+e.getClass().getSimpleName(),false);}
  }
@@ -222,7 +222,7 @@ final class TvRecovery {
     if(SystemClock.elapsedRealtime()-lastClick<400){scheduleProbe(450);return;}
     if(nav.matchesEndpoint(snapshot,job.endpoint)){
      if(testing){try{SavedDestinations.passed(context,job,profileId,saveProfile);}catch(RuntimeException e){fail("No se pudo conservar la prueba. El destino anterior sigue guardado.",false);return;}clearDeadline();phase="confirming";deadline=()->{if(token==generation)fail("Prueba pendiente de guardar en Mi control → Destino pendiente",false);};ui.postDelayed(deadline,300000);setStatus("Prueba completada · confirma Guardar destino");nav.showConfirmation(job.channel);}
-     else finish("Canal preparado: "+job.channel,false);
+     else finish("Destino preparado: "+job.channel,false);
     }
     return;
    }
@@ -259,12 +259,12 @@ final class TvRecovery {
  }
  private void advanced(){routeIndex++;scrolls=0;walkDirection=1;lastClick=SystemClock.elapsedRealtime();scheduleProbe(400);}
  void taught(){
-  if(!phase.equals("teaching")||draft.steps.length()==0){notice("Navega hasta el canal con flechas y OK antes de terminar");if(TvNavigationService.active!=null)TvNavigationService.active.recording(true);return;}
+  if(!phase.equals("teaching")||draft.steps.length()==0){notice("Navega hasta tu destino con flechas y OK antes de terminar");if(TvNavigationService.active!=null)TvNavigationService.active.recording(true);return;}
   TvNavigationService nav=TvNavigationService.active;if(nav==null)return;
   final long token=generation;nav.snapshot(snapshot->{
    if(token!=generation||!phase.equals("teaching")||snapshot==null)return;
    JSONObject endpoint=nav.endpoint(snapshot,draft.channel,learnSource);
-   if(endpoint==null){notice("No se puede verificar esta pantalla; prueba cuando el canal ya se vea");nav.recording(true);return;}
+   if(endpoint==null){notice("No se puede verificar esta pantalla; prueba cuando ya veas el destino");nav.recording(true);return;}
    draft.endpoint=endpoint;draft.verified=true;TvRecoveryConfig.Settings trial=draft.copy();
    try{SavedDestinations.stage(context,trial,profileId,saveProfile);}catch(RuntimeException e){notice("No se pudo guardar el borrador; no se inició la prueba");nav.recording(true);return;}
    String id=profileId;boolean personal=saveProfile;finish("Probando el recorrido desde cero…",false);start("prueba",false,trial,true,"route",id,personal);
@@ -283,7 +283,7 @@ final class TvRecovery {
    else TvRecoveryConfig.save(context,SavedDestinations.apply(TvRecoveryConfig.get(context),target));
    SavedDestinations.discard(context);finish("Destino guardado: "+target.channel+" · disponible para botones y arranque",false);
   }catch(JSONException e){throw new IllegalStateException("No se pudo guardar el destino; se conserva el borrador",e);}
-  context.startActivity(new Intent(context,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));changed();
+  context.startActivity(TvRecoveryActivity.openIntent(context));changed();
  }
  void useDestination(String id,String button){SavedDestinations.Entry e=SavedDestinations.find(context,id);if(e==null||!TvRecoveryConfig.sameApp(context,e.target))throw new IllegalStateException("La app de este destino no está instalada o cambió de firma");cancel("");if(button.isEmpty()){TvRecoveryConfig.save(context,SavedDestinations.apply(TvRecoveryConfig.get(context),e.target));restored();}else{RemoteActions.Action a=RemoteActions.find(context,button);if(a==null)throw new IllegalStateException("El botón ya no existe");a=a.copy();a.target=SavedDestinations.apply(a.target,e.target);a.kind="route";RemoteActions.save(context,a);}setStatus("Destino asignado: "+e.target.channel);changed();}
  void cancel(String message){if(!busy()){generation++;return;}finish(message,false);}
@@ -342,6 +342,7 @@ final class TvRecovery {
  void testEvent(String event){
   if(!("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)))throw new SecurityException("Emulator only");
   if(event.equals("boot")){checkBoot();}
+  else if(event.equals("control_task_root")){cancel("");context.startActivity(new Intent(context,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra("control_home",true));}
   else if(event.equals("boot_waiting")){runtime.edit().putInt("last_boot",bootCount()-1).commit();checkBoot();}
   else if(event.equals("wake_cancel")){power(Intent.ACTION_SCREEN_OFF);power(Intent.ACTION_SCREEN_ON);disable();}
   else if(event.equals("held_button")){TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);if(!s.button||!s.hasBinding())throw new IllegalStateException();for(int i=0;i<8;i++){long now=SystemClock.uptimeMillis();key(new KeyEvent(now,now,0,s.key,0,0,0,s.scan));key(new KeyEvent(now,now,1,s.key,0,0,0,s.scan));}}

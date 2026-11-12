@@ -19,7 +19,7 @@ final class TvRecoveryDiagnostics {
   if(method.equals("tv_buttons_restore")){if(arg==null||arg.length()>524288)throw new IllegalArgumentException();t.cancel("");RemoteActions.restore(c,new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8)));t.changed();out.putString("status","OK");return;}
   if(method.equals("tv_native_prepared")){if(arg==null||arg.length()>4096)throw new IllegalArgumentException();JSONObject layout=new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8));if(!layout.optString("status").equals("OK")||!layout.optString("current").equals("local.z6panel/local.z6panel.RemoteLayoutReceiver/z6remote"))throw new IllegalArgumentException();RemoteActions.nativePrepared(c,layout);out.putString("status","OK");return;}
   if(method.equals("tv_inspect")){JSONObject state=t.inspect();if(TvNavigationService.active!=null)state.put("navigation",TvNavigationService.active.inspect());out.putString("json",state.toString());return;}
-  if(method.equals("tv_open")){c.startActivity(new Intent(c,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));out.putString("status","OK");return;}
+  if(method.equals("tv_open")){c.startActivity(TvRecoveryActivity.openIntent(c));out.putString("status","OK");return;}
   if(method.equals("tv_export")){out.putString("base64",Base64.encodeToString(TvRecoveryConfig.get(c).json().toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
   if(method.equals("tv_restore")){
    if(arg==null||arg.length()>65536)throw new IllegalArgumentException("Invalid TV backup");
@@ -47,7 +47,7 @@ final class TvRecoveryDiagnostics {
    case "activate":t.activate();break;
    case "toggle":t.toggle(o.getString("kind"));break;
    case "assign":t.assignKey(o.getInt("key"),o.optInt("scan"),o.optString("name"));break;
-   case "learn_key":case "prepare_key":String label=o.optString("name","Otro botón");if(label.length()>40)throw new IllegalArgumentException();c.startActivity(new Intent(c,TvRecoveryActivity.class).putExtra(op.equals("prepare_key")?"prepare_remote":"learn_remote",label).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP));break;
+   case "learn_key":case "prepare_key":String label=o.optString("name","Otro botón");if(label.length()>40)throw new IllegalArgumentException();c.startActivity(TvRecoveryActivity.openIntent(c).putExtra(op.equals("prepare_key")?"prepare_remote":"learn_remote",label));break;
    case "cancel":t.cancel("Recuperación cancelada");break;
    case "remote_fixture":TvRemoteKeys.fixture(o.getString("type"),o.optString("device","0003|ffff|0001|Z6 test remote"),o.optInt("code",88));break;
    case "choose":if(TvNavigationService.active==null||!TvNavigationService.active.shellChoose(o.getString("id")))throw new IllegalArgumentException("Guide control unavailable");break;
