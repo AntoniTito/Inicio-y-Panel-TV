@@ -3,7 +3,7 @@ import android.os.*;import android.content.*;import android.content.pm.*;import 
 /** ADB shell helper. Binder authenticates the app UID. No network listener or arbitrary commands. */
 public final class BridgeMain {
  static final String DESCRIPTOR="local.z6panel.system.v1";
- static final String VERSION="0.18.0-tv2";
+ static final String VERSION="0.19.0-tv3";
  static final java.util.concurrent.atomic.AtomicLong attachAttempts=new java.util.concurrent.atomic.AtomicLong();
  static volatile boolean clientLinked;
  static final class Attacher implements Runnable {
@@ -77,6 +77,7 @@ public final class BridgeMain {
   if("STATS".equals(op))return new org.json.JSONObject().put("attachAttempts",attachAttempts.get()).put("clientLinked",clientLinked).put("remote",RemoteKeys.stats()).toString();
   if("PING".equals(op))return recoveryRequired?"ERROR: RECOVERY_REQUIRED; restart local control":"OK";
   if(op!=null&&op.startsWith("REMOTE:"))return RemoteKeys.command(op.substring(7));
+  if(op!=null&&op.startsWith("REMOTE_LAYOUT:"))return NativeRemoteLayout.command(op.substring(14));
   if("FOREGROUND_APP".equals(op))return foregroundApp();
   if(op!=null&&op.startsWith("TV_NAV:")){String[] a=op.substring(7).split(":",-1);return a.length==2?tvKey(a[0],Integer.parseInt(a[1])):"DENIED";}
   if(op!=null&&op.startsWith("TV_FOCUS:"))return tvFocus(op.substring(9));

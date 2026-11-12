@@ -1,3 +1,7 @@
+# Mi control y arranque vigente
+
+Desde 0.19.0/c56 usa [Mi control y arranque](MI-CONTROL.md). Los botones son independientes y el destino se configura navegando directamente en la app. El apartado siguiente documenta la versión histórica 0.18.1, no la interfaz actual.
+
 # Inicio y recuperación de TV
 
 Disponible en Z6 Panel 0.18.1/código 54 para API 29 y 31. Se configura en **Ajustes → Aplicaciones → Inicio y recuperación de TV**.

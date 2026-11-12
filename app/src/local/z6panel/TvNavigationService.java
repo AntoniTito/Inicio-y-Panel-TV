@@ -43,22 +43,79 @@ public final class TvNavigationService extends AccessibilityService {
  String failureMessage(){if(actionFailure.equals("focus_mode"))return "El control auxiliar no está disponible; revísalo en Equipo → Diagnóstico";if(actionFailure.equals("foreground")||actionFailure.contains("window"))return "La app dejó de estar disponible en pantalla";if(actionFailure.startsWith("matches:"))return "El menú cambió; vuelve a elegir el control";return "La app no respondió a esa selección; puedes continuar manualmente";}
  private volatile long epoch;
  private boolean busy,retry,destroyed;private int queries;private Runnable pendingAction;
+ private boolean recording;private TextView badge;private Selector recordedFocus;private long lastRecordKey;private boolean recordedGesture;
+ private Selector pendingRecord;private String pendingRecordActivity="",pendingBaseline="";
+ private int recordingEvents,recordingKeys;
  private LinearLayout overlay,rows;private ScrollView scroll;private TextView heading,hint;
  private final ArrayList<View> rowViews=new ArrayList<>();private final ArrayList<Runnable> rowActions=new ArrayList<>();
  private final ArrayList<String> rowIds=new ArrayList<>();private int selection,painted=-1;
  private String rendered="";private final Set<Integer> overlayKeys=new HashSet<>();
- private final Runnable changed=()->{if(TvRecovery.instance!=null&&!target.isEmpty())TvRecovery.instance.navigationChanged();};
+ private final Runnable changed=()->{if(TvRecovery.instance!=null&&!target.isEmpty()){if(recording)recordSnapshot();else TvRecovery.instance.navigationChanged();}};
  @Override protected void onServiceConnected(){active=this;worker.allowCoreThreadTimeOut(true);end();TvRecoveryActivity.refresh();TvRecovery.readyChanged();}
  @Override public void onAccessibilityEvent(AccessibilityEvent e){
   if(target.isEmpty()||e==null||!target.contentEquals(e.getPackageName()==null?"":e.getPackageName()))return;
+  if(recording){
+   recordingEvents++;
+   int type=e.getEventType();
+   if(type==AccessibilityEvent.TYPE_VIEW_FOCUSED||type==AccessibilityEvent.TYPE_VIEW_SELECTED||type==AccessibilityEvent.TYPE_VIEW_CLICKED){
+    AccessibilityNodeInfo source=e.getSource();Selector selected=null;
+    if(source!=null)try{
+     if(type==AccessibilityEvent.TYPE_VIEW_SELECTED&&nativeContainer(source)){
+      int index=e.getCurrentItemIndex();for(int i=0;i<Math.min(64,source.getChildCount());i++){AccessibilityNodeInfo child=source.getChild(i);if(child!=null)try{AccessibilityNodeInfo.CollectionItemInfo item=child.getCollectionItemInfo();boolean row=item!=null&&item.getRowIndex()==index||e.getFromIndex()>=0&&i==index-e.getFromIndex();if(row){selected=recordSelector(child,target);break;}}finally{child.recycle();}}
+     }
+     if(selected==null)selected=recordSelector(source,target);
+    }finally{source.recycle();}
+    if(selected!=null)recordedFocus=selected;
+    if(type==AccessibilityEvent.TYPE_VIEW_CLICKED&&SystemClock.uptimeMillis()-lastRecordKey<1200&&!recordedGesture&&pendingRecord!=null){recordedGesture=true;lastConfirmed=pendingRecord;TvRecovery.get(this).recorded(pendingRecord,pendingRecordActivity);pendingRecord=null;}
+   }
+  }
   if(e.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED&&e.getClassName()!=null){String name=e.getClassName().toString();try{if(target.equals(getPackageManager().getActivityInfo(new ComponentName(target,name),0).packageName))lastActivity=name;}catch(android.content.pm.PackageManager.NameNotFoundException ignored){}}
-  ui.removeCallbacks(changed);ui.postDelayed(changed,150);
+  if(!recording||e.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED||e.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED||e.getEventType()==AccessibilityEvent.TYPE_VIEW_CLICKED){ui.removeCallbacks(changed);ui.postDelayed(changed,150);}
  }
  @Override public void onInterrupt(){if(TvRecovery.instance!=null)TvRecovery.instance.cancel("Ayuda de navegación interrumpida");end();}
  @Override public void onDestroy(){destroyed=true;if(TvRecovery.instance!=null)TvRecovery.instance.cancel("La ayuda de navegación se desconectó");end();worker.shutdownNow();active=null;TvRecoveryActivity.refresh();super.onDestroy();}
  void begin(String pkg){end();target=pkg;lastActivity="";AccessibilityServiceInfo info=getServiceInfo();if(info==null)return;info.packageNames=new String[]{pkg};info.eventTypes=AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED|AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED|AccessibilityEvent.TYPE_VIEW_SCROLLED;info.notificationTimeout=120;info.flags=AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS|AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;setServiceInfo(info);}
- void end(){epoch++;lastConfirmed=null;lastSnapshot=null;pendingAction=null;retry=false;target="";lastActivity="";ui.removeCallbacks(changed);hideGuide();AccessibilityServiceInfo info=getServiceInfo();if(info!=null){info.packageNames=new String[]{"local.z6panel.navigation.idle"};info.eventTypes=0;info.flags=0;setServiceInfo(info);}}
+ void end(){epoch++;recording=false;recordedFocus=null;hideBadge();lastConfirmed=null;lastSnapshot=null;pendingAction=null;retry=false;target="";lastActivity="";ui.removeCallbacks(changed);hideGuide();AccessibilityServiceInfo info=getServiceInfo();if(info!=null){info.packageNames=new String[]{"local.z6panel.navigation.idle"};info.eventTypes=0;info.flags=0;setServiceInfo(info);}}
+ private static Selector recordSelector(AccessibilityNodeInfo source,String pkg){
+  if(nativeContainer(source)){for(int i=0;i<Math.min(64,source.getChildCount());i++){AccessibilityNodeInfo child=source.getChild(i);if(child!=null)try{if(child.isSelected())return recordSelector(child,pkg);}finally{child.recycle();}}return null;}
+  AccessibilityNodeInfo n=AccessibilityNodeInfo.obtain(source);
+  try{for(int i=0;i<5&&n!=null;i++){if(!readable(n,pkg))return null;if(isListItem(n,pkg)||n.isClickable()){Selector s=selector(n,pkg);if(s!=null){s.nativeRow=isListItem(n,pkg);return s;}}AccessibilityNodeInfo parent=n.getParent();n.recycle();n=parent;}return null;}finally{if(n!=null)n.recycle();}
+ }
+ void recording(boolean value){
+  recording=value;pendingRecord=null;recordedFocus=null;AccessibilityServiceInfo info=getServiceInfo();if(info!=null){if(value)info.eventTypes|=AccessibilityEvent.TYPE_VIEW_FOCUSED|AccessibilityEvent.TYPE_VIEW_SELECTED|AccessibilityEvent.TYPE_VIEW_CLICKED;setServiceInfo(info);}
+  if(value){showBadge("Configurar destino · navega como siempre\nHome: terminar · Atrás: volver en la app");ui.postDelayed(changed,150);}else hideBadge();
+ }
+ private void showBadge(String label){
+  if(badge==null){badge=text(label,11,0xFFE5F0F3);badge.setPadding(dp(10),dp(7),dp(10),dp(7));badge.setBackground(background(true));badge.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+   WindowManager.LayoutParams p=new WindowManager.LayoutParams(-2,-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,PixelFormat.TRANSLUCENT);p.gravity=Gravity.TOP|Gravity.RIGHT;p.x=dp(12);p.y=dp(12);((WindowManager)getSystemService(WINDOW_SERVICE)).addView(badge,p);
+  }badge.setText(label);badge.post(()->{if(badge!=null)badge.requestFocusFromTouch();});
+ }
+ private void hideBadge(){if(badge!=null){try{((WindowManager)getSystemService(WINDOW_SERVICE)).removeView(badge);}catch(IllegalArgumentException ignored){}badge=null;}}
+ void recordingStatus(int steps,String label){if(recording)showBadge(steps+" elecciones · "+label+"\nHome: terminar · Atrás: volver en la app");}
+ void recordKey(KeyEvent e){
+  if(!recording)return;
+  recordingKeys++;
+  int key=e.getKeyCode();
+  if(key>=19&&key<=22)pendingRecord=null;
+  if(key==KeyEvent.KEYCODE_BACK){TvRecovery.get(this).recordedBack(lastActivity);return;}
+  if(key!=KeyEvent.KEYCODE_DPAD_CENTER&&key!=KeyEvent.KEYCODE_ENTER)return;
+  lastRecordKey=SystemClock.uptimeMillis();recordedGesture=false;
+  Selector before=focusedControl();if(before==null)before=recordedFocus;
+  pendingRecord=before;pendingRecordActivity=lastActivity;pendingBaseline=fingerprint(lastSnapshot);ui.removeCallbacks(changed);ui.postDelayed(changed,250);
+ }
+ private static String fingerprint(Snapshot s){if(s==null)return "";StringBuilder b=new StringBuilder(s.activity);for(Selector v:s.controls)b.append(v.key());return b.toString();}
+ private void recordSnapshot(){snapshot(s->{if(!recording||s==null)return;if(pendingRecord!=null&&SystemClock.uptimeMillis()-lastRecordKey<1800&&!recordedGesture&&!pendingBaseline.isEmpty()&&!pendingBaseline.equals(fingerprint(s))){Selector selected=pendingRecord;pendingRecord=null;recordedGesture=true;lastConfirmed=selected;TvRecovery.get(this).recorded(selected,pendingRecordActivity);}});}
+ private static boolean nativeContainer(AccessibilityNodeInfo n){String type=String.valueOf(n.getClassName());return type.endsWith("ListView")||type.endsWith("GridView");}
+ private Selector focusedControl(){AccessibilityNodeInfo r=root(target,epoch);if(r==null)return null;try{AccessibilityNodeInfo f=r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);if(f==null)return null;try{if(nativeContainer(f)){for(int i=0;i<Math.min(64,f.getChildCount());i++){AccessibilityNodeInfo n=f.getChild(i);if(n!=null)try{if(n.isSelected())return recordSelector(n,target);}finally{n.recycle();}}return null;}return recordSelector(f,target);}finally{f.recycle();}}finally{r.recycle();}}
+ void reviewRecording(){
+  recording=false;hideBadge();ensureGuide();rendered="review";rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;selection=0;
+  heading.setText("¿Ya estás en tu destino?");hint.setText("Si el canal se ve y se oye, prueba el recorrido desde cero antes de guardarlo.");
+  addRow("done","Probar y guardar este destino",()->{hideGuide();TvRecovery.get(this).taught();});
+  addRow("continue","Seguir navegando",()->{hideGuide();recording(true);});
+  addRow("cancel","Cancelar configuración",()->TvRecovery.get(this).cancel("Configuración cancelada"));paint();
+ }
  String activity(){return lastActivity;}
+ boolean liveRecording(){return recording&&overlay==null;}
  private static String norm(CharSequence value){if(value==null)return "";String s=value.toString().trim().replaceAll("\\s+"," ");return s.length()>160?s.substring(0,160):s;}
  static boolean videoType(String type){return type.endsWith("SurfaceView")||type.endsWith("TextureView")||type.endsWith("VideoView")||type.endsWith("PlayerView");}
  private static boolean readable(AccessibilityNodeInfo n,String pkg){return n!=null&&(n.getPackageName()==null||pkg.contentEquals(n.getPackageName()))&&!n.isPassword()&&!n.isEditable()&&!String.valueOf(n.getClassName()).contains("EditText");}
@@ -134,18 +191,26 @@ public final class TvNavigationService extends AccessibilityService {
  void click(Selector wanted,Result<Boolean> done){
   final String pkg=target;final long token=epoch;
   actionFailure="";remoteState="";query(()->{
-   if(!pkg.equals(SystemBridge.read("FOREGROUND_APP",1200)))return unavailable("foreground");
-   if(!"OK".equals(SystemBridge.call("TV_FOCUS:"+pkg)))return unavailable("focus_mode");
+   prepareNativeFocus(token);
    AccessibilityNodeInfo root=root(pkg,token);if(root==null)return unavailable("window");
    ArrayList<AccessibilityNodeInfo> matches=new ArrayList<>();
    try{
     walk(root,pkg,token,n->{Selector s=selector(n,pkg);if(s!=null&&s.key().equals(wanted.key())&&activatable(n))matches.add(AccessibilityNodeInfo.obtain(n));});
     if(token!=epoch||matches.size()!=1)return unavailable("matches:"+matches.size());
     AccessibilityNodeInfo node=matches.get(0);
-    if(isListItem(node,pkg))return remoteList(node,wanted,pkg,token);
+    if(isListItem(node,pkg)){
+     AccessibilityNodeInfo parent=node.getParent();try{if(parent!=null)parent.performAction(AccessibilityNodeInfo.ACTION_FOCUS);node.performAction(AccessibilityNodeInfo.ACTION_SELECT);node.refresh();if(node.isSelected()&&node.performAction(AccessibilityNodeInfo.ACTION_CLICK)){lastConfirmed=wanted;return true;}}finally{if(parent!=null)parent.recycle();}
+     if(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive())return unavailable("native_selection");
+     if(!pkg.equals(SystemBridge.read("FOREGROUND_APP",1200))||!"OK".equals(SystemBridge.call("TV_FOCUS:"+pkg)))return unavailable("focus_mode");
+     return remoteList(node,wanted,pkg,token);
+    }
     return node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
    }finally{for(AccessibilityNodeInfo n:matches)n.recycle();}
   },ok->done.done(Boolean.TRUE.equals(ok)),true);
+ }
+ private void prepareNativeFocus(long token){
+  CountDownLatch latch=new CountDownLatch(1);ui.post(()->{View focus=null;try{if(token!=epoch)return;if(badge!=null)focus=badge;else{focus=new View(this);WindowManager.LayoutParams p=new WindowManager.LayoutParams(1,1,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,PixelFormat.TRANSLUCENT);((WindowManager)getSystemService(WINDOW_SERVICE)).addView(focus,p);}focus.requestFocusFromTouch();}catch(RuntimeException ignored){}finally{if(focus!=null&&focus!=badge)try{((WindowManager)getSystemService(WINDOW_SERVICE)).removeView(focus);}catch(RuntimeException ignored){}latch.countDown();}});
+  try{latch.await(800,TimeUnit.MILLISECONDS);}catch(InterruptedException e){Thread.currentThread().interrupt();}
  }
  static boolean injectedKey(KeyEvent e){int k=e.getKeyCode();return active!=null&&active.remoteInput&&e.getDeviceId()==-1&&(k==19||k==20||k==23);}
  private boolean inputWindow(boolean release){
@@ -196,15 +261,15 @@ public final class TvNavigationService extends AccessibilityService {
  void scroll(boolean forward,Result<Boolean> done){
   final String pkg=target;final long token=epoch;
   query(()->{
-   if(!pkg.equals(SystemBridge.read("FOREGROUND_APP",1200)))return false;
    AccessibilityNodeInfo r=root(pkg,token);if(r==null)return false;ArrayList<AccessibilityNodeInfo> candidates=new ArrayList<>();
    try{walk(r,pkg,token,n->{if(n.isVisibleToUser()&&n.isScrollable())candidates.add(AccessibilityNodeInfo.obtain(n));});
     for(AccessibilityNodeInfo n:candidates)if(token==epoch&&n.performAction(forward?AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD))return true;return false;
    }finally{for(AccessibilityNodeInfo n:candidates)n.recycle();}
   },ok->done.done(Boolean.TRUE.equals(ok)),true);
  }
- void back(Result<Boolean> done){final String pkg=target;final long token=epoch;query(()->pkg.equals(SystemBridge.read("FOREGROUND_APP",1200)),ok->{if(Boolean.TRUE.equals(ok)&&token==epoch)done.done(performGlobalAction(GLOBAL_ACTION_BACK));else done.done(false);},true);}
- void isTargetForeground(Result<Boolean> done){final String pkg=target;query(()->pkg.equals(SystemBridge.read("FOREGROUND_APP",1200)),done);}
+ private boolean targetVisible(String pkg,long token){AccessibilityNodeInfo n=root(pkg,token);if(n==null)return false;n.recycle();return true;}
+ void back(Result<Boolean> done){final String pkg=target;final long token=epoch;query(()->targetVisible(pkg,token),ok->{if(Boolean.TRUE.equals(ok)&&token==epoch)done.done(performGlobalAction(GLOBAL_ACTION_BACK));else done.done(false);},true);}
+ void isTargetForeground(Result<Boolean> done){final String pkg=target;final long token=epoch;query(()->targetVisible(pkg,token),done);}
  JSONObject endpoint(Snapshot snapshot,String channel,String source){
   try{
    JSONObject endpoint=new JSONObject().put("activity",snapshot.activity);
@@ -238,27 +303,13 @@ public final class TvNavigationService extends AccessibilityService {
   hint=text("Elige los controles de la app hasta llegar a tu canal. Atrás cancela.",11,0xFFB8BFC5);overlay.addView(hint);
   scroll=new ScrollView(this);rows=new LinearLayout(this);rows.setOrientation(1);scroll.addView(rows);overlay.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
   if(Build.VERSION.SDK_INT>=30){overlay.setFocusableInTouchMode(true);overlay.setDescendantFocusability(android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS);overlay.setOnKeyListener((v,k,e)->TvRecovery.handleKey(e));}
-  WindowManager.LayoutParams lp=new WindowManager.LayoutParams(Math.min(dp(390),getResources().getDisplayMetrics().widthPixels*42/100),getResources().getDisplayMetrics().heightPixels*90/100,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|(Build.VERSION.SDK_INT<30?WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE:0),PixelFormat.TRANSLUCENT);
-  lp.gravity=Gravity.RIGHT|Gravity.CENTER_VERTICAL;lp.x=dp(10);
+  WindowManager.LayoutParams lp=new WindowManager.LayoutParams(Math.min(dp(500),getResources().getDisplayMetrics().widthPixels*60/100),Math.min(dp(270),getResources().getDisplayMetrics().heightPixels*70/100),WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|(Build.VERSION.SDK_INT<30?WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE:0),PixelFormat.TRANSLUCENT);
+  lp.gravity=Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;lp.y=dp(20);
   try{((WindowManager)getSystemService(WINDOW_SERVICE)).addView(overlay,lp);if(Build.VERSION.SDK_INT>=30)overlay.requestFocus();}
   catch(RuntimeException e){hideGuide();throw e;}
  }
  private void addRow(String id,String label,Runnable action){
   final int i=rowViews.size();TextView cell=text(label,13,Color.WHITE);cell.setGravity(Gravity.CENTER_VERTICAL);cell.setMinHeight(dp(42));cell.setPadding(dp(9),dp(5),dp(9),dp(5));cell.setMaxLines(2);cell.setBackground(rowBackground());LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(4);rows.addView(cell,p);rowViews.add(cell);rowActions.add(action);rowIds.add(id);cell.setOnClickListener(v->{selection=i;paint();action.run();});
- }
- void showGuide(Snapshot snapshot){
-  StringBuilder signature=new StringBuilder(snapshot.activity);for(Selector s:snapshot.controls)signature.append(s.key());signature.append(snapshot.scrollable);
-  if(signature.toString().equals(rendered)&&overlay!=null)return;
-  String previous=selection>=0&&selection<rowIds.size()?rowIds.get(selection):"";ensureGuide();rendered=signature.toString();rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;
-  heading.setText("Enseñar el recorrido");hint.setText("Elige Televisión, Perú y un canal. Cuando se vea, selecciona «Ya se ve el canal». Atrás cancela.");
-  addRow("done","✓ Ya se ve el canal · probar desde cero",()->TvRecovery.get(this).taught());
-  if(snapshot.scrollable){addRow("scroll_next","↓ Mostrar más opciones de la app",()->TvRecovery.get(this).guideScroll(true));addRow("scroll_previous","↑ Opciones anteriores",()->TvRecovery.get(this).guideScroll(false));}
-  LinkedHashMap<String,Selector> unique=new LinkedHashMap<>();Set<String> ambiguous=new HashSet<>();for(Selector s:snapshot.controls){if(unique.put(s.key(),s)!=null)ambiguous.add(s.key());}
-  for(Selector s:unique.values())if(!ambiguous.contains(s.key()))addRow(s.key(),s.label(),()->TvRecovery.get(this).guideClick(s));
-  if(unique.isEmpty())addRow("empty","No hay controles accesibles todavía",()->TvRecovery.get(this).navigationChanged());
-  addRow("back_app","Volver dentro de la app",()->TvRecovery.get(this).guideBack());
-  addRow("cancel","Cancelar configuración",()->TvRecovery.get(this).cancel("Configuración cancelada; la app sigue abierta"));
-  selection=Math.max(0,rowIds.indexOf(previous));paint();
  }
  void showConfirmation(String channel){
   ensureGuide();rendered="confirm";rows.removeAllViews();rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;selection=0;
@@ -282,6 +333,6 @@ public final class TvNavigationService extends AccessibilityService {
   return true;
  }
  void hideGuide(){if(overlay!=null){try{((WindowManager)getSystemService(WINDOW_SERVICE)).removeView(overlay);}catch(IllegalArgumentException ignored){}overlay.removeAllViews();overlay=null;}heading=hint=null;rows=null;scroll=null;rowViews.clear();rowActions.clear();rowIds.clear();painted=-1;overlayKeys.clear();rendered="";}
- JSONObject inspect()throws JSONException{JSONObject out=new JSONObject().put("active",!target.isEmpty()).put("target",target).put("overlay",overlay!=null).put("selection",selection).put("workerBusy",busy).put("queries",queries).put("actionFailure",actionFailure).put("remoteState",remoteState);JSONArray a=new JSONArray();for(int i=0;i<rowIds.size();i++)a.put(new JSONObject().put("id",rowIds.get(i)).put("label",((TextView)rowViews.get(i)).getText()));JSONArray seen=new JSONArray();if(lastSnapshot!=null)for(Selector control:lastSnapshot.controls){if(seen.length()==80)break;seen.put(control.json());}return out.put("controls",a).put("observedControls",seen);}
+ JSONObject inspect()throws JSONException{JSONObject out=new JSONObject().put("recording",recording).put("recordingEvents",recordingEvents).put("recordingKeys",recordingKeys).put("recordedFocus",recordedFocus==null?"":recordedFocus.label()).put("active",!target.isEmpty()).put("target",target).put("overlay",overlay!=null).put("selection",selection).put("workerBusy",busy).put("queries",queries).put("actionFailure",actionFailure).put("remoteState",remoteState);JSONArray a=new JSONArray();for(int i=0;i<rowIds.size();i++)a.put(new JSONObject().put("id",rowIds.get(i)).put("label",((TextView)rowViews.get(i)).getText()));JSONArray seen=new JSONArray();if(lastSnapshot!=null)for(Selector control:lastSnapshot.controls){if(seen.length()==80)break;seen.put(control.json());}return out.put("controls",a).put("observedControls",seen);}
  boolean shellChoose(String id){int i=rowIds.indexOf(id);if(i<0)return false;selection=i;rowActions.get(i).run();return true;}
 }

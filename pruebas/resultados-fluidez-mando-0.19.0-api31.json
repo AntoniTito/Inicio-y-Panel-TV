@@ -1,0 +1,43 @@
+{
+  "api": 31,
+  "emulator": true,
+  "cyclesAfterWarmup": 20,
+  "samples": [
+    {
+      "cycles": 5,
+      "pssKb": 37947
+    },
+    {
+      "cycles": 10,
+      "pssKb": 36699
+    },
+    {
+      "cycles": 15,
+      "pssKb": 34925
+    },
+    {
+      "cycles": 20,
+      "pssKb": 37076
+    },
+    {
+      "cycles": 25,
+      "pssKb": 36471
+    }
+  ],
+  "growthKb": -1476,
+  "graphics": [
+    "Total frames rendered: 336",
+    "Janky frames: 211 (62.80%)",
+    "Janky frames (legacy): 267 (79.46%)",
+    "95th percentile: 4950ms"
+  ],
+  "comparedAgainstPreviousVersion": false,
+  "apkSha256": "9EAF5C08EB140E6F746BC6B3C3F438FC5722129DA57396D995A8B75689EADDAD",
+  "uiCodeSameAsFinal": true,
+  "graphicsValidForAcceptance": false,
+  "graphicsLimitations": [
+    "Headless emulator log contains invalid color-buffer/texture errors",
+    "Dota 2 observed running on Windows during sampling",
+    "No controlled previous-version comparison"
+  ]
+}

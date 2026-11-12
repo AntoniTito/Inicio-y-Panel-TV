@@ -1,0 +1,3 @@
+type OVERLAY
+map key 87 BUTTON_1
+map key 88 BUTTON_2

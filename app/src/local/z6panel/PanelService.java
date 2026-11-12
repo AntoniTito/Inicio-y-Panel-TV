@@ -519,14 +519,15 @@ public class PanelService extends AccessibilityService {
     title.setText("Reiniciar equipo");subtitle.setText("Se cerrarán las aplicaciones y se cancelará el temporizador.");
     addKey("confirmReboot","Reiniciar","",ready()?()->{SleepTimer.cancel(this);systemCommand("REBOOT");}:null);addKey("cancel","Cancelar","",this::back);p.selectedId=p.selectedId==null?"cancel":p.selectedId;return true;
    case "diagnostics":
-    title.setText("Diagnóstico y permisos");subtitle.setText(bridgeStatus);
-    info("Control del equipo: "+(ready()?"conectado":"no disponible"));
+    title.setText("Diagnóstico y permisos");subtitle.setText("Acceso avanzado: "+bridgeStatus);
+    info("Reabrir con Android: "+(NativeAppRestart.available(this)?"disponible":"permiso inicial pendiente"));
+    info("Control avanzado del equipo: "+(ready()?"conectado":"no disponible"));
     info("Ajustes de sistema: "+(canSecure()?"permitidos":"pendientes"));
     info("Bluetooth: "+(bluetooth.permissionsGranted()?"permitido":"pendiente"));
     if(Build.VERSION.SDK_INT<31)info("Ubicación para buscar: "+(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED?"permitida":"pendiente"));
     addKey("repair","Recuperar control",localStarting?"Iniciando…":"Autoriza la clave local si Android lo solicita",localStarting?null:()->startLocalControl(true));
     addKey("check","Comprobar conexión","Consultar el servicio auxiliar",()->systemCommand("PING"));
-    addKey("autonomous","Inicio autónomo: "+(prefs.getBoolean("local_adb_enabled",false)?"activado":"desactivado"),"Recuperar la depuración al encender, sin PC",()->{if(prefs.getBoolean("local_adb_enabled",false)){localGeneration++;prefs.edit().putBoolean("local_adb_enabled",false).apply();renderSide();}else startLocalControl(true);});
+    addKey("autonomous","Inicio autónomo: "+(prefs.getBoolean("local_adb_enabled",false)?"activado":"desactivado"),"Iniciar el auxiliar cuando Android permita el acceso local",()->{if(prefs.getBoolean("local_adb_enabled",false)){localGeneration++;prefs.edit().putBoolean("local_adb_enabled",false).apply();renderSide();}else startLocalControl(true);});
     addKey("access","Permisos del panel en Android","Abre otra pantalla",()->nativePage("Permisos del panel",appSettings(getPackageName())));
     return true;
    case "network":{
@@ -577,7 +578,7 @@ public class PanelService extends AccessibilityService {
     title.setText("Información del equipo");subtitle.setText("Datos consultados a Android");info("Android "+Build.VERSION.RELEASE+" · API "+Build.VERSION.SDK_INT);info("Modelo: "+Build.MODEL);info(storageSummary());
     addKey("display","Pantalla","Resolución y frecuencia declaradas",()->push(new Page("display",null)));addKey("diagnostics","Diagnóstico y permisos",bridgeStatus,()->push(new Page("diagnostics",null)));return true;
    case "manage":
-    addKey("tvRecovery","Inicio y recuperación de TV","App, canal y botón del control",()->nativePage("Inicio y recuperación de TV",new Intent(this,TvRecoveryActivity.class)));
+    addKey("tvRecovery","Mi control y arranque","Botones independientes, apps y destinos",()->nativePage("Mi control y arranque",new Intent(this,TvRecoveryActivity.class)));
     title.setText("Aplicaciones");subtitle.setText("Apps que pueden abrirse · "+managerFilter);
     adjustable("filter","Mostrar: "+managerFilter,"← → cambiar filtro",()->cycleFilter(1),()->cycleFilter(-1),()->cycleFilter(1));
     for(AppCatalog.Entry e:catalog.all()){if(managerFilter.equals("Usuario")&&e.system||managerFilter.equals("Sistema")&&!e.system||managerFilter.equals("Ocultas")&&catalog.visible(e))continue;addKey("app:"+e.pkg,e.title,(catalog.visible(e)?"Visible en el panel":"Oculta del panel")+(e.system?" · sistema":""),()->push(new Page("app",e.pkg)));}

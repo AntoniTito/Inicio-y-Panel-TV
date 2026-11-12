@@ -34,15 +34,15 @@ final class TvRemoteKeys {
  static void disable(Context c){TvRemoteKeys m=get(c);m.blocked=true;m.learnToken="";m.revision++;m.configuration();}
  private void configuration(){
   transientRetries=0;ui.removeCallbacks(retry);
-  TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);if(active&&s.button&&s.hardware())blocked=false;
-  boolean needed=active&&s.button&&s.hardware();InputManager input=(InputManager)context.getSystemService(Context.INPUT_SERVICE);
+  RemoteActions.Action action=RemoteActions.hardware(context);if(active&&action!=null)blocked=false;
+  boolean needed=active&&action!=null;InputManager input=(InputManager)context.getSystemService(Context.INPUT_SERVICE);
   if(needed&&!listening){input.registerInputDeviceListener(devices,ui);listening=true;}else if(!needed&&listening){input.unregisterInputDeviceListener(devices);listening=false;ui.removeCallbacks(deviceChanged);}
   revision++;sync(false);
  }
  private JSONObject desired()throws JSONException{
   if(!blocked&&!learnToken.isEmpty())return new JSONObject().put("mode","learn").put("token",learnToken);
-  TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);
-  if(!blocked&&active&&s.button&&s.hardware()&&!TvRecoveryActivity.keySetupActive())return new JSONObject().put("mode","bind").put("token",runtimeToken).put("device",s.remoteDevice).put("code",s.remoteCode);
+  RemoteActions.Action action=RemoteActions.hardware(context);
+  if(!blocked&&active&&action!=null&&!TvRecoveryActivity.keySetupActive())return new JSONObject().put("mode","bind").put("token",runtimeToken).put("device",action.target.remoteDevice).put("code",action.target.remoteCode);
   return new JSONObject().put("mode","stop");
  }
  private static String encode(JSONObject value){return "REMOTE:"+Base64.encodeToString(value.toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP);}
@@ -61,7 +61,7 @@ final class TvRemoteKeys {
    if(type.equals("learn")&&token.equals(learnToken)&&!token.isEmpty()&&device.length()>0&&device.length()<=256&&local.z6bridge.RemoteKeyFormat.allowed(code)){
     ui.postDelayed(()->{if(token.equals(learnToken))TvRecoveryActivity.remoteDetected(token,device,code);},150);return;
    }
-   if(type.equals("key")&&token.equals(runtimeToken)){TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);if(active&&s.button&&s.hardware()&&s.remoteCode==code&&s.remoteDevice.equals(device)&&!TvRecoveryActivity.keySetupActive()&&TvRecovery.instance!=null)TvRecovery.instance.hardwareShortcut();}
+   if(type.equals("key")&&token.equals(runtimeToken)){RemoteActions.Action action=RemoteActions.hardware(context);if(active&&action!=null&&action.target.remoteCode==code&&action.target.remoteDevice.equals(device)&&!TvRecoveryActivity.keySetupActive()&&TvRecovery.instance!=null)TvRecovery.instance.execute(action);}
    if((type.equals("expired")||type.equals("unavailable"))&&token.equals(learnToken))TvRecoveryActivity.remoteReady(token,false);
    if(type.equals("unavailable")&&token.equals(runtimeToken))status="Control no disponible; vuelve a conectarlo";
   }catch(JSONException ignored){}

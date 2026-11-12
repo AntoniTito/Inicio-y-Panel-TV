@@ -58,6 +58,8 @@ function Save-Original {
  if($panelPath){$prefs=Get-Z6PanelPreferences}
  $snapshot=[ordered]@{schema=1;createdUtc=[DateTime]::UtcNow.ToString('o');device=$device;home=$device.home;homePackage=$homePackage;homeEnabled=(Get-Z6PackageState $homePackage);panelPresent=[bool]$panelPath;panelCode=(Get-PanelCode);preferences=$prefs;settings=$settings;permissions=$permissions}
  if(Test-Z6TvRecoverySupport){$snapshot.tvRecovery=Get-Z6TvPreferences}
+ if(Test-Z6RemoteActionsSupport){$snapshot.remoteActions=Get-Z6RemoteActions}
+ if($panelPath){$usage=Invoke-Z6Shell @('cmd','appops','get','local.z6panel','GET_USAGE_STATS') -AllowFailure;$mode=[regex]::Match($usage,'GET_USAGE_STATS:\s*(allow|default|ignore|deny)');$snapshot.usageMode=if($mode.Success){$mode.Groups[1].Value}else{'default'}}
  if($device.api -ge 31){$op=Invoke-Z6Shell @('cmd','appops','get','local.z6panel','SCHEDULE_EXACT_ALARM') -AllowFailure;$mode=[regex]::Match($op,'SCHEDULE_EXACT_ALARM:\s*(allow|default|ignore|deny)');$snapshot.alarmMode=if($mode.Success){$mode.Groups[1].Value}else{'default'}}
  if($panelPath){New-Item -ItemType Directory -Force -Path $deviceDir|Out-Null;Invoke-Z6Adb -Arguments @('-s',$Dispositivo,'pull',$panelPath,(Join-Path $deviceDir 'panel-anterior.apk'))|Out-Null}
  Write-Z6Json $snapshot $snapshotPath
@@ -89,6 +91,11 @@ function Configure-Panel {
   if((Get-PanelDump) -notmatch ([regex]::Escape($permission)+': granted=true')){Add-Limitation ('Permission unavailable: '+$permission)}
  }
  if($device.api -ge 31){$null=Invoke-Z6Shell @('cmd','appops','set','local.z6panel','SCHEDULE_EXACT_ALARM','allow') -AllowFailure}
+ if(Test-Z6RemoteActionsSupport){
+  $usageBackup=Join-Path $deviceDir 'acceso-reapertura-original.json'
+  if(!(Test-Path -LiteralPath $usageBackup)){$op=Invoke-Z6Shell @('cmd','appops','get','local.z6panel','GET_USAGE_STATS') -AllowFailure;$mode=[regex]::Match($op,'GET_USAGE_STATS:\s*(allow|default|ignore|deny)');Write-Z6Json ([ordered]@{deviceId=$device.id;mode=$(if($mode.Success){$mode.Groups[1].Value}else{'default'})}) $usageBackup}
+  $null=Invoke-Z6Shell @('cmd','appops','set','local.z6panel','GET_USAGE_STATS','allow') -AllowFailure
+ }
  $enabled=Get-Z6Setting 'secure' 'enabled_accessibility_services'
  $services=@($enabled -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/(local\.z6panel\.|\.)?PanelService$'})
  if($services -notcontains 'local.z6panel/local.z6panel.PanelService'){$services+='local.z6panel/local.z6panel.PanelService'}
@@ -209,6 +216,11 @@ try{
    if((Normalize-Component (Get-Z6Home)) -ne (Normalize-Component $original.home)){throw 'Original HOME restoration failed'}
    if($original.preferences){Set-Z6PanelPreferences $original.preferences}
    if(!$RecuperarVersion -and (Test-Z6TvRecoverySupport) -and $original.PSObject.Properties['tvRecovery']){$tv=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','tv_restore','--arg',$original.tvRecovery);if($tv -notmatch 'status=OK'){throw 'TV settings could not be restored for this device'}}
+   if(!$RecuperarVersion -and (Test-Z6RemoteActionsSupport) -and $original.PSObject.Properties['remoteActions']){
+    $buttons=Invoke-Z6Shell @('content','call','--uri','content://local.z6panel.bridge','--method','tv_buttons_restore','--arg',$original.remoteActions);if($buttons -notmatch 'status=OK'){throw 'Button configuration could not be restored'}
+    $priorButtons=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($original.remoteActions))|ConvertFrom-Json
+    if($priorButtons.layout.current -eq 'local.z6panel/local.z6panel.RemoteLayoutReceiver/z6remote'){$apk=Get-PanelPath;if($apk -notmatch '^/[A-Za-z0-9_./=+~\-]+$'){throw 'Invalid installed path'};$layout=Invoke-Z6Shell @("CLASSPATH='$apk' app_process /system/bin local.z6bridge.NativeRemoteLayout apply_saved");if($layout -notmatch '"status":"OK"'){throw 'Original native remote setup was not restored'}}
+   }
    if($partialRecovery){$restored=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Get-Z6PanelPreferences)))|ConvertFrom-Json;foreach($entry in $partialRecovery.GetEnumerator()){$restored|Add-Member -NotePropertyName $entry.Key -NotePropertyValue $entry.Value -Force};$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($restored|ConvertTo-Json -Depth 20 -Compress)));Set-Z6PanelPreferences $encoded;$steps.Add('Partial slideshow preserved; original background selected for older APK compatibility')}
    $current=@((Get-Z6Setting 'secure' 'enabled_accessibility_services') -split ':'|Where-Object {$_ -and $_ -ne 'null' -and $_ -notmatch '^local\.z6panel/'})
    $prior=@($original.settings.secure.enabled_accessibility_services -split ':'|Where-Object {$_ -and $_ -ne 'null'})
@@ -218,6 +230,8 @@ try{
    foreach($p in $original.settings.global.PSObject.Properties){Set-Z6Setting 'global' $p.Name ([string]$p.Value)}
    foreach($p in $original.permissions.PSObject.Properties){if(!$p.Value){$null=Invoke-Z6Shell @('pm','revoke','local.z6panel',$p.Name) -AllowFailure;if((Get-PanelDump) -match ([regex]::Escape($p.Name)+': granted=true')){throw ('Permission restoration failed: '+$p.Name)}}}
    if($device.api -ge 31 -and ($original.PSObject.Properties['alarmMode'] -or !$original.panelPresent)){$mode=if($original.PSObject.Properties['alarmMode']){$original.alarmMode}else{'default'};Invoke-Z6Shell @('cmd','appops','set','local.z6panel','SCHEDULE_EXACT_ALARM',$mode)|Out-Null}
+   $usageBackup=Join-Path $deviceDir 'acceso-reapertura-original.json'
+   if($original.PSObject.Properties['usageMode'] -or !$original.panelPresent -or (Test-Path -LiteralPath $usageBackup)){$mode=if($original.PSObject.Properties['usageMode']){$original.usageMode}elseif(Test-Path -LiteralPath $usageBackup){$savedUsage=Read-Z6Json $usageBackup;if($savedUsage.deviceId -ne $device.id){throw 'Usage access backup belongs to another device'};$savedUsage.mode}else{'default'};Invoke-Z6Shell @('cmd','appops','set','local.z6panel','GET_USAGE_STATS',$mode)|Out-Null}
    if(!$original.panelPresent){$helperPids=Invoke-Z6Shell @('pidof','z6panel_bridge') -AllowFailure;foreach($helperPid in ($helperPids -split '\s+')){if($helperPid -match '^\d+$'){Invoke-Z6Shell @('kill',$helperPid)|Out-Null}}}
    Invoke-Z6Shell @('am','start','-a','android.intent.action.MAIN','-c','android.intent.category.HOME')|Out-Null
    $steps.Add('Original HOME and modified settings restored; unrelated accessibility services retained; panel data not uninstalled')

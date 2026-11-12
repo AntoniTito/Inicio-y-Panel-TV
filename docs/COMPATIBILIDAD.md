@@ -1,3 +1,9 @@
+# Compatibilidad de 0.19.0
+
+Un APK para API 29 y 31. Consulta [MI-CONTROL.md](MI-CONTROL.md) y [VERIFICACION-0.19.0.md](VERIFICACION-0.19.0.md) para las pruebas actuales. El mapa nativo exige el modelo de control comprobado; otros controles usan detección de teclas de Android. Reapertura y navegación dependen de las capacidades del firmware. No se promete soporte universal ni funcionamiento sin auxiliar en todas las apps.
+
+Los apartados siguientes conservan el registro de las versiones anteriores.
+
 # Compatibilidad comprobada
 
 La entrega vigente es 0.18.1/código 54. La base histórica 0.10.4 y la firma están preservadas. Hay evidencia separada del emulador API 31 y del TV original API 29 en [VERIFICACION-0.18.0.md](VERIFICACION-0.18.0.md); no equivale a compatibilidad universal.

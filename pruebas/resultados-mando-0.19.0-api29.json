@@ -1,0 +1,12 @@
+{
+  "api": 29,
+  "physicalDevice": true,
+  "nativeMapNetflixConfirmed": true,
+  "bothPhysicalButtonsConfirmed": true,
+  "videoAudioConfirmed": true,
+  "controlledActionsWithoutHelperConfirmed": true,
+  "netflixAfterRealRebootWithoutReenablingDebugConfirmed": true,
+  "firstAutomaticBootAttemptFailed": true,
+  "initialBootFixAwaitingValidation": true,
+  "imagesPreserved": 2
+}

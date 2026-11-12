@@ -6,38 +6,24 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 |---|---|---|
 | `v0.10.4` | `android10` | Base anterior, APK 0.10.4/codigo 22. Comportamiento comprobado en el TV Box Android 10 original. Los 21 archivos de app coinciden byte a byte con el respaldo previo a Android 12. |
 | `v0.11.0` | Etiqueta histórica | Adaptacion Android TV 12, APK 0.11.0/codigo 24. Mantiene rutas para API 29; regresion fisica en Android 10 pendiente. Verificaciones del emulador registradas en pruebas/. |
-
 | `v0.12.0` | Etiqueta histórica | Apps accesibles con fila vacía, fondos propios/diarios y QR temporal. APK código 26. Pruebas y límites por API registrados. |
-
 | `v0.12.1` | Etiqueta histórica | Corrige el fondo para cubrir toda la pantalla. APK código 28; recuperaciones por API con código 29. |
-
 | `v0.12.2` | Etiqueta histórica | Recepción confirmada en el TV, vista previa directa y regreso a biblioteca. APK código 30, recuperación 0.12.1/código 31 para ambas API. |
-
 | `v0.13.0` | Etiqueta histórica | Biblioteca con miniaturas y borrado múltiple, fotos adaptadas y comparación 720p/1080p/4K según el equipo. APK código 32, recuperación 0.12.2/código 33. |
-
 | `v0.14.0` | Etiqueta histórica | Fondos con vista previa y OK directo, galería y presentación seleccionable, importación visual. APK código 34; recuperación 0.13.0/código 35 con protección de selección parcial. |
-
 | `v0.15.0` | Etiqueta histórica | Modos en fila, fotos y presentación integradas, eliminación sin papelera, elección de paisajes de Wikimedia. APK código 36; recuperación histórica 0.14.0/código 37. |
-
 | `v0.16.0` | Etiqueta histórica | Doce paisajes diarios, caché persistente, rotación opcional, conservación permanente y galería MediaStore. Código 38; recuperación 0.15.0/código 39 con adaptador compartido. |
-
 | `v0.16.1` | Etiqueta histórica | Quita el acceso a la galería nativa desde Fondos, manteniendo imágenes y funciones. Código 40; recuperación 0.16.0/código 41. |
-
 | `v0.16.2` | Etiqueta histórica | Evita borrar el fondo durante las pausas breves de Home y ajustes. Código 42; recuperación 0.16.1/código 43. |
-
 | `v0.16.3` | Etiqueta histórica | Reduce el trabajo de Home reutilizando el fondo validado; mantiene entrada y retorno sin parpadeo. Código 44; recuperación 0.16.2/código 45. |
-
 | `v0.16.4` | Etiqueta histórica | Resaltado translúcido de las tarjetas del inicio. Código 46; recuperación 0.16.3/código 47. |
-
 | `v0.16.5` | Etiqueta histórica | Corrige el regreso de Añadir app durante la edición del panel superpuesto. Código 48; recuperación 0.16.4/código 49. |
-
 | `v0.17.0` | Etiqueta histórica | Filas circulares independientes del panel y edición confinada a Apps, con limpieza de código inaccesible. Código 50; recuperación 0.16.5/código 51. |
-
 | `v0.18.0` | Etiqueta historica | Inicio y recuperación de TV: app y canal elegibles, recorrido guiado, arranque y despertar optativos, tecla configurable y datos privados por dispositivo. Código 52; recuperación 0.17.0/código 53. |
+| `v0.18.1` | Etiqueta histórica | Recuperacion del auxiliar por eventos sin reiniciar depuracion, estado real del boton y reintentos limitados. Codigo 54; recuperacion 0.18.0/codigo 55. |
+| `v0.19.0` / `main` | Vigente | Botones independientes, destino en la app y reapertura nativa verificada. APK c56; recuperación 0.18.1/c57. Ver MI-CONTROL.md y VERIFICACION-0.19.0.md. |
 
-| `v0.18.1` / `main` | Entrega vigente | Recuperacion del auxiliar por eventos sin reiniciar depuracion, estado real del boton y reintentos limitados. Codigo 54; recuperacion 0.18.0/codigo 55. |
-
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.18.1.md. La recuperación vigente conserva el comportamiento 0.18.0 con código 55 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 56 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
+Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado de la entrega actual y las pruebas físicas pendientes están en VERIFICACION-0.19.0.md. La recuperación vigente conserva el comportamiento 0.18.1 con código 57 y la misma firma para API 29 y 31. El manifiesto selecciona ese APK para ambas API. Tras instalarla se necesita código 58 o superior para actualizar. Las recuperaciones anteriores y las etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 

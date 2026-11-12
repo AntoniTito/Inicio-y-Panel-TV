@@ -11,6 +11,11 @@ import java.nio.charset.StandardCharsets;
 final class TvRecoveryDiagnostics {
  static void call(Context c,String method,String arg,Bundle out)throws Exception {
   TvRecovery t=TvRecovery.get(c);
+  if(method.equals("tv_ui_inspect")){out.putString("json",TvRecoveryActivity.inspect().toString());return;}
+  if(method.equals("tv_buttons_export")){out.putString("base64",Base64.encodeToString(RemoteActions.export(c).toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
+  if(method.equals("tv_buttons_inspect")){JSONObject o=RemoteActions.export(c);o.put("nativeRestart",NativeAppRestart.available(c)).put("nativeState",NativeAppRestart.lastState);out.putString("json",o.toString());return;}
+  if(method.equals("tv_buttons_restore")){if(arg==null||arg.length()>524288)throw new IllegalArgumentException();t.cancel("");RemoteActions.restore(c,new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8)));t.changed();out.putString("status","OK");return;}
+  if(method.equals("tv_native_prepared")){if(arg==null||arg.length()>4096)throw new IllegalArgumentException();JSONObject layout=new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8));if(!layout.optString("status").equals("OK")||!layout.optString("current").equals("local.z6panel/local.z6panel.RemoteLayoutReceiver/z6remote"))throw new IllegalArgumentException();RemoteActions.nativePrepared(c,layout);out.putString("status","OK");return;}
   if(method.equals("tv_inspect")){JSONObject state=t.inspect();if(TvNavigationService.active!=null)state.put("navigation",TvNavigationService.active.inspect());out.putString("json",state.toString());return;}
   if(method.equals("tv_open")){c.startActivity(new Intent(c,TvRecoveryActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));out.putString("status","OK");return;}
   if(method.equals("tv_export")){out.putString("base64",Base64.encodeToString(TvRecoveryConfig.get(c).json().toString().getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP));return;}
@@ -24,6 +29,10 @@ final class TvRecoveryDiagnostics {
   if(!method.equals("tv_control")||arg==null||arg.length()>65536)throw new IllegalArgumentException("Unsupported TV diagnostic");
   JSONObject o=new JSONObject(new String(Base64.decode(arg,Base64.DEFAULT),StandardCharsets.UTF_8));String op=o.getString("op");
   switch(op){
+   case "ui_choose":if(!TvRecoveryActivity.shellChoose(o.getString("id")))throw new IllegalArgumentException("UI control unavailable");break;
+   case "button_run":RemoteActions.Action action=RemoteActions.find(c,o.getString("id"));if(action==null)throw new IllegalArgumentException();t.execute(action);break;
+   case "button_teach":RemoteActions.Action teach=RemoteActions.find(c,o.getString("id"));if(teach==null)throw new IllegalArgumentException();t.requestProfile(teach,true,false);break;
+   case "record_done":if(TvNavigationService.active!=null)TvNavigationService.active.reviewRecording();break;
    case "select":t.choose(o.getString("package"));break;
    case "teach":t.request("configuración",true,null);break;
    case "test":TvRecoveryConfig.Settings trial=TvRecoveryConfig.get(c);if(!trial.verified)throw new IllegalArgumentException("No verified route");t.request("prueba",false,trial);break;

@@ -1,0 +1,7 @@
+{
+  "api": 31,
+  "emulator": true,
+  "apkSha256": "6B0C67F2057B20AF67B5A9C9F5ECE34444EA30C55DAE36E8E128B9EADDB5DC0F",
+  "homeDismissesSetup": true,
+  "backCancelsLearning": true
+}

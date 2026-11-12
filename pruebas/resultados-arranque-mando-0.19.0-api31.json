@@ -1,0 +1,15 @@
+{
+  "api": 31,
+  "emulator": true,
+  "syntheticBootOrdering": true,
+  "actualPhysicalReboot": false,
+  "checks": [
+    "boot accepted while navigation service is not connected",
+    "boot remains pending instead of consuming the request",
+    "late navigation service resumes the same boot request",
+    "automatic boot waits while display is off",
+    "no target app restart before wake",
+    "screen-on event resumes automatic preparation",
+    "duplicate boot does not restart the app twice"
+  ]
+}
