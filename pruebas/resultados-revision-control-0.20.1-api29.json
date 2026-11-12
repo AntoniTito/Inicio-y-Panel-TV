@@ -12,7 +12,7 @@
   "installedVersion": "0.20.1",
   "installedCode": 60,
   "installedSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07",
-  "physicalRemoteConfirmationPending": true,
+  "physicalRemoteConfirmationPending": false,
   "adbDrivenPhysicalChecks": [
     "panel reentry works after three HOME returns",
     "route delete is visible on physical TV",
@@ -47,5 +47,8 @@
   "finalButtonCount": 4,
   "finalSavedRouteCount": 2,
   "preservedPhotoHashCount": 2,
-  "temporaryDataRemoved": true
+  "temporaryDataRemoved": true,
+  "userConfirmedControlReentry": true,
+  "userConfirmedDeleteActionVisible": true,
+  "userConfirmedResponsiveNavigation": true
 }
