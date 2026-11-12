@@ -1,0 +1,19 @@
+{
+  "api": 31,
+  "emulator": true,
+  "actualVideo": false,
+  "checks": [
+    "correct endpoint delayed",
+    "one process launch without reopening delayed",
+    "correct endpoint advanced",
+    "one process launch without reopening advanced",
+    "already exposed exact destination skips missing intermediate menu",
+    "correct endpoint early-player",
+    "one process launch without reopening early-player",
+    "named playing endpoint needs no extra menu clicks",
+    "generic video surface never claims the chosen channel",
+    "unverified player remains open after timeout",
+    "one process launch without reopening other-player"
+  ],
+  "apkSha256": "17C0CDC9BB746B5B2173884B971284DFD8E418053D92BD8984FF747CD52BD7D0"
+}

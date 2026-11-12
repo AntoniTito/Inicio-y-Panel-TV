@@ -16,6 +16,8 @@ El destino anterior se conserva hasta confirmar la prueba desde un proceso nuevo
 
 **Arranque y despertar** tiene su propia app, recorrido e interruptores. Apagar solo el televisor puede dejar encendido el TV Box sin generar un evento de despertar; en ese caso usa el botón del control.
 
+Cada solicitud cierra y abre la app una sola vez. Si sus menús tardan, Z6 espera sin volver a reiniciarla. Si ya aparece el destino exacto guardado, continúa desde ahí. Si no puede comprobar el destino a tiempo, deja la app abierta para continuar con el control; no anuncia que el canal está listo sin verificarlo.
+
 ## Android, Z6 y el auxiliar
 
 Estas funciones pertenecen al APK de Z6. El servicio de accesibilidad principal recibe teclas y conserva `canRetrieveWindowContent=false`. La asistencia adicional solo reconoce controles de la app elegida mientras se configura o ejecuta un recorrido; al terminar retira los eventos y las ventanas.
@@ -46,4 +48,4 @@ La recuperación 0.18.1/c57 conserva fotos y datos. Antes de instalarla, el rest
 
 ## Pruebas en un emulador preparado
 
-Instala el APK vigente mediante el asistente, habilita Asistencia de TV y compila la app sintética con `pruebas/preparar-fixture-tv.ps1`. Instala su APK generado y ejecuta `node pruebas/mando-0190.cjs SERIAL` y `node pruebas/arranque-mando-0190.cjs SERIAL`. Ambos exigen un emulador explícito y restauran la configuración de TV y botones al terminar. El segundo utiliza exclusivamente el contrato de la app sintética incluida; no depende de recorridos o archivos privados de una sesión anterior. Las pruebas físicas se registran por separado.
+Instala el APK vigente mediante el asistente, habilita Asistencia de TV y compila la app sintética con `pruebas/preparar-fixture-tv.ps1`. Instala su APK generado y ejecuta `node pruebas/mando-0190.cjs SERIAL`, `node pruebas/arranque-mando-0190.cjs SERIAL` y `node pruebas/apertura-unica-0190.cjs SERIAL`. Exigen un emulador explícito y restauran la configuración que modifican. Las pruebas de arranque y apertura única utilizan exclusivamente el contrato de la app sintética incluida; no dependen de recorridos o archivos privados de una sesión anterior. Las pruebas físicas se registran por separado.

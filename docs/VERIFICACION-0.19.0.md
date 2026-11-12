@@ -21,6 +21,8 @@ La inyección ADB no reproduce por sí sola la entrada de Accesibilidad del cont
 
 `arranque-mando-0190.cjs` añade siete comprobaciones de orden de inicialización: asistencia tardía, pantalla apagada, continuación por eventos y deduplicación del arranque. Son eventos controlados del emulador, no un reinicio físico.
 
+`apertura-unica-0190.cjs` añade once comprobaciones: controles que tardan siete segundos, lista de canales restaurada sin menú intermedio, destino nombrado ya reproduciéndose y reproductor genérico que no identifica el canal. Cada solicitud abre un solo proceso; un vencimiento deja la app abierta sin anunciar un destino no comprobado. Esta prueba usó el APK identificado en su JSON, anterior únicamente al aumento del plazo máximo del primer dibujo en frío. Las 25 comprobaciones de botones y las siete de inicialización se repitieron con el APK final registrado en el manifiesto.
+
 ## TV original Android 10 / API 29
 
 Respaldo previo del APK instalado, preferencias, configuración del destino y bytes de las dos imágenes actuales. Clave, rutas, canales, identidad, capturas y datos individuales se conservan en `privado/`, fuera de Git.
@@ -38,15 +40,21 @@ El usuario confirmó también Netflix después de un reinicio real, sin reactiva
 
 Se detectó un fallo del arranque automático: la solicitud podía descartarse si la asistencia aún no estaba conectada o la pantalla seguía apagada. Se corrigió manteniendo la preparación pendiente, reanudándola por eventos y creando la pantalla de preparación solo cuando se cumplen las condiciones.
 
-**Pendiente:** configuración de un nuevo recorrido con el control real y confirmación del arranque automático tras la corrección. Las pruebas controladas anteriores no sustituyen estas comprobaciones. No se extrapola el resultado del TV original a otros firmwares.
+El usuario confirmó que el arranque automático alcanzó el canal, pero informó una doble apertura. El registro de procesos mostró dos inicios separados por el cierre del primero. El código conservaba un reintento automático que cerraba y reabría la app al faltar el siguiente control durante cuatro segundos. Se retiró ese reintento: ahora se espera sobre la misma app, se reconoce el destino guardado si ya está disponible y no se cierra una reproducción por vencer el plazo de navegación. No se deduce el canal de una superficie de video genérica.
+
+Se instaló la corrección con el hash final del manifiesto, conservando preferencias, dos botones y los hashes de ambas imágenes. En la primera carga de Inicio después de actualizar y en dos retornos desde Ajustes de Android, el fondo local estuvo preparado antes del primer dibujo de contenido: contador de vencimientos cero, imagen 1280 × 720. Esta muestra no demuestra el resultado visual del encendido en frío.
+
+**Pendiente:** configuración de un nuevo recorrido con el control real y confirmación de una sola apertura tras el último reinicio físico. Las pruebas controladas anteriores no sustituyen estas comprobaciones. No se extrapola el resultado del TV original a otros firmwares.
 
 ## Rendimiento
 
-Sin tarea, la asistencia mantiene eventos de contenido desactivados. No se añadieron sondeos de entrada, reconstrucciones por flecha, dependencias gráficas ni trabajo de imágenes. Se serializan las tareas; el cierre nativo tiene un plazo de cuatro segundos y como máximo cuatro solicitudes durante una acción explícita.
+Sin tarea, la asistencia mantiene eventos de contenido desactivados. No se añadieron sondeos de entrada, reconstrucciones por flecha ni dependencias gráficas. Se serializan las tareas; el cierre nativo tiene un plazo de cuatro segundos y como máximo cuatro solicitudes durante una acción explícita.
 
-`resultados-fluidez-mando-0.19.0-api31.json` registra cinco aperturas de calentamiento y otras veinte con la misma implementación de interfaz: PSS 37 947 → 36 471 KB, sin crecimiento sostenido en esa muestra. El hash del APK medido figura en el archivo; los cambios posteriores corresponden a restauración y cancelación de la captura, no al dibujo de la pantalla.
+Inicio agrupa llamadas de reanudación repetidas mientras prepara la misma primera imagen. Solo esa decodificación local usa temporalmente la prioridad normal del hilo; después recupera su prioridad anterior. No añade copias ni retiene imágenes al ocultarse. El límite para preparar el primer dibujo es de 2500 ms en la primera carga y de 1000 ms en retornos posteriores: son plazos máximos cancelados al estar lista la imagen, no esperas fijas. Se evita relanzar Inicio si ya está visible.
 
-La muestra gráfica registró 336 cuadros y p95 de 4950 ms. **No es una aceptación gráfica válida ni evidencia de mejora:** el emulador sin ventana informa errores de texturas/color buffer, el juego Dota 2 estaba abierto en Windows y no se recogió una referencia anterior bajo condiciones controladas. Se conserva el dato y sus limitaciones, sin atribuir toda la demora al juego ni afirmar un porcentaje de aceleración. La fluidez física de esta interfaz sigue pendiente del usuario.
+`resultados-fluidez-mando-0.19.0-api31.json` registra cinco aperturas de calentamiento y otras veinte con la misma implementación de la pantalla de botones: PSS 37 947 → 36 471 KB, sin crecimiento sostenido en esa muestra. El hash del APK medido figura en el archivo; no incluye las correcciones posteriores de arranque y preparación del primer fondo.
+
+La muestra gráfica registró 336 cuadros y p95 de 4950 ms. **No es una aceptación gráfica válida ni evidencia de mejora:** el emulador sin ventana informa errores de texturas/color buffer, el juego Dota 2 estaba abierto en Windows y no se recogió una referencia anterior bajo condiciones controladas. Se conserva el dato y sus limitaciones, sin atribuir toda la demora al juego ni afirmar un porcentaje de aceleración. El usuario confirmó que la interfaz física se ve completa y responde bien; no equivale a una comparación instrumental de rendimiento.
 
 ## Instalador, recuperación y privacidad
 

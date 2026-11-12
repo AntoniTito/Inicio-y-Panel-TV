@@ -11,5 +11,6 @@
     "no target app restart before wake",
     "screen-on event resumes automatic preparation",
     "duplicate boot does not restart the app twice"
-  ]
+  ],
+  "apkSha256": "46FE8A028FAA1B3B6FED9FEE251CCE2086A930A3DCBD02C23ACEEEEB11768239"
 }

@@ -286,6 +286,11 @@ public final class TvNavigationService extends AccessibilityService {
   }catch(JSONException e){return null;}
  }
  private static boolean channelLabel(String text,String channel){String a=text.toLowerCase(Locale.ROOT),b=channel.toLowerCase(Locale.ROOT);return a.equals(b)||a.startsWith(b+" · ")||a.startsWith(b+" - ");}
+ boolean matchesNamedEndpoint(Snapshot s,JSONObject endpoint,String channel){
+  if(channel.isEmpty())return false;JSONObject marker=endpoint.optJSONObject("marker");
+  if(marker==null)return false;
+  try{Selector m=Selector.parse(marker);return (channelLabel(m.text,channel)||channelLabel(m.description,channel))&&matchesEndpoint(s,endpoint);}catch(JSONException e){return false;}
+ }
  boolean matchesEndpoint(Snapshot s,JSONObject endpoint){
   String expected=endpoint.optString("activity");if(!expected.isEmpty()&&!expected.equals(s.activity))return false;
   JSONObject confirmed=endpoint.optJSONObject("confirmedControl");if(confirmed!=null){try{Selector control=Selector.parse(confirmed);if(lastConfirmed==null||!lastConfirmed.label().equalsIgnoreCase(control.label()))return false;for(Selector visible:s.controls)if(visible.label().equalsIgnoreCase(control.label()))return false;return true;}catch(JSONException e){return false;}}

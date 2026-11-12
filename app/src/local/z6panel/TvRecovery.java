@@ -19,7 +19,7 @@ final class TvRecovery {
  private final SharedPreferences runtime;
  private final Set<String> consumed=new HashSet<>();
  private volatile long generation;
- private boolean working,listening,launched,guide,testing,targetSeen,automaticRetried;
+ private boolean working,listening,launched,guide,testing,targetSeen;
  private String phase="idle",reason="",status="Sin configurar",learnSource="";
  private int routeIndex,scrolls,walkDirection=1;
  private long lastClick,lastShortcutEvent,prepareAfter,navigateAfter;
@@ -28,6 +28,8 @@ final class TvRecovery {
  private String lastShortcutAction="";
  private boolean saveProfile,coverRequested;
  private volatile String restartBackend="";
+ private int appLaunches,routeResumes;
+ private final ArrayDeque<JSONObject> launchHistory=new ArrayDeque<>();
  private Runnable deadline;
  private ConnectivityManager.NetworkCallback network;
  private final Runnable probe=()->probe();
@@ -120,7 +122,7 @@ final class TvRecovery {
   generation++;guide=teach;testing=trialTest;draft=teach?job.copy():trial;reason=why;phase="waiting";
   jobKind=kind;profileId=id;saveProfile=saveToProfile;
   restartBackend="";coverRequested=false;
-  launched=targetSeen=automaticRetried=false;routeIndex=scrolls=0;walkDirection=1;
+  launched=targetSeen=false;appLaunches=routeResumes=0;routeIndex=scrolls=0;walkDirection=1;
   setStatus("Preparando "+job.name+"…");watch();final long token=generation;
   // Let Android finish restoring HOME/input services before a cold-boot launch.
   // This is one cancellable preparation callback, never a timed navigation sequence.
@@ -141,7 +143,7 @@ final class TvRecovery {
   if(automatic&&job.verified&&TvNavigationService.active==null)return;
   if(!jobKind.equals("open")&&!NativeAppRestart.available(context)&&(SystemBridge.remote==null||!SystemBridge.remote.isBinderAlive())){if(!automatic)fail("Prepara el acceso para reabrir apps en Mi control. Abrir una app no requiere el auxiliar.",false);return;}
   if(!coverRequested&&NativeAppRestart.available(context)&&!jobKind.equals("open")){
-   try{if(PanelService.active!=null)PanelService.active.hideForTvRecovery();context.startActivity(new Intent(context,HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));coverRequested=true;}
+   try{if(PanelService.active!=null)PanelService.active.hideForTvRecovery();if(!HomeActivity.visible)context.startActivity(new Intent(context,HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));coverRequested=true;}
    catch(RuntimeException e){fail("Android no permitió preparar la reapertura; la app sigue disponible",false);return;}
   }
   final long token=generation;final TvRecoveryConfig.Settings taskJob=job;working=true;
@@ -173,12 +175,14 @@ final class TvRecovery {
  private void submit(Runnable task){try{work.execute(task);}catch(RejectedExecutionException e){working=false;fail("El control está ocupado; vuelve a intentarlo",false);}}
  private void launch(long token){
   if(token!=generation||!interactive())return;
+  if(appLaunches!=0){fail("La app ya está abierta; puedes continuar con el control",false);return;}
   clearDeadline();unwatchNetwork();Intent intent=TvRecoveryConfig.launchIntent(context,job.pkg);
   if(intent==null){fail("La app ya no tiene un acceso de inicio disponible",false);return;}
   try{
    if(PanelService.active!=null)PanelService.active.hideForTvRecovery();
    if(TvNavigationService.active!=null)TvNavigationService.active.begin(job.pkg);
-   context.startActivity(intent);launched=true;phase=guide?"teaching":"navigating";
+   context.startActivity(intent);appLaunches++;launched=true;phase=guide?"teaching":"navigating";
+   try{launchHistory.addLast(new JSONObject().put("boot",bootCount()).put("elapsed",SystemClock.elapsedRealtime()).put("reason",reason).put("generation",generation));while(launchHistory.size()>8)launchHistory.removeFirst();}catch(JSONException ignored){}
    // Cold boot can restore the player's own session asynchronously. Wait for
    // that initial restoration before inspecting and activating named controls.
    navigateAfter=SystemClock.elapsedRealtime()+(reason.equals("arranque")?5000:500);
@@ -211,6 +215,9 @@ final class TvRecovery {
    if(token!=generation||!busy())return;
    if(snapshot==null)return;
    if(guide)return;
+   // Only a named, verified endpoint can end navigation early. A generic
+   // player surface or activity alone does not identify the chosen channel.
+   if(routeIndex<job.steps.length()&&nav.matchesNamedEndpoint(snapshot,job.endpoint,job.channel))routeIndex=job.steps.length();
    if(routeIndex>=job.steps.length()){
     if(SystemClock.elapsedRealtime()-lastClick<400){scheduleProbe(450);return;}
     if(nav.matchesEndpoint(snapshot,job.endpoint)){
@@ -233,10 +240,15 @@ final class TvRecovery {
      for(TvNavigationService.Selector candidate:snapshot.controls)if(candidate.nativeRow&&candidate.label().equalsIgnoreCase(job.channel)){selector=candidate;matches++;}
     }
     if(matches>1){fail("El menú cambió: hay controles ambiguos. Revisa el recorrido",true);return;}
-    if(matches==0&&routeIndex>0&&!testing&&!automaticRetried&&(reason.equals("arranque")||reason.equals("despertar"))){
-     long remaining=4000-(SystemClock.elapsedRealtime()-lastClick);
-     if(remaining>0){scheduleProbe(remaining);return;}
-     retryAutomatic();return;
+    if(matches==0&&routeIndex<job.steps.length()-1){
+     // Players may restore their country/channel list themselves. Use the
+     // exact taught destination when it is already exposed, without replaying
+     // missing intermediate menus or restarting a playing app.
+     JSONObject last=job.steps.getJSONObject(job.steps.length()-1);
+     if(last.optString("op","click").equals("click")){
+      TvNavigationService.Selector destination=TvNavigationService.Selector.parse(last.getJSONObject("target"));
+      if(destination.label().equalsIgnoreCase(job.channel)&&snapshot.matches(destination)==1){selector=destination;matches=1;routeIndex=job.steps.length()-1;routeResumes++;}
+     }
     }
     if(matches==1){nav.click(selector,ok->{if(token!=generation)return;if(ok)advanced();else fail(nav.failureMessage(),false);});}
     else if(snapshot.scrollable&&scrolls<12){
@@ -244,12 +256,6 @@ final class TvRecovery {
     }
    }catch(JSONException e){fail("El recorrido necesita configurarse otra vez",true);}
   });
- }
- private void retryAutomatic(){
-  automaticRetried=true;generation++;launched=targetSeen=coverRequested=false;phase="waiting";routeIndex=scrolls=0;walkDirection=1;prepareAfter=0;
-  ui.removeCallbacks(probe);clearDeadline();if(TvNavigationService.active!=null)TvNavigationService.active.end();
-  setStatus("Reintentando la apertura de "+job.name+"…");final long token=generation;
-  deadline=()->{if(token==generation)fail("No se pudo preparar la app; puedes usar el botón",false);};ui.postDelayed(deadline,30000);ready();
  }
  private void advanced(){routeIndex++;scrolls=0;walkDirection=1;lastClick=SystemClock.elapsedRealtime();scheduleProbe(400);}
  void taught(){
@@ -320,7 +326,7 @@ final class TvRecovery {
  JSONObject inspect()throws JSONException{
   TvRecoveryConfig.Settings s=TvRecoveryConfig.get(context);return new JSONObject().put("restartBackend",restartBackend).put("kind",jobKind).put("phase",phase).put("status",status).put("reason",reason)
    .put("package",s.pkg).put("channel",s.channel).put("verified",s.verified).put("boot",s.boot).put("wake",s.wake)
-   .put("button",s.button).put("key",s.key).put("scan",s.scan).put("keyName",s.keyName).put("learningKey",TvRecoveryActivity.isLearning()).put("keyPromptReady",TvRecoveryActivity.keyPromptReady()).put("navigationService",TvNavigationService.active!=null).put("step",routeIndex).put("automaticRetried",automaticRetried)
+   .put("button",s.button).put("key",s.key).put("scan",s.scan).put("keyName",s.keyName).put("learningKey",TvRecoveryActivity.isLearning()).put("keyPromptReady",TvRecoveryActivity.keyPromptReady()).put("navigationService",TvNavigationService.active!=null).put("step",routeIndex).put("automaticRetried",false).put("appLaunches",appLaunches).put("routeResumes",routeResumes).put("launchHistory",new JSONArray(launchHistory))
    .put("steps",s.steps.length()).put("draftSteps",draft==null?0:draft.steps.length()).put("keyLearning",TvRecoveryActivity.keyState()).put("remoteCode",s.remoteCode).put("remoteInput",TvRemoteKeys.inspect()).put("screenListener",listening).put("networkListener",network!=null).put("workerActive",work.getActiveCount());
  }
  void testEvent(String event){
