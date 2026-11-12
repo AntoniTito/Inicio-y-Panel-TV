@@ -1,6 +1,6 @@
 # Verificación de Z6 Panel 0.19.0
 
-Entrega: 0.19.0/c56, un APK para API 29 y 31. Recuperación: comportamiento original de v0.18.1, código 57 y firma original. Después de instalar c57 se requiere c58 o superior. Los hashes exactos se registran en `entregas/manifest.json`.
+Actualización preparada: 0.19.0/c56, un APK para API 29 y 31. Recuperación: comportamiento original de v0.18.1, código 57 y firma original. Después de instalar c57 se requiere c58 o superior. Los hashes exactos se registran en `entregas/manifest.json`.
 
 ## Cambios comprobables
 

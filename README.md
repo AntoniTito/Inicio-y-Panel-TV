@@ -1,8 +1,8 @@
 # Z6 Panel
 
-Inicio y paneles superpuestos para TV Box. La versión vigente **0.19.0, código 56**, incorpora [Mi control y arranque](docs/MI-CONTROL.md): botones independientes, configuración del destino navegando en la app y reapertura verificada mediante Android cuando el firmware lo permite. Conserva carrusel, fondos y optimizaciones. Consulta la [verificación de la entrega](docs/VERIFICACION-0.19.0.md).
+Inicio y paneles superpuestos para TV Box. La actualización preparada **0.19.0, código 56**, incorpora [Mi control y arranque](docs/MI-CONTROL.md): botones independientes, configuración del destino navegando en la app y reapertura verificada mediante Android cuando el firmware lo permite. Conserva carrusel, fondos y optimizaciones. Consulta la [verificación de la entrega](docs/VERIFICACION-0.19.0.md).
 
-La rama `main` corresponde a `v0.19.0`. Netflix y YouTube se configuran por separado en Mi control y arranque.
+La rama `main` contiene 0.19.0 preparada. La etiqueta final queda pendiente de confirmar el arranque automático en el TV. Netflix y YouTube se configuran por separado en Mi control y arranque.
 
 ## Uso rápido en Windows
 

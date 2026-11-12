@@ -8,5 +8,6 @@
   "netflixAfterRealRebootWithoutReenablingDebugConfirmed": true,
   "firstAutomaticBootAttemptFailed": true,
   "initialBootFixAwaitingValidation": true,
-  "imagesPreserved": 2
+  "imagesPreserved": 2,
+  "physicalUiCompleteAndResponsiveConfirmed": true
 }
