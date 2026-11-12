@@ -6,7 +6,46 @@
   "controlEntryFailureReproduced": true,
   "controlBelowHomeInSameTask": true,
   "fixedApkSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07",
-  "fixInstalled": false,
-  "installationPendingReason": "ADB port closed before installation",
-  "physicalVerificationOfFixPending": true
+  "fixInstalled": true,
+  "installationPendingReason": null,
+  "physicalVerificationOfFixPending": false,
+  "installedVersion": "0.20.1",
+  "installedCode": 60,
+  "installedSha256": "869CB15B142508EB8BD26FDA8933C4E07612BD6E4160B7FB4CC24EA39F9EEC07",
+  "physicalRemoteConfirmationPending": true,
+  "adbDrivenPhysicalChecks": [
+    "panel reentry works after three HOME returns",
+    "route delete is visible on physical TV",
+    "cancel preserves temporary route",
+    "complete deletion clears temporary route and resets its action",
+    "real buttons and saved routes remain intact",
+    "real startup destination stays intact during deletion test",
+    "choosing another app removes the stale destination flow",
+    "physical YouTube opens with no route or channel request",
+    "unassigned temporary button can be deleted",
+    "original data preserved after full physical smoke test"
+  ],
+  "nativeLabelDialogTest": {
+    "nativeKeyboardOpened": true,
+    "nativeDialogRename": true,
+    "bindingPreserved": true,
+    "temporaryButtonDeleted": true
+  },
+  "configurationCorrections": {
+    "youtubeCorrected": true,
+    "startupCorrected": true,
+    "startupSwitchesPreserved": true
+  },
+  "savedStartupRouteReplay": {
+    "verifiedByControls": true,
+    "steps": 5,
+    "appLaunches": 1,
+    "automaticRetried": false,
+    "videoAudioMeasured": false,
+    "fullRebootPerformed": false
+  },
+  "finalButtonCount": 4,
+  "finalSavedRouteCount": 2,
+  "preservedPhotoHashCount": 2,
+  "temporaryDataRemoved": true
 }
