@@ -1,0 +1,21 @@
+{
+  "version": "0.20.1",
+  "code": 63,
+  "api": 31,
+  "emulator": true,
+  "physicalDeviceContacted": false,
+  "fromVersion": "0.20.2",
+  "syntheticImages": 3,
+  "checks": [
+    "preference:display_name",
+    "preference:opacity",
+    "preference:overlay_clock",
+    "preference:app_order",
+    "preference:wallpaper_photo",
+    "preference:wallpaper_mode",
+    "buttons preserved",
+    "startup preserved",
+    "photos preserved"
+  ],
+  "snapshotReturnedToCode62": true
+}

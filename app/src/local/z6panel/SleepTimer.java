@@ -100,7 +100,7 @@ public final class SleepTimer {
             }
             AlarmManager alarms = alarms(context);
             if (Build.VERSION.SDK_INT >= 31 && !alarms.canScheduleExactAlarms()) {
-                return schedulingFailure(context, "Permite alarmas exactas para Z6 Panel en Ajustes");
+                return schedulingFailure(context, "Permite alarmas exactas para Inicio y Panel TV en Ajustes");
             }
             // Bounded even when an attached helper's Binder stops answering. Never bootstrap ADB.
             String ping = bridgeCall("PING", PING_MS, SystemClock.elapsedRealtime() + PING_MS);
@@ -399,7 +399,7 @@ public final class SleepTimer {
         if (token.isEmpty()) throw new IllegalStateException("Generación del temporizador ausente");
         AlarmManager alarms = alarms(context);
         if (Build.VERSION.SDK_INT >= 31 && !alarms.canScheduleExactAlarms()) {
-            throw new SecurityException("Permite alarmas exactas para Z6 Panel en Ajustes");
+            throw new SecurityException("Permite alarmas exactas para Inicio y Panel TV en Ajustes");
         }
         alarms.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, due,
                 pendingIntent(context, token, PendingIntent.FLAG_UPDATE_CURRENT));

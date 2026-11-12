@@ -1,0 +1,403 @@
+﻿{
+    "version":  "0.20.2",
+    "physicalDeviceContacted":  false,
+    "certificateSha256":  "1446d3adb55774747cadf9c8f7c814652fb2d0a97e0368094d1c251572dfe2d5",
+    "artifacts":  [
+                      {
+                          "file":  "Z6-Panel-0.10.4.apk",
+                          "code":  22,
+                          "version":  "0.10.4",
+                          "embeddedVersionName":  "0.10.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.10.3.apk",
+                          "code":  23,
+                          "version":  "0.10.3",
+                          "embeddedVersionName":  "0.10.3-recovery",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.11.0.apk",
+                          "code":  24,
+                          "version":  "0.11.0",
+                          "embeddedVersionName":  "0.11.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.10.4.apk",
+                          "code":  25,
+                          "version":  "0.10.4",
+                          "embeddedVersionName":  "0.10.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.12.0.apk",
+                          "code":  26,
+                          "version":  "0.12.0",
+                          "embeddedVersionName":  "0.12.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-api29-0.10.4-c27.apk",
+                          "code":  27,
+                          "version":  "0.10.4",
+                          "embeddedVersionName":  "0.10.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-api31-0.11.0-c27.apk",
+                          "code":  27,
+                          "version":  "0.11.0",
+                          "embeddedVersionName":  "0.11.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.12.1.apk",
+                          "code":  28,
+                          "version":  "0.12.1",
+                          "embeddedVersionName":  "0.12.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-api29-0.10.4-c29.apk",
+                          "code":  29,
+                          "version":  "0.10.4",
+                          "embeddedVersionName":  "0.10.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-api31-0.12.0-c29.apk",
+                          "code":  29,
+                          "version":  "0.12.0",
+                          "embeddedVersionName":  "0.12.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.12.2.apk",
+                          "code":  30,
+                          "version":  "0.12.2",
+                          "embeddedVersionName":  "0.12.2",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.12.1-c31.apk",
+                          "code":  31,
+                          "version":  "0.12.1",
+                          "embeddedVersionName":  "0.12.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.13.0.apk",
+                          "code":  32,
+                          "version":  "0.13.0",
+                          "embeddedVersionName":  "0.13.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.12.2-c33.apk",
+                          "code":  33,
+                          "version":  "0.12.2",
+                          "embeddedVersionName":  "0.12.2",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.14.0.apk",
+                          "code":  34,
+                          "version":  "0.14.0",
+                          "embeddedVersionName":  "0.14.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.13.0-c35.apk",
+                          "code":  35,
+                          "version":  "0.13.0",
+                          "embeddedVersionName":  "0.13.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.15.0.apk",
+                          "code":  36,
+                          "version":  "0.15.0",
+                          "embeddedVersionName":  "0.15.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.14.0-c37.apk",
+                          "code":  37,
+                          "version":  "0.14.0",
+                          "embeddedVersionName":  "0.14.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.0.apk",
+                          "code":  38,
+                          "version":  "0.16.0",
+                          "embeddedVersionName":  "0.16.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.15.0-c39.apk",
+                          "code":  39,
+                          "version":  "0.15.0",
+                          "embeddedVersionName":  "0.15.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.1.apk",
+                          "code":  40,
+                          "version":  "0.16.1",
+                          "embeddedVersionName":  "0.16.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.0-c41.apk",
+                          "code":  41,
+                          "version":  "0.16.0",
+                          "embeddedVersionName":  "0.16.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.2.apk",
+                          "code":  42,
+                          "version":  "0.16.2",
+                          "embeddedVersionName":  "0.16.2",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.1-c43.apk",
+                          "code":  43,
+                          "version":  "0.16.1",
+                          "embeddedVersionName":  "0.16.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.3.apk",
+                          "code":  44,
+                          "version":  "0.16.3",
+                          "embeddedVersionName":  "0.16.3",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.2-c45.apk",
+                          "code":  45,
+                          "version":  "0.16.2",
+                          "embeddedVersionName":  "0.16.2",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.4.apk",
+                          "code":  46,
+                          "version":  "0.16.4",
+                          "embeddedVersionName":  "0.16.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.3-c47.apk",
+                          "code":  47,
+                          "version":  "0.16.3",
+                          "embeddedVersionName":  "0.16.3",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.16.5.apk",
+                          "code":  48,
+                          "version":  "0.16.5",
+                          "embeddedVersionName":  "0.16.5",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.4-c49.apk",
+                          "code":  49,
+                          "version":  "0.16.4",
+                          "embeddedVersionName":  "0.16.4",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.17.0.apk",
+                          "code":  50,
+                          "version":  "0.17.0",
+                          "embeddedVersionName":  "0.17.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.16.5-c51.apk",
+                          "code":  51,
+                          "version":  "0.16.5",
+                          "embeddedVersionName":  "0.16.5",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.18.0.apk",
+                          "code":  52,
+                          "version":  "0.18.0",
+                          "embeddedVersionName":  "0.18.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.17.0-c53.apk",
+                          "code":  53,
+                          "version":  "0.17.0",
+                          "embeddedVersionName":  "0.17.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.18.1.apk",
+                          "code":  54,
+                          "version":  "0.18.1",
+                          "embeddedVersionName":  "0.18.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.18.0-c55.apk",
+                          "code":  55,
+                          "version":  "0.18.0",
+                          "embeddedVersionName":  "0.18.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.19.0.apk",
+                          "code":  56,
+                          "version":  "0.19.0",
+                          "embeddedVersionName":  "0.19.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.18.1-c57.apk",
+                          "code":  57,
+                          "version":  "0.18.1",
+                          "embeddedVersionName":  "0.18.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.20.0.apk",
+                          "code":  58,
+                          "version":  "0.20.0",
+                          "embeddedVersionName":  "0.20.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.19.0-c59.apk",
+                          "code":  59,
+                          "version":  "0.19.0",
+                          "embeddedVersionName":  "0.19.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-0.20.1.apk",
+                          "code":  60,
+                          "version":  "0.20.1",
+                          "embeddedVersionName":  "0.20.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Z6-Panel-recuperacion-0.20.0-c61.apk",
+                          "code":  61,
+                          "version":  "0.20.0",
+                          "embeddedVersionName":  "0.20.0",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Inicio-y-Panel-TV-0.20.2.apk",
+                          "code":  62,
+                          "version":  "0.20.2",
+                          "embeddedVersionName":  "0.20.2",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      },
+                      {
+                          "file":  "Inicio-y-Panel-TV-recuperacion-0.20.1-c63.apk",
+                          "code":  63,
+                          "version":  "0.20.1",
+                          "embeddedVersionName":  "0.20.1",
+                          "hashVerified":  true,
+                          "certificateVerified":  true,
+                          "metadataVerified":  true
+                      }
+                  ]
+}

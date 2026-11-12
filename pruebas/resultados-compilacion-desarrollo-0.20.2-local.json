@@ -1,0 +1,9 @@
+﻿{
+    "version":  "0.20.2",
+    "customKeyBuildSucceeded":  true,
+    "customKeyPasswordRequested":  true,
+    "officialPasswordNotReused":  true,
+    "certificateDifferentFromOfficial":  true,
+    "apkInstalled":  false,
+    "physicalDeviceContacted":  false
+}

@@ -1,5 +1,7 @@
 # Componentes de terceros
 
+El código propio y la documentación de Inicio y Panel TV se publican bajo [GPL-3.0-only](../LICENSE), Copyright © 2026 Antoni. Los componentes y recursos siguientes mantienen sus licencias individuales. Esta declaración no sustituye sus avisos originales.
+
 ## Generación local de QR
 
 Se incluyen las cuatro clases necesarias de la versión Java estándar de **QR Code generator de Project Nayuki 1.8.0**: BitBuffer, DataTooLongException, QrCode y QrSegment. No se incluye la demo de escritorio ni dependencias de Java AWT.

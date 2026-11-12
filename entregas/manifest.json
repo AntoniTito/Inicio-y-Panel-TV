@@ -323,13 +323,25 @@
       "version": "0.20.0",
       "code": 61,
       "sha256": "F80CE2927AAC2A7DAC530092E0D5A5BDD93B96FDBB0F876947F89C2FFD041E2A"
+    },
+    {
+      "file": "Inicio-y-Panel-TV-0.20.2.apk",
+      "version": "0.20.2",
+      "code": 62,
+      "sha256": "047A932B6E617071619A9441BB196BD9C87F2D9E52D6AC0541AE6BC68747B493"
+    },
+    {
+      "file": "Inicio-y-Panel-TV-recuperacion-0.20.1-c63.apk",
+      "version": "0.20.1",
+      "code": 63,
+      "sha256": "A75B733C9F11C0DCA89A5CA690F8CBA744267D3891524A16FCED5A95EDE01E32"
     }
   ],
   "certificateSha256": "1446d3adb55774747cadf9c8f7c814652fb2d0a97e0368094d1c251572dfe2d5",
-  "current": "Z6-Panel-0.20.1.apk",
-  "recovery": "Z6-Panel-recuperacion-0.20.0-c61.apk",
+  "current": "Inicio-y-Panel-TV-0.20.2.apk",
+  "recovery": "Inicio-y-Panel-TV-recuperacion-0.20.1-c63.apk",
   "recoveryByApi": {
-    "29": "Z6-Panel-recuperacion-0.20.0-c61.apk",
-    "31": "Z6-Panel-recuperacion-0.20.0-c61.apk"
+    "29": "Inicio-y-Panel-TV-recuperacion-0.20.1-c63.apk",
+    "31": "Inicio-y-Panel-TV-recuperacion-0.20.1-c63.apk"
   }
 }

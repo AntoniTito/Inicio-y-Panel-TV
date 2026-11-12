@@ -1,0 +1,17 @@
+﻿{
+    "version":  "0.20.2",
+    "code":  62,
+    "recoveryCode":  63,
+    "physicalDeviceContacted":  false,
+    "apkSha256":  "047A932B6E617071619A9441BB196BD9C87F2D9E52D6AC0541AE6BC68747B493",
+    "recoverySha256":  "A75B733C9F11C0DCA89A5CA690F8CBA744267D3891524A16FCED5A95EDE01E32",
+    "freshFolderInstallerChecks":  81,
+    "dryRunNoAdb":  true,
+    "originalPrivateFolderNotNeeded":  true,
+    "originalSdkNotNeededForInstallation":  true,
+    "privateProfileProbeExcluded":  true,
+    "photosAndSigningKeysExcluded":  true,
+    "screenshotCount":  8,
+    "licenseAndCreditsIncluded":  true,
+    "replicaCertifiedOnPhysicalTarget":  false
+}

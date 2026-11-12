@@ -1,0 +1,17 @@
+name: Proponer una mejora
+description: Explica qué tarea haría más sencilla la mejora.
+title: "[Mejora]: "
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué necesitas hacer
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Comportamiento propuesto
+      description: Explica cómo se manejaría con el control y qué resultado esperas.
+    validations:
+      required: true

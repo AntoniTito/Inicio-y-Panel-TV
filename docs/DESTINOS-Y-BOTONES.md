@@ -1,4 +1,4 @@
-# Destinos y botones — 0.20.1
+# Destinos y botones — 0.20.2
 
 En **Ajustes → Aplicaciones → Mi control y arranque**, cada botón tiene una etiqueta editable, la identidad que entrega Android y una acción. Los destinos probados están disponibles para cualquier botón y para el encendido.
 
@@ -14,7 +14,7 @@ Llegar a una sección concreta es opcional y sirve también para aplicaciones si
 2. Navega como siempre. En el canal o pantalla elegidos, pulsa Home y **Probar y guardar este destino**.
 3. Al terminar la prueba, comprueba el resultado y pulsa **Guardar destino**.
 
-Antes de la prueba se conserva un borrador privado. Salir, interrumpir la prueba o recrear el proceso de Z6 no lo descarta. En **Destino pendiente**, puedes reintentar sin volver a navegar, guardar una prueba ya completada o descartar el borrador. Una prueba incompleta no se puede confirmar como válida. El destino anterior permanece asignado hasta guardar el nuevo.
+Antes de la prueba se conserva un borrador privado. Salir, interrumpir la prueba o recrear el proceso del panel no lo descarta. En **Destino pendiente**, puedes reintentar sin volver a navegar, guardar una prueba ya completada o descartar el borrador. Una prueba incompleta no se puede confirmar como válida. El destino anterior permanece asignado hasta guardar el nuevo.
 
 ## Reutilizar un destino
 
@@ -52,4 +52,4 @@ Si la ruta no tiene usos, basta **Eliminar destino**. También puedes quitar el 
 
 Los destinos, borradores, etiquetas y códigos pertenecen al dispositivo; no forman parte del perfil de réplica ni se suben a Git. El respaldo de botones incluye esos datos. No hay consultas de pantalla ni nuevas tareas periódicas para mantener esta lista.
 
-La recuperación 0.20.0/c61 conserva biblioteca, borrador y asignaciones. Se obtiene del commit histórico de 0.20.0 y añade únicamente la declaración singleTask necesaria para recuperar el acceso a Mi control. Conserva la interfaz anterior de esa versión; las mejoras nuevas de gestión se recuperan al actualizar después. El restaurador exporta los datos privados y restaura HOME, permisos y teclas originales del equipo. Tras instalar c61 se necesita c62 o superior. No desinstales Z6 para recuperar una versión.
+La recuperación 0.20.1/c63 conserva biblioteca, borrador y asignaciones. Se obtiene de la etiqueta inmutable v0.20.1 cambiando únicamente su código de versión. Conserva la marca anterior Z6 Panel y el mismo formato de datos. El restaurador exporta los datos privados y restaura HOME, permisos y teclas originales del equipo. Tras instalar c63 se necesita c64 o superior. No desinstales la aplicación para recuperar una versión.

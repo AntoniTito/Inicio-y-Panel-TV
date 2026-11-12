@@ -1,6 +1,6 @@
 # Instalación y recuperación
 
-Para reproducir el entorno completo, seguir [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md) y su [prompt para la IA](PROMPT-REPLICA.md). Esta página describe el asistente; instalar el APK no configura automáticamente botones, destinos ni cuentas de otras apps. La referencia es 0.20.1/c60, común a API 29/31; el manifiesto identifica los archivos vigentes.
+Para reproducir el entorno completo, seguir [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md) y su [prompt para la IA](PROMPT-REPLICA.md). Esta página describe el asistente; instalar el APK no configura automáticamente botones, destinos ni cuentas de otras apps. La referencia es 0.20.2/c62, común a API 29/31; el manifiesto identifica los archivos vigentes.
 
 ## Preparación
 
@@ -14,15 +14,15 @@ Ejecuta `z6.ps1 instalar -Dispositivo IP:PUERTO`. El primer respaldo se guarda e
 
 La identidad del respaldo utiliza huella de firmware, número de serie y Android ID; esos datos no se aplican a otro TV. Revisa el destino antes de instalar. Si no puede identificar un HOME recuperable, no continúa.
 
-Si Accesibilidad no se activa automáticamente, habilita Z6 Panel en Android y repite el mismo comando. Las otras aplicaciones y sus sesiones no se recrean con las preferencias del panel. El listado de aplicaciones faltantes y permisos pendientes queda en `ultimo-informe.json`.
+Si Accesibilidad no se activa automáticamente, habilita Inicio y Panel TV en Android y repite el mismo comando. Las otras aplicaciones y sus sesiones no se recrean con las preferencias del panel. El listado de aplicaciones faltantes y permisos pendientes queda en `ultimo-informe.json`.
 
 El auxiliar autónomo requiere la autorización propia del destino y un transporte local compatible. Se solicita desde Diagnóstico. Se comprobó su recuperación tras reinicio en el emulador API 31; otro firmware requiere su propia prueba. PING solo comprueba la conexión actual. Si falta capacidad se conserva el acceso nativo y se declara la limitación. Usa `-SoloPanel` para instalar las aplicaciones externas después.
 
 ## Recuperación
 
-`z6.ps1 restaurar -Dispositivo IP:PUERTO` usa el respaldo inicial del destino. También puedes indicar `-Respaldo ARCHIVO`. Rechaza identidades diferentes, restaura el HOME y las animaciones, recupera los permisos que modificó y conserva otros servicios de accesibilidad activados posteriormente. Z6 Panel permanece instalado para evitar perder sus datos.
+`z6.ps1 restaurar -Dispositivo IP:PUERTO` usa el respaldo inicial del destino. También puedes indicar `-Respaldo ARCHIVO`. Rechaza identidades diferentes, restaura el HOME y las animaciones, recupera los permisos que modificó y conserva otros servicios de accesibilidad activados posteriormente. Inicio y Panel TV permanece instalado para evitar perder sus datos.
 
-`-RecuperarVersion` selecciona 0.20.0/código 61 para API 29 y 31, con la misma firma y el arreglo singleTask para reentrar a Mi control. No funciona encima de códigos superiores. Tras recuperarlo, una actualización debe tener código 62 o mayor. Sin esa opción solo se restauran HOME y ajustes originales, conservando el APK instalado. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
+`-RecuperarVersion` selecciona 0.20.1/código 63 para API 29 y 31, con la misma firma y datos compatibles. Recupera la marca anterior Z6 Panel. No funciona encima de códigos superiores. Tras recuperarlo, una actualización debe tener código 64 o mayor. Sin esa opción solo se restauran HOME y ajustes originales, conservando el APK instalado. La restauración cancela el temporizador y recupera el modo previo de alarmas exactas y los permisos gestionados.
 
 Los estados originales de la limpieza antigua se conservan en `privado/referencia/original`. No son una receta para otros modelos. El restaurador específico se niega a ejecutarlos sin una identidad comprobada del TV original. Los respaldos del instalador nuevo sí incluyen su identidad desde el principio.
 
@@ -30,9 +30,9 @@ Las imágenes de 0.16.0 se publican en MediaStore y los índices quedan privados
 
 ## Git y entregas
 
-El repositorio se prepara localmente, sin remoto ni publicación automática. Para publicarlo elige un repositorio privado y conecta su URL. Los APK locales conservados se adjuntan a la entrega junto con `entregas/manifest.json`. No añadas por fuerza `privado` o `.local` ni publiques la firma, credenciales, inventarios o sesiones de terceros.
+El repositorio público es [AntoniTito/Inicio-y-Panel-TV](https://github.com/AntoniTito/Inicio-y-Panel-TV). Descarga preferentemente el portable de [Releases](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest): incluye los APK firmados. Un clon del código no los incluye; descarga los de su etiqueta y colócalos en `entregas/` para usar el asistente. No añadas por fuerza `privado` o `.local` ni publiques la clave de firma, credenciales, inventarios o sesiones de terceros.
 
-La recuperación vigente 0.20.0/código 61 conserva formatos de fotos compartidas, biblioteca de destinos, borrador y asignaciones. El restaurador exporta privadamente los botones y devuelve su mapa original cuando corresponde; conserva la interfaz anterior de 0.20.0. No usar un APK histórico anterior a la migración para recuperar fotos de MediaStore. No elimina la biblioteca ni devuelve imágenes borradas expresamente.
+La recuperación vigente 0.20.1/código 63 conserva fotos compartidas, biblioteca de destinos, borrador y asignaciones. El restaurador exporta privadamente los botones y devuelve su mapa original cuando corresponde; conserva el comportamiento de 0.20.1. No usar un APK histórico anterior a la migración para recuperar fotos de MediaStore. No elimina la biblioteca ni devuelve imágenes borradas expresamente.
 
 ## Galería y respaldo de fotos desde 0.16.0
 

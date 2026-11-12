@@ -396,7 +396,7 @@ public class PanelService extends AccessibilityService {
  }
  private void startLocalControl(boolean authorize){
   if(!authorize&&Settings.Global.getInt(getContentResolver(),Settings.Global.ADB_ENABLED,0)!=1){bridgeStatus="Depuración desactivada en Android";return;}
-  if(localStarting||!authorize&&!prefs.getBoolean("local_adb_enabled",false))return;localStarting=true;bridgeStatus="Iniciando control…";final int token=localGeneration;if(authorize){if(!prefs.getBoolean("local_adb_enabled",false))hide();message("Esperando autorización en la Z6…");}
+  if(localStarting||!authorize&&!prefs.getBoolean("local_adb_enabled",false))return;localStarting=true;bridgeStatus="Iniciando control…";final int token=localGeneration;if(authorize){if(!prefs.getBoolean("local_adb_enabled",false))hide();message("Esperando autorización en el TV Box…");}
   bootstrapWorker.execute(()->{String result;try{result=LocalAdb.start(this,authorize);}catch(java.net.SocketTimeoutException e){result="Autorización o conexión pendiente";}catch(Exception e){android.util.Log.w("Z6LocalAdb","Bootstrap failed",e);result="Inicio local no disponible: "+e.getClass().getSimpleName();}final String status=result;
    ui.post(()->{localStarting=false;if(destroyed||token!=localGeneration)return;if(status.equals("OK")||status.equals("STARTED")){localAttempts=0;ui.postDelayed(()->finishLocalControl(authorize,0),500);}else{bridgeStatus=status;if(panel!=null&&!pages.isEmpty())renderSide();if(authorize)message(status);else if(++localAttempts<3){ui.removeCallbacks(recoverLostBridge);ui.postDelayed(recoverLostBridge,30000);}}});});
  }

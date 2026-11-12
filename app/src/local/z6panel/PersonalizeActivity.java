@@ -20,7 +20,7 @@ public class PersonalizeActivity extends Activity {
   TextView hint=new TextView(this);hint.setText("Estos cambios se guardan localmente y no dejan procesos activos.");hint.setTextSize(14);hint.setTextColor(0xFFAAAAAA);list.addView(hint);
   EditText name=new EditText(this);name.setSingleLine();name.setHint("Nombre mostrado");name.setText(prefs.getString("display_name",""));list.addView(name);
   Button save=new Button(this);save.setText("Guardar nombre");save.setOnClickListener(v->{prefs.edit().putString("display_name",name.getText().toString().trim()).apply();Toast.makeText(this,"Guardado",Toast.LENGTH_SHORT).show();});list.addView(save);
-  Button apps=new Button(this);apps.setText("Personalizar aplicaciones");apps.setOnClickListener(v->{if(PanelService.active!=null)PanelService.active.openPage("manage");else Toast.makeText(this,"Activa Z6 Panel en Accesibilidad",Toast.LENGTH_SHORT).show();});list.addView(apps);
+  Button apps=new Button(this);apps.setText("Personalizar aplicaciones");apps.setOnClickListener(v->{if(PanelService.active!=null)PanelService.active.openPage("manage");else Toast.makeText(this,"Activa Inicio y Panel TV en Accesibilidad",Toast.LENGTH_SHORT).show();});list.addView(apps);
   CheckBox greeting=check("Mostrar saludo", "show_greeting", true);list.addView(greeting);
   CheckBox date=check("Mostrar fecha", "show_date", true);list.addView(date);
   CheckBox controls=check("Mostrar Wi‑Fi, Bluetooth y Ajustes", "show_controls", true);list.addView(controls);

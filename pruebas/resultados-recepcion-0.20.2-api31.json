@@ -1,0 +1,16 @@
+{
+  "version": "0.20.2",
+  "code": 62,
+  "api": 31,
+  "emulator": true,
+  "physicalPhone": false,
+  "physicalDeviceContacted": false,
+  "checks": [
+    "new mobile page brand",
+    "invalid session rejected",
+    "optimized image received",
+    "receipt does not apply wallpaper",
+    "receiver port closed on exit",
+    "synthetic transfer removed without touching demo images"
+  ]
+}

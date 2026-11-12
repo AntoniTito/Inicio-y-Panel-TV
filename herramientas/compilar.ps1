@@ -8,13 +8,13 @@ if(!$Jdk){
 }
 if(!$Jdk -or !(Test-Path -LiteralPath (Join-Path $Jdk 'javac.exe'))){throw 'Install JDK 21 and set JAVA_HOME, or provide -Jdk (bin directory).'}
 if(!$Keystore){$Keystore=Join-Path $script:Z6Root 'privado\firma\original.p12'}
-if(!(Test-Path -LiteralPath $Keystore)){throw 'Original signing key required. No replacement key will be generated.'}
+if(!(Test-Path -LiteralPath $Keystore)){throw 'Signing key missing. Official updates use the original key; development builds may provide their own -Keystore. No replacement key is generated automatically.'}
 $sdk=Join-Path $script:Z6Root '.local\sdk'
 $bt=Join-Path $sdk 'build-tools\35.0.0'
 $android=Join-Path $sdk 'platforms\android-35\android.jar'
 if(!(Test-Path -LiteralPath $android) -or !(Test-Path -LiteralPath (Join-Path $bt 'aapt2.exe'))){throw 'Android SDK missing. See docs\COMPILACION.md.'}
 $project=if($Proyecto){[IO.Path]::GetFullPath($Proyecto)}else{Join-Path $script:Z6Root 'app'}
-if(!$Salida){$Salida=Join-Path $script:Z6Root '.local\build\Z6-Panel-recompilado.apk'}
+if(!$Salida){$Salida=Join-Path $script:Z6Root '.local\build\Inicio-y-Panel-TV-recompilado.apk'}
 $Salida=[IO.Path]::GetFullPath($Salida)
 foreach($entry in (Read-Z6Json (Join-Path $script:Z6Root 'entregas\manifest.json')).artifacts){if($Salida -eq [IO.Path]::GetFullPath((Join-Path $script:Z6Root ('entregas\'+$entry.file)))){throw 'Build output must not overwrite a verified release.'}}
 $build=Join-Path $script:Z6Root ('.local\build\'+[guid]::NewGuid().ToString('N'))
@@ -26,7 +26,9 @@ try{
  $env:JAVA_HOME=Split-Path $Jdk -Parent
  if(!$env:Z6_STORE_PASSWORD){
   $credential=Join-Path $script:Z6Root 'privado\firma\password.dpapi'
-  $secure=if(Test-Path -LiteralPath $credential){(Get-Content -LiteralPath $credential -Raw).Trim()|ConvertTo-SecureString}else{Read-Host 'Signing key password' -AsSecureString}
+  $originalKey=[IO.Path]::GetFullPath((Join-Path $script:Z6Root 'privado\firma\original.p12'))
+  $useSavedPassword=([IO.Path]::GetFullPath($Keystore) -eq $originalKey) -and (Test-Path -LiteralPath $credential)
+  $secure=if($useSavedPassword){(Get-Content -LiteralPath $credential -Raw).Trim()|ConvertTo-SecureString}else{Read-Host 'Signing key password' -AsSecureString}
   $handle=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
   try{$env:Z6_STORE_PASSWORD=[Runtime.InteropServices.Marshal]::PtrToStringBSTR($handle)}finally{[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($handle)}
  }

@@ -92,7 +92,7 @@ function Get-Z6Artifact([switch]$Recovery,[int]$Api=29){
  $entries=@($manifest.artifacts|Where-Object {$_.file -eq $name});if($entries.Count -ne 1){throw "Unknown release artifact: $name"};$entry=$entries[0]
  if($Recovery -and $entry.PSObject.Properties['validatedApi'] -and $Api -notin @($entry.validatedApi)){throw "Recovery is not compatible with API $Api"}
  $path=Join-Path $script:Z6Root ('entregas\'+$name)
- if(!(Test-Path -LiteralPath $path)){throw "Missing signed APK: $name. Download the private release into entregas."}
+ if(!(Test-Path -LiteralPath $path)){throw "Missing signed APK: $name. Download its official release into entregas: https://github.com/AntoniTito/Inicio-y-Panel-TV/releases"}
  if((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $entry.sha256){throw "APK hash mismatch: $name"}
  [pscustomobject]@{path=$path;code=[int]$entry.code;sha256=$entry.sha256}
 }

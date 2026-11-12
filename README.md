@@ -1,68 +1,124 @@
-# Z6 Panel
+# Inicio y Panel TV
 
-Inicio y paneles superpuestos para TV Box. **0.20.1, código 60**, corrige el regreso a Mi control, añade gestión visible de rutas y distingue abrir apps de elegir una sección opcional. Conserva [destinos reutilizables, borradores y etiquetas editables](docs/DESTINOS-Y-BOTONES.md). Consulta la [verificación de la entrega](docs/VERIFICACION-0.20.1.md), incluido el estado de la instalación física.
+**Tu inicio, tus aplicaciones y tu control.**
 
-La rama `main` contiene 0.20.1. Abrir o cerrar y abrir una app no requiere elegir un destino. Una sección probada se puede asignar a varios botones y al arranque/despertar. El nombre visible se edita sin cambiar la tecla detectada. El selector reconoce variantes instaladas según sus capacidades, sin una lista fija de nombres.
+Un inicio personalizable y un panel superpuesto para Android TV. Organiza tus aplicaciones, consulta la hora sobre el video, cambia el fondo y configura los botones del control desde un mismo entorno.
 
-**Para replicar el entorno completo en otro TV:** entrega a la IA el [prompt único](docs/PROMPT-REPLICA.md) y la [guía de réplica](docs/REPLICAR-ENTORNO.md). Incluyen instalación, sustitución reversible del inicio, aspecto, apps, fondos, teclas, destinos reutilizables, arranque/despertar y recuperación. La misma entrega vigente sirve para Android 10/12; las autorizaciones, apps y control se comprueban en cada destino.
+[![Versión](https://img.shields.io/badge/versi%C3%B3n-0.20.2-477d82)](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest)
+[![Licencia](https://img.shields.io/badge/licencia-GPL--3.0--only-647785)](LICENSE)
+[![Instalador](https://img.shields.io/badge/instalador-Windows-647785)](docs/INSTALACION.md)
 
-**Aceptación obligatoria:** la IA debe cumplir toda la matriz de [requisitos de réplica](docs/CONTRATO-REPLICA.md). Instalar el APK o documentar diferencias no autoriza a declararla terminada. Una función omitida, prueba pendiente o restricción sin resolver deja el resultado incompleto o incompatible; no se garantiza identidad en cualquier hardware por imponer instrucciones más estrictas.
+**[Descargar el paquete completo](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest) · [Instalar paso a paso](docs/INSTALACION.md) · [Replicar con una IA](docs/PROMPT-REPLICA.md) · [Compatibilidad](docs/COMPATIBILIDAD.md)**
 
-## Uso rápido en Windows
+![Pantalla de inicio con reloj, fondo y aplicaciones](docs/capturas/inicio.png)
 
-**Versiones:** `v0.10.4` / rama `android10` conserva el proyecto anterior para Android 10. `v0.11.0` conserva la adaptación anterior y `v0.12.0` conserva los fondos iniciales y `v0.12.1` corrige su cobertura completa. `v0.12.2` conserva la recepción confirmada. `v0.13.0` conserva la biblioteca visual. `v0.14.0` conserva el rediseño anterior. `v0.15.0` conserva la gestión integrada y elección de paisajes. `v0.16.0` conserva catálogo diario y galería compartida; `v0.16.1` retira el acceso a la galería nativa dentro de Fondos; `v0.16.2` corrige las transiciones del fondo; `v0.16.3` evita trabajo repetido al recibir Home; `v0.16.4` aclara la selección translúcida de las tarjetas; `v0.16.5` conserva la corrección del retorno desde Añadir app; `v0.17.0` conserva las filas circulares independientes del panel; `v0.18.0` añade la recuperación de TV configurable. `v0.18.1` corrige la reconexion del auxiliar sin reiniciar la depuracion. El instalador usa el APK de la rama seleccionada. Lee [como elegir y recuperar cada version](docs/VERSIONES.md); el historial Git no cambia por si solo el dispositivo.
+*Captura real de 0.20.2 en un emulador Android TV 12, a 1280 × 720, con datos de demostración. Las capturas no representan una certificación de otros dispositivos.*
 
-1. Descarga el repositorio privado y los dos APK de su entrega (actual y recuperación común a API 29/31) a `entregas/`. La copia local consolidada ya los incluye. Para descargar de un repositorio privado necesitas acceso a él. Este proyecto no se ha publicado automáticamente.
-2. Si falta ADB: `powershell -File .\herramientas\preparar-herramientas.ps1 -SoloAdb`.
-3. Activa depuración en el TV Box y autoriza el PC. Sustituye `IP:PUERTO` por su conexión real:
+## Lo que puedes hacer
 
-```powershell
-powershell -File .\z6.ps1 instalar -Dispositivo IP:PUERTO -Perfil replica -Simular
-powershell -File .\z6.ps1 diagnosticar -Dispositivo IP:PUERTO
-powershell -File .\z6.ps1 instalar -Dispositivo IP:PUERTO -Perfil replica -SoloPanel
-```
-
-El asistente identifica y respalda el destino, instala, aplica preferencias, configura permisos y verifica Z6 como HOME antes de deshabilitar el inicio anterior. Pedirá la autorización local de Android si está disponible. No cambia redes, emparejamientos, idioma, zona horaria ni resolución. El nombre del usuario se personaliza en el propio panel. `-SoloPanel` permite instalar las apps externas después; sin esa opción consulta las del perfil. Botones, destinos y arranque/despertar se completan según la guía, no se importan de otro TV.
-
-**Compatibilidad:** el asistente admite Android 10/API 29 y Android TV 12/API 31. La base 0.10.4 fue comprobada en el TV físico Android 10; 0.12.0 se comprobó en el emulador API 31 y su biblioteca/recepción en API 29. La imagen stock API 29 presenta fallos nativos de superposición reproducidos también con 0.10.4; la comprobación física de la entrega actual se registra por separado y no se extrapola a otros modelos. Las otras API permiten diagnosticar, pero bloquean la instalación automática. Consulta la [matriz](docs/COMPATIBILIDAD.md).
-
-## Comandos
-
-```powershell
-.\z6.ps1 instalar -Dispositivo IP:PUERTO -Simular
-.\z6.ps1 diagnosticar -Dispositivo IP:PUERTO
-.\z6.ps1 configurar -Dispositivo IP:PUERTO
-.\z6.ps1 verificar -Dispositivo IP:PUERTO
-.\z6.ps1 exportar -Dispositivo IP:PUERTO
-.\z6.ps1 restaurar -Dispositivo IP:PUERTO
-.\z6.ps1 compilar
-```
-
-`-Simular` y `-WhatIf` no ejecutan ADB. `restaurar` recupera el HOME y los ajustes del respaldo del mismo equipo, sin desinstalar ni borrar datos. `-RecuperarVersion` selecciona la recuperación 0.20.0/código 61 para API 29 y 31, con el arreglo de acceso a Mi control. Después se necesita código 62 o superior para actualizar. Se rechazan respaldos de otro dispositivo y downgrades.
-
-Para aplicaciones externas, proporciona APK de procedencia verificada mediante `-CarpetaApks RUTA`, nombrados por paquete, por ejemplo `com.android.mgstv.apk` para la variante Xuper de referencia. Se valida el identificador con las build-tools antes de instalar; si falta otro paquete, adapta el perfil local como explica la guía. No se incluyen cuentas, licencias ni APK de terceros en Git. Usa `-SoloPanel` si las instalarás después.
-
-## Contenido
-
-| Carpeta | Función |
+| Función | Cómo te ayuda |
 |---|---|
-| `app` | Única base vigente: aplicación y auxiliar integrados. |
-| `herramientas` | Compilación, dependencias y restauración. |
-| `perfiles` | Preferencias transferibles y aplicaciones requeridas. |
-| `entregas` | APK firmados locales y manifiesto de integridad. Los binarios se distribuyen aparte de Git. |
-| `pruebas` | Pruebas con ADB simulado y suites de emulador, que exigen un destino explícito. |
-| `docs` | Guías, limitaciones y resultados. |
-| `privado` | Firma, respaldo de firma, auditorías, identidades y preferencias personales. Excluido de Git. |
-| `.local` | SDK, compilaciones y resultados temporales. Excluido de Git. |
+| **Inicio organizado** | Mostrar, ocultar y ordenar apps. Añadir la primera aunque no haya tarjetas visibles. |
+| **Panel sobre las aplicaciones** | Home abre apps y acciones sin abandonar el video durante las tareas que no lo interrumpen. |
+| **Control con flechas** | Filas circulares independientes, foco visible y edición de apps con OK sostenido. |
+| **Hora y ajustes rápidos** | Reloj y fecha opcionales, volumen, conexiones y acceso a Ajustes de Android. |
+| **Fondos a tu gusto** | Foto fija, presentación y hasta 12 paisajes diarios de Wikimedia. |
+| **Fotos desde el celular** | QR temporal en la misma red, copia optimizada en el TV y biblioteca con miniaturas y borrado. |
+| **Tu control, tus acciones** | Etiquetas editables, abrir/reabrir apps y destinos reutilizables en teclas compatibles. |
+| **Arranque y despertar** | Abrir la app y el destino configurados cuando Android informa esos eventos. |
+| **Mantenimiento y recuperación** | Diagnóstico de capacidades, temporizador de suspensión y respaldo de ajustes antes de instalar. |
 
-Lee [instalación y recuperación](docs/INSTALACION.md), [navegación del panel](docs/PANEL-SUPERPUESTO.md), [compilación](docs/COMPILACION.md), [compatibilidad](docs/COMPATIBILIDAD.md) y [consolidación](docs/CONSOLIDACION.md).
+El diseño conserva cachés acotadas, trabajo pesado fuera de la interfaz y actualizaciones por eventos. No utiliza fondos de video ni transiciones de imágenes. [Conoce su arquitectura](docs/ARQUITECTURA.md).
 
-El archivo `.local/Z6-Panel-0.20.1-portable.zip` es una entrega lista para trasladar: incluye código, asistentes, instrucciones de réplica y APK firmados, sin firma privada ni datos del equipo original. Se regenera con `herramientas/empaquetar.ps1`. No contiene el SDK; ADB se prepara con el comando indicado al principio.
+## Mira cómo se usa
 
-El emulador configurado y su recuperación se describen en [Android TV 12](docs/EMULADOR-TV12.md). Para otro emulador: `.\z6.ps1 instalar -Dispositivo emulator-5554 -SoloPanel`, sustituyendo el serial real.
+| Panel sobre una app | Ajustes disponibles |
+|---|---|
+| ![Panel inferior y reloj sobre una app de demostración](docs/capturas/panel.png) | ![Menú de Ajustes con sus ocho apartados](docs/capturas/ajustes.png) |
+| **Fondos y vista previa** | **Mis fotos** |
+| ![Fondos con cuatro modos y vista previa](docs/capturas/fondos.png) | ![Biblioteca de fotos con miniaturas](docs/capturas/biblioteca.png) |
+| **Los paisajes de hoy** | **Mi control y arranque** |
+| ![Selección de paisajes diarios con sus estados](docs/capturas/paisajes.png) | ![Acciones independientes para botones del control](docs/capturas/control.png) |
 
-Consulta [Aplicaciones y fondos](docs/FONDOS.md) para enviar fotos desde el celular, usar TV/USB y entender la resolución del fondo. El fondo original sigue siendo el predeterminado; las fotos y sus sesiones no se distribuyen.
+[Ver las ocho capturas y sus explicaciones](docs/CAPTURAS.md).
 
-## Comprobaciones
+## Antes de instalar
 
-`powershell -File .\pruebas\verificar.ps1` ejecuta pruebas de instalación, repetición, recuperación e identidades con un ADB falso. Las pruebas físicas se realizan según [la lista de aceptación](docs/PRUEBAS-FISICAS.md).
+- **Android 10/API 29 o Android TV 12/API 31.** El asistente bloquea otras API hasta su adaptación y validación.
+- **PC con Windows y PowerShell 5.1 o posterior**, conexión ADB autorizada y un control para completar las pruebas.
+- La instalación usa el APK firmado: **no necesita Android Studio, Java ni la clave privada**.
+- Apps externas, sus APK, cuentas y licencias se proporcionan por separado.
+
+La marca del TV Box no basta para determinar compatibilidad. Home, teclas especiales, suspensión y auxiliar dependen del firmware. La evidencia del TV físico Android 10 corresponde a versiones anteriores; las pruebas nuevas de 0.20.2 se registran por separado en [el informe de la entrega](docs/VERIFICACION-0.20.2.md). [Consulta la matriz completa](docs/COMPATIBILIDAD.md).
+
+## Instalación rápida
+
+1. Descarga **`Inicio-y-Panel-TV-0.20.2-portable.zip`** desde [Releases](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest) y extráelo. Contiene código, guías y los dos APK firmados. El ZIP automático «Source code» de GitHub no contiene los APK.
+2. Activa las opciones de desarrollador y la depuración compatibles con tu TV Box. Conecta y autoriza el PC; utiliza la IP/puerto o serial real del destino.
+3. Abre PowerShell en la carpeta extraída. Prepara ADB y revisa el destino:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\herramientas\preparar-herramientas.ps1 -SoloAdb
+powershell -NoProfile -ExecutionPolicy Bypass -File .\z6.ps1 instalar -Dispositivo IP:PUERTO -Simular
+powershell -NoProfile -ExecutionPolicy Bypass -File .\z6.ps1 diagnosticar -Dispositivo IP:PUERTO
+```
+
+4. Instala el panel. `-SoloPanel` permite añadir después las aplicaciones externas:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\z6.ps1 instalar -Dispositivo IP:PUERTO -Perfil replica -SoloPanel
+```
+
+5. Completa las autorizaciones que muestre Android. En Ajustes, organiza tus apps, elige el fondo y configura **Aplicaciones → Mi control y arranque**. Comprueba el resultado con tu control.
+
+El asistente conserva un respaldo por dispositivo y verifica Inicio y Panel TV como HOME antes de deshabilitar reversiblemente el inicio anterior. Configurar botones y destinos requiere pasos adicionales en el TV. [Guía completa de instalación y recuperación](docs/INSTALACION.md).
+
+## Personaliza tu TV
+
+- **Panel e inicio:** reloj superior, formato de hora, saludo y aspecto.
+- **Fondos del inicio:** foto, presentación, paisajes, recepción del celular y TV/USB. La resolución se adapta al área real de Inicio y a la memoria; la salida HDMI no determina por sí sola la resolución de la interfaz.
+- **Mi control y arranque:** identifica una tecla, ponle nombre y elige su acción. Abrir o reabrir una app no requiere seleccionar un canal.
+- **Destinos guardados:** enseña un recorrido navegando dentro de la app, pruébalo y guárdalo. Después reutilízalo en botones y arranque/despertar.
+
+[Fondos y fotos](docs/FONDOS.md) · [Navegación del panel](docs/PANEL-SUPERPUESTO.md) · [Botones y destinos](docs/DESTINOS-Y-BOTONES.md).
+
+## Replicar el entorno con una IA
+
+Entrega a tu agente el [prompt único](docs/PROMPT-REPLICA.md), la [guía de réplica](docs/REPLICAR-ENTORNO.md) y los [14 requisitos obligatorios](docs/CONTRATO-REPLICA.md). Las instrucciones exigen completar y demostrar cada requisito: instalar el APK o documentar una limitación no equivale a una réplica terminada.
+
+Los valores propios del nuevo equipo se configuran allí. No se distribuyen cuentas, autorizaciones, fotos ni recorridos privados. Una restricción demostrada que impida una función deja la réplica incompleta; no se promete identidad en cualquier hardware.
+
+## Si algo no funciona
+
+| Situación | Qué revisar |
+|---|---|
+| Home no abre el panel | Servicio principal de Accesibilidad, HOME seleccionado y política del firmware. |
+| Un botón no se detecta | Identidad que entrega Android y preparación de teclas compatibles; los logos del control no identifican el código. |
+| Una app no aparece | Debe estar instalada y tener una actividad de inicio; comprueba también apps ocultas. |
+| El destino no quedó guardado | Completa la prueba y confirma **Guardar destino**; revisa el borrador pendiente. |
+| El celular no abre el QR | Misma red que el TV, pantalla de recepción abierta y QR actual. La red privada del emulador no es accesible directamente desde el celular. |
+| Falta una función avanzada | **Equipo → Diagnóstico y permisos** muestra la capacidad y autorización pendientes. |
+
+[Permisos, auxiliar y privacidad](docs/PERMISOS-Y-PRIVACIDAD.md). La autorización del PC para instalar no significa que deba reactivarse la depuración por cada uso de un botón.
+
+## Recuperar la configuración
+
+```powershell
+.\z6.ps1 restaurar -Dispositivo IP:PUERTO
+# Para instalar además el APK de recuperación:
+.\z6.ps1 restaurar -Dispositivo IP:PUERTO -RecuperarVersion
+```
+
+Usa solo el respaldo de ese equipo. La recuperación **0.20.1/c63** conserva el formato de fotos y destinos y vuelve a la marca anterior Z6 Panel. Después requiere **c64 o superior** para actualizar. No desinstales para forzar una versión anterior: podrías perder datos. [Detalles de recuperación](docs/INSTALACION.md).
+
+## Para desarrolladores
+
+Código Java con vistas nativas, herramientas Windows y pruebas con emuladores y ADB simulado. Los nombres técnicos `local.z6panel`, `z6.ps1` y `Pictures/Z6` se conservan para mantener compatibilidad; **Inicio y Panel TV es la continuación del mismo proyecto**.
+
+[Arquitectura](docs/ARQUITECTURA.md) · [Compilación](docs/COMPILACION.md) · [Pruebas](pruebas/README.md) · [Versiones](docs/VERSIONES.md) · [Contribuir](CONTRIBUTING.md).
+
+## Licencia y créditos
+
+Código propio y documentación: **Copyright © 2026 Antoni**, bajo [GPL-3.0-only](LICENSE). Los componentes de terceros conservan sus licencias; la biblioteca QR Nayuki utiliza MIT. Las imágenes de Wikimedia tienen sus propios autores y licencias. [Avisos y créditos](docs/TERCEROS.md).
+
+Las descargas oficiales usan la firma original. Las claves, SDK, respaldos y datos personales quedan fuera del repositorio y del portable.

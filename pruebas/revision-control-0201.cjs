@@ -49,5 +49,6 @@ async function recordLibrary(){
   check(b().actions.find(a=>a.id==='qa-open').target.channel.toLowerCase()==='mis listas'&&d().destinations.some(e=>e.target.package===other),'optional non-TV section records tests and saves successfully');
   await enter();check(ui().visible&&ui().page==='main'&&ui().dialogs===0,'configuration remains accessible after saving generic destination');
  }catch(error){q.fs.writeFileSync(q.path.join(q.root,'.local/revision-control-failure.json'),JSON.stringify({state:p(),ui:ui(),destinations:d()},null,2));throw error;}finally{c({op:'cancel'});q.command(s,'shell','settings','put','secure','enabled_accessibility_services',services);q.panel(s,'tv_restore',original);q.panel(s,'tv_buttons_restore',buttons);}
- q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-revision-control-0.20.1-api31.json'),JSON.stringify({api:31,emulator:true,actualVideo:false,checks},null,2)+'\n');
+ const version=q.command(s,'shell','dumpsys','package','local.z6panel').match(/versionName=(\d+\.\d+\.\d+)/)[1];
+ q.fs.writeFileSync(q.path.join(q.root,'pruebas/resultados-revision-control-'+version+'-api31.json'),JSON.stringify({api:31,emulator:true,actualVideo:false,checks},null,2)+'\n');
 })().catch(e=>{console.error(e.message);process.exitCode=1});

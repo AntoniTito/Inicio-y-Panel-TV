@@ -152,7 +152,7 @@ public class HomeActivity extends Activity {
    list.addView(row,rowParams);
   }
   if(choices.isEmpty())hint.setText("No hay apps para añadir. Instala una aplicación y vuelve aquí.");
-  Button install=new Button(this);install.setText("Instalar aplicaciones");install.setOnClickListener(v->{dialog.dismiss();if(PanelService.active!=null)openPanel("install");else showNotice("Activa Z6 en Accesibilidad para abrir Instalación");});panel.addView(install);
+  Button install=new Button(this);install.setText("Instalar aplicaciones");install.setOnClickListener(v->{dialog.dismiss();if(PanelService.active!=null)openPanel("install");else showNotice("Activa Inicio y Panel TV en Accesibilidad para abrir Instalación");});panel.addView(install);
   panel.addView(scroll,new LinearLayout.LayoutParams(-1,dp(250)));
   TextView cancel=text("ATRÁS · CANCELAR",11);
   cancel.setGravity(Gravity.CENTER);

@@ -1,0 +1,55 @@
+{
+  "version": "0.20.2",
+  "code": 62,
+  "api": 31,
+  "emulator": true,
+  "resolution": [
+    1280,
+    720
+  ],
+  "physicalDeviceContacted": false,
+  "syntheticPersonalImages": 3,
+  "realWikimediaThumbnails": 6,
+  "images": [
+    {
+      "file": "docs/capturas/paisajes.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/inicio.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/panel.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/ajustes.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/fondos.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/biblioteca.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/control.png",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "docs/capturas/destinos.png",
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}

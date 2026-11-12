@@ -1,0 +1,41 @@
+name: Comunicar un problema
+description: Describe un fallo con los datos necesarios para reproducirlo.
+title: "[Error]: "
+body:
+  - type: markdown
+    attributes:
+      value: "No adjuntes contraseñas, sesiones QR, cuentas, fotos personales ni respaldos completos."
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Inicio y Panel TV
+      placeholder: "Ejemplo: 0.20.2 / código 62"
+    validations:
+      required: true
+  - type: input
+    id: equipo
+    attributes:
+      label: Modelo, firmware y Android/API
+    validations:
+      required: true
+  - type: dropdown
+    id: entorno
+    attributes:
+      label: Entorno
+      options:
+        - TV Box físico
+        - Emulador Android TV
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos, resultado esperado y resultado observado
+      description: Indica también el control y la tecla si el problema es de navegación.
+    validations:
+      required: true
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Capturas o registros revisados
+      description: Comparte solo la información necesaria, sin datos individuales.

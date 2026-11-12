@@ -16,7 +16,7 @@ final class RemoteActions {
   Action copy(){try{return parse(json());}catch(JSONException e){throw new IllegalStateException(e);}}
   String label(){return !label.isEmpty()?label:target.hardware()?"Función "+target.remoteCode:target.key!=0?KeyEvent.keyCodeToString(target.key):target.scan!=0?"Scan "+target.scan:"Botón sin tecla";}
   String keyDescription(){return target.hardware()?"Función del control: "+target.remoteCode:target.hasBinding()?"Android: "+KeyEvent.keyCodeToString(target.key)+" ("+target.key+") · Scan: "+target.scan:"Sin tecla asignada";}
-  String description(){return kind.equals("home")?"Inicio de Z6":kind.equals("settings")?"Ajustes de Android":kind.equals("mute")?"Silenciar / activar sonido":(kind.equals("open")?"Abrir ":"Reabrir ")+target.name+(kind.equals("route")?" · "+(target.verified?target.channel:"Elegir destino"):"");}
+  String description(){return kind.equals("home")?"Inicio":kind.equals("settings")?"Ajustes de Android":kind.equals("mute")?"Silenciar / activar sonido":(kind.equals("open")?"Abrir ":"Reabrir ")+target.name+(kind.equals("route")?" · "+(target.verified?target.channel:"Elegir destino"):"");}
  }
  private static List<Action> cache;
  static synchronized List<Action> get(Context c){

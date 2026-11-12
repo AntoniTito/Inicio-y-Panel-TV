@@ -1,11 +1,33 @@
-# Compilación independiente
+# Compilar Inicio y Panel TV
 
-`z6.ps1 compilar` usa `app`, las herramientas de `.local/sdk` y la firma privada. La salida predeterminada es `.local/build/Z6-Panel-recompilado.apk`; no reemplaza los APK verificados de `entregas`.
+Para instalar el entorno usa los APK firmados de [Releases](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest). Compilar es un flujo de desarrollo, no un requisito de instalación.
 
-Requisitos: JDK 21, Android Build Tools 35.0.0, plataforma Android 35 revisión 2 y Platform Tools 37.0.1. Las tres herramientas Android están copiadas y verificadas en la consolidación. En otra descarga, `herramientas/preparar-herramientas.ps1` las obtiene de Google y valida el SHA-256 fijado en `dependencias.json`. Los SDK no forman parte de Git.
+## Requisitos
 
-Configura `JAVA_HOME` al JDK 21 o utiliza `-Jdk RUTA\bin`. Java y Git son programas instalados en el PC y pueden permanecer en sus ubicaciones habituales; el código no depende de las carpetas fechadas eliminadas.
+Windows, JDK 21, Android Build Tools 35.0.0, plataforma Android 35 revisión 2 y Platform Tools 37.0.1. `herramientas/preparar-herramientas.ps1` descarga las herramientas Android desde Google y comprueba los hashes fijados. El SDK se guarda en `.local/sdk`, fuera de Git.
 
-La clave está en `privado/firma/original.p12`, con una copia en `privado/respaldo-firma/original.p12`. La contraseña local está protegida con DPAPI de Windows: solo la cuenta/máquina que la protegió puede recuperarla. En otro PC proporciona la contraseña mediante solicitud segura o la variable temporal `Z6_STORE_PASSWORD`, y transfiere la clave por separado. No se genera otra firma automáticamente.
+Configura `JAVA_HOME` al JDK 21 o proporciona `-Jdk RUTA\bin`. El código y los scripts resuelven sus rutas desde el proyecto, sin depender de carpetas fechadas o rutas personales.
 
-La compilación restaura las variables de entorno al terminar y verifica firma y hash. La fuente vigente produce 0.20.1/código 60. La equivalencia con 0.10.4 se comprobó durante la consolidación histórica, antes de adaptar Android 12; el DEX actual contiene los cambios posteriores. La base histórica se conserva en `privado/historico/codigo-0.10.4.zip`. La recuperación vigente conserva 0.20.0 con el arreglo singleTask y código 61, con la misma firma para API 29/31; se prepara mediante `herramientas/recuperacion-0201.ps1`. Tras instalarla se necesita c62 o superior. La biblioteca Nayuki integrada se documenta en TERCEROS.md. Para replicar el entorno, usar el APK firmado y [la guía de instalación completa](REPLICAR-ENTORNO.md), sin recompilar.
+## Compilación para desarrollo
+
+El código propio está disponible bajo GPL-3.0-only. La clave oficial no se distribuye; puedes usar tu propia clave para compilar y estudiar una variante.
+
+```powershell
+New-Item -ItemType Directory -Force .local | Out-Null
+& "$env:JAVA_HOME\bin\keytool.exe" -genkeypair -keystore .local\desarrollo.p12 -storetype PKCS12 -alias desarrollo -keyalg RSA -keysize 2048 -validity 3650
+.\herramientas\compilar.ps1 -Keystore .local\desarrollo.p12 -Salida .local\build\Inicio-y-Panel-TV-desarrollo.apk
+```
+
+Introduce la contraseña de esa clave cuando se solicite. El compilador acepta también la variable temporal `Z6_STORE_PASSWORD`; no la escribas en un archivo versionado ni la compartas. Restaura sus variables de entorno al terminar. No genera otra firma automáticamente.
+
+**Una firma propia no actualiza una instalación oficial firmada por el autor.** Utiliza un emulador o destino de desarrollo separado; no desinstales una app con datos para sortear la firma. Si publicas una variante, identifica su procedencia y firma y conserva las obligaciones de licencia y los avisos de terceros.
+
+## Entregas oficiales
+
+El propietario usa la clave original, conservada privadamente. Sin `-Keystore`, el compilador busca `privado/firma/original.p12`; su contraseña local DPAPI solo se reutiliza para esa clave. La clave y su respaldo nunca se publican ni se incorporan a GitHub Actions.
+
+La fuente actual produce **0.20.2/c62**, paquete `local.z6panel`. La salida predeterminada es `.local/build/Inicio-y-Panel-TV-recompilado.apk`; no puede sobrescribir artefactos verificados de `entregas`. El compilador verifica el certificado y muestra el hash.
+
+La recuperación **0.20.1/c63** se prepara con `herramientas/recuperacion-0202.ps1`, desde la etiqueta inmutable `v0.20.1` y la misma firma. Conserva los formatos de datos y la marca anterior Z6 Panel; tras instalarla se requiere c64 o superior. El cambio de marca no altera el protocolo del auxiliar.
+
+Después de revisar manifiesto y artefactos, `herramientas/empaquetar.ps1` genera el portable con código, capturas, guías, licencia y dos APK. No incluye SDK, claves o datos individuales. Consulta [TERCEROS.md](TERCEROS.md), [VERSIONES.md](VERSIONES.md) y [CONTRIBUTING.md](../CONTRIBUTING.md).

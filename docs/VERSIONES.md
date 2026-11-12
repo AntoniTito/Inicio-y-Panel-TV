@@ -1,6 +1,6 @@
-# Versiones del proyecto
+# Versiones de Inicio y Panel TV
 
-El historial Git conserva sus entregas completas del proyecto. Seleccionar una version cambia el codigo, el instalador, los perfiles y la documentacion correspondientes; no modifica por si solo un TV Box o el emulador.
+El proyecto se llamó Z6 Panel hasta 0.20.1. Inicio y Panel TV conserva el mismo paquete, firma y datos. El historial Git conserva sus entregas completas: seleccionar una versión cambia el código, perfiles y documentación, no modifica por sí solo un TV Box o emulador.
 
 | Etiqueta fija | Rama | Contenido y evidencia |
 |---|---|---|
@@ -23,9 +23,10 @@ El historial Git conserva sus entregas completas del proyecto. Seleccionar una v
 | `v0.18.1` | Etiqueta histórica | Recuperacion del auxiliar por eventos sin reiniciar depuracion, estado real del boton y reintentos limitados. Codigo 54; recuperacion 0.18.0/codigo 55. |
 | `v0.19.0` | Etiqueta histórica | Botones independientes, destino en la app, arranque sin doble apertura y selector por capacidades reales. APK c56; recuperación 0.18.1/c57. Evidencia y límites en MI-CONTROL.md y VERIFICACION-0.19.0.md. |
 | `0.20.0` | Commit histórico `96c622f` | Guardado confirmado por el usuario. El regreso a Mi control y la gestión se corrigen en 0.20.1; no se recomienda esta interfaz anterior. APK c58 y recuperación histórica 0.19.0/c59. |
-| `v0.20.1` | `main` | Regreso a Mi control, gestor visible de rutas, borrado con usos y destinos genéricos opcionales. APK c60 instalado y comprobado mediante ADB en el TV API 29; pruebas de emulador API 31 separadas. Recuperación 0.20.0/c61 con arreglo singleTask. Ver VERIFICACION-0.20.1.md. |
+| `v0.20.1` | Etiqueta histórica | Regreso a Mi control, gestor visible de rutas, borrado con usos y destinos genéricos opcionales. APK c60 instalado y comprobado en el TV API 29; pruebas de emulador API 31 separadas. Recuperación histórica 0.20.0/c61. Ver VERIFICACION-0.20.1.md. |
+| `v0.20.2` | `main` | Inicio y Panel TV: cambio de marca, documentación pública y capturas de demostración. APK c62; recuperación 0.20.1/c63. Conserva funciones, componentes, firma y datos. Evidencia en VERIFICACION-0.20.2.md. |
 
-Las etiquetas identifican entregas y no deben moverse ni sobrescribirse. Las ramas permiten continuar el trabajo de cada linea. `main` queda en la entrega más reciente; el estado y las pruebas físicas pendientes están en VERIFICACION-0.20.1.md. La recuperación vigente conserva la interfaz 0.20.0 con el arreglo singleTask y código 61, con la firma original para API 29 y 31. Tras instalarla se necesita código 62 o superior para actualizar. Las recuperaciones anteriores y etiquetas históricas se conservan sin sobrescribir.
+Las etiquetas son inmutables. `main` queda en la entrega más reciente; su evidencia y pendientes físicos están en VERIFICACION-0.20.2.md. La recuperación vigente conserva 0.20.1 con código 63 y la firma original para API 29/31; después requiere código 64 o superior. Las recuperaciones y etiquetas históricas se conservan sin sobrescribir.
 
 ## Elegir una base
 
@@ -55,6 +56,6 @@ El historial comienza con una instantanea verificada de la consolidacion 0.10.4.
 
 Los proximos cambios se registran con commits nuevos. Si cambia el APK, aumenta su version y codigo, conserva la misma firma y prepara su recuperacion antes de etiquetar otra entrega. Las pruebas necesarias y los limites de compatibilidad deben quedar en esa version.
 
-El historial es local y no hay un remoto configurado. Publicarlo requiere elegir un repositorio remoto; no se publico ni se subieron datos a servicios externos durante este trabajo.
+El repositorio público es [AntoniTito/Inicio-y-Panel-TV](https://github.com/AntoniTito/Inicio-y-Panel-TV). Las etiquetas históricas conservan sus nombres, código y autoría originales; los APK están en Releases, fuera del historial de código. No se incluyen respaldos, fotos personales ni claves.
 
 0.12.1 conserva los controles y la proporción de las fotos. Su recuperación API 29 conserva 0.10.4; la de API 31 vuelve a 0.12.0. Después de instalar una recuperación código 29 se necesita código 30 o superior para actualizar. Las recuperaciones código 27 corresponden a la entrega anterior.

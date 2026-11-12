@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "name": "replica",
-  "reference": "0.20.1",
+  "reference": "0.20.2",
   "validatedApi": [
     29,
     31
   ],
-  "description": "Apariencia de referencia 0.20.1 para Android 10/12; apps, control, destinos y fondos se verifican en el equipo de destino.",
+  "description": "Inicio y Panel TV para Android 10/12; apariencia de referencia conservada. Apps, control, destinos y fondos se verifican en cada equipo.",
   "panel": {
     "compact": {
       "type": "boolean",
