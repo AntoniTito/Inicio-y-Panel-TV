@@ -2,7 +2,7 @@
 
 Registrar modelo, firmware, Android, resolución y versión del panel. No copiar credenciales en los resultados versionados.
 
-Para una réplica del entorno vigente, completar primero [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md). Guardar el informe con identidades y configuraciones individuales en `privado/dispositivos/`, separado de la evidencia pública.
+Para una réplica del entorno vigente, cumplir [CONTRATO-REPLICA.md](CONTRATO-REPLICA.md) y completar [REPLICAR-ENTORNO.md](REPLICAR-ENTORNO.md). Estas pruebas son obligatorias para aprobar los requisitos correspondientes: ningún pendiente ni limitación documentada equivale a VERIFICADO. Guardar toda la matriz, identidades y configuraciones individuales en `privado/dispositivos/`, separado de la evidencia pública.
 
 - Home abre el panel sobre YouTube y Xuper; video y audio continúan.
 - Flechas, OK, Atrás y pulsación larga funcionan con el control real.
