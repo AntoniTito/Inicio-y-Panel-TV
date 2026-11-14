@@ -10,13 +10,9 @@ Un inicio personalizable y un panel superpuesto para Android TV. Organiza tus ap
 
 **[Descargar el paquete completo](https://github.com/AntoniTito/Inicio-y-Panel-TV/releases/latest) · [Instalar paso a paso](docs/INSTALACION.md) · [Replicar con una IA](docs/PROMPT-REPLICA.md) · [Compatibilidad](docs/COMPATIBILIDAD.md)**
 
-## Antes y después
+![Pantalla de inicio con reloj, fondo y aplicaciones](docs/capturas/inicio.png)
 
-| Antes · inicio de fábrica de Android TV | Después · Inicio y Panel TV |
-|---|---|
-| ![Inicio estándar de Android TV 12 con búsqueda, aplicaciones y recomendaciones](docs/capturas/antes-inicio-fabrica.png) | ![Inicio y Panel TV 0.20.2 con reloj, fondo personalizado y aplicaciones organizadas](docs/capturas/despues-inicio-panel-tv.png) |
-
-*Capturas reales del mismo emulador Android TV 12, a 1280 × 720. El «antes» muestra el launcher incluido en esa imagen de Android TV; el «después», Inicio y Panel TV 0.20.2 con datos de demostración. El inicio de fábrica varía según el fabricante. [Ver el alcance de la comparación](docs/CAPTURAS.md#antes-y-después).*
+*Captura real de 0.20.2 en un emulador Android TV 12, a 1280 × 720, con datos de demostración. Las capturas no representan una certificación de otros dispositivos.*
 
 ## Lo que puedes hacer
 
@@ -44,7 +40,11 @@ El diseño conserva cachés acotadas, trabajo pesado fuera de la interfaz y actu
 | **Los paisajes de hoy** | **Mi control y arranque** |
 | ![Selección de paisajes diarios con sus estados](docs/capturas/paisajes.png) | ![Acciones independientes para botones del control](docs/capturas/control.png) |
 
-[Ver la comparación y todas las capturas con sus explicaciones](docs/CAPTURAS.md).
+[Ver todas las interfaces actuales y sus explicaciones](docs/CAPTURAS.md).
+
+## Interfaces anteriores
+
+El [archivo de capturas anteriores](docs/INTERFACES-ANTERIORES.md) reúne el inicio de fábrica y las interfaces históricas de Biblioteca, Fondos y Mi control y arranque. Cada imagen identifica su etapa y procedencia. Las capturas actuales permanecen en el recorrido principal.
 
 ## Antes de instalar
 

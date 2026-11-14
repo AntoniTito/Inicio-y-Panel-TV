@@ -15,4 +15,8 @@ Los fondos abstractos de Inicio y Panel TV fueron creados por el proyecto para l
 
 ## Inicio estándar de Android TV
 
-`antes-inicio-fabrica.png` es una captura real del launcher de Android TV incluido en la imagen oficial del emulador Android TV 12. Su interfaz, marcas, logotipos y miniaturas de recomendaciones pertenecen a sus respectivos titulares. Se muestran para comparar las interfaces y no quedan relicenciados bajo la GPL del proyecto ni se distribuyen como fondos o recursos del APK.
+`capturas/historico/inicio-fabrica-api31.png` es una captura real del launcher de Android TV incluido en la imagen oficial del emulador Android TV 12. Su interfaz, marcas, logotipos y miniaturas de recomendaciones pertenecen a sus respectivos titulares. Se muestran en el archivo visual del entorno original y no quedan relicenciados bajo la GPL del proyecto ni se distribuyen como fondos o recursos del APK.
+
+## Interfaces históricas de Z6 Panel
+
+Las capturas de Biblioteca 0.13.0, Fondos 0.14.0 y Mi control y arranque 0.19.0 proceden de las pruebas archivadas del proyecto. Los patrones de colores, las imágenes sintéticas y la aplicación de prueba fueron creados para esas comprobaciones. No contienen fotografías personales. La marca Z6 Panel corresponde al nombre anterior del proyecto.
