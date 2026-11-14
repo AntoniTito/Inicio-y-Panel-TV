@@ -46,7 +46,7 @@ Estas son las interfaces nativas del emulador Android TV 12 usado como referenci
 
 El proyecto incorpora el inicio personalizable, el panel sobre las aplicaciones y sus ajustes rápidos. Los ajustes nativos de Android continúan disponibles desde **Ajustes de Android**.
 
-| Panel sobre YouTube FOR | Ajustes superpuestos |
+| Panel sobre YouTube | Ajustes superpuestos |
 |---|---|
 | ![Panel inferior y reloj sobre un video de YouTube FOR en el TV Box real](docs/capturas/panel-youtube-for.png) | ![Menú lateral de Ajustes sobre el video de YouTube FOR en el TV Box real](docs/capturas/ajustes-youtube-for.png) |
 | **Fondos y vista previa** | **Mis fotos** |
