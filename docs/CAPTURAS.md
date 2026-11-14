@@ -1,6 +1,22 @@
 # Recorrido visual
 
-Capturas reales de **Inicio y Panel TV 0.20.2/c62**, obtenidas en un emulador Android TV 12/API 31 separado, a **1280 × 720**. Usan nombres ficticios, aplicaciones de prueba y gráficos de demostración. El auxiliar de la demostración se inició desde ADB autorizado; estas imágenes no prueban recuperación autónoma tras reiniciar. No son fotografías del TV Box original ni pruebas físicas de reproducción o de un control Bluetooth.
+Capturas reales obtenidas en un emulador Android TV 12/API 31 separado, a **1280 × 720**. La interfaz de Inicio y Panel TV corresponde a **0.20.2/c62**, con nombres ficticios, aplicaciones de prueba y gráficos de demostración. La comparación incluye también el inicio estándar de la imagen de Android TV. El auxiliar de la demostración se inició desde ADB autorizado; estas imágenes no prueban recuperación autónoma tras reiniciar. No son fotografías del TV Box original ni pruebas físicas de reproducción o de un control Bluetooth.
+
+## Antes y después
+
+Las dos imágenes siguientes se obtuvieron en la misma sesión del mismo emulador, con igual resolución:
+
+| Antes · inicio de fábrica de Android TV | Después · Inicio y Panel TV 0.20.2 |
+|---|---|
+| ![Launcher estándar de Android TV 12 con búsqueda y recomendaciones](capturas/antes-inicio-fabrica.png) | ![Inicio personalizable con reloj, fondo y tarjetas de aplicaciones](capturas/despues-inicio-panel-tv.png) |
+
+**Antes:** el launcher `com.google.android.tvlauncher`, incluido en la imagen oficial del emulador, abierto temporalmente para esta captura. Muestra su búsqueda, accesos y recomendaciones.
+
+**Después:** el inicio de 0.20.2 con el fondo abstracto propio, reloj, fecha y aplicaciones de demostración. El [panel superpuesto](#panel-superpuesto) y los ajustes se muestran más abajo.
+
+La comparación ilustra el cambio de interfaz en este entorno. El inicio de fábrica del TV Box original o de otra marca puede tener un aspecto distinto; estas imágenes no documentan un cambio de firmware ni una prueba física. Las recomendaciones visibles en el inicio estándar pertenecen a sus proveedores y no forman parte de Inicio y Panel TV.
+
+Para obtenerlas se reutilizó el emulador de demostración existente en una sesión de solo lectura y sin guardar snapshots. Se conservó su launcher configurado y se cerró la sesión al terminar. No se descargó otro emulador ni se modificó el TV Box físico.
 
 ## Inicio
 
@@ -54,4 +70,4 @@ Una sección probada puede reutilizarse en botones y arranque/despertar. Las acc
 
 Los tres gráficos abstractos de la biblioteca fueron generados para esta demostración por el proyecto, sin usar fotos personales. Las aplicaciones de demostración proceden de la fixture incluida en `pruebas/fixture-tv`. Las capturas conservan la interfaz real; no son maquetas generadas.
 
-Los créditos de las fotografías visibles del catálogo se registran en [CRÉDITOS DE PAISAJES](CREDITOS-CAPTURAS.md): autor, licencia y origen. Se muestran como miniaturas o encuadres de la interfaz, sin incorporar una colección al APK.
+Los créditos de las fotografías visibles del catálogo y la atribución de la interfaz del inicio estándar se registran en [CRÉDITOS DE LAS CAPTURAS](CREDITOS-CAPTURAS.md). Los paisajes se muestran como miniaturas o encuadres de la interfaz, sin incorporar una colección al APK.

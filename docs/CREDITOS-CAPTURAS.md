@@ -11,4 +11,8 @@ Las seis miniaturas de `paisajes.png` proceden del catálogo real de Wikimedia c
 | [360° Panorama auf der Roggalspitze 2673 m.jpg](https://commons.wikimedia.org/wiki/File:360%C2%B0_Panorama_auf_der_Roggalspitze_2673_m.jpg) | böhringer friedrich | [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5) |
 | [360° Panorama mit hl Maria und Gh Fetz auf dem Bödele.jpg](https://commons.wikimedia.org/wiki/File:360%C2%B0_Panorama_mit_hl_Maria_und_Gh_Fetz_auf_dem_B%C3%B6dele.jpg) | Feel free to use my photos, but please mention me as the author and if you want send me a message. or (rufre@lenz-nenning.at) | [CC BY-SA 3.0 at](https://creativecommons.org/licenses/by-sa/3.0/at/deed.en) |
 
-Los otros gráficos de las capturas fueron creados por el proyecto para la demostración. No se utilizaron fotografías personales.
+Los fondos abstractos de Inicio y Panel TV fueron creados por el proyecto para la demostración. No se utilizaron fotografías personales.
+
+## Inicio estándar de Android TV
+
+`antes-inicio-fabrica.png` es una captura real del launcher de Android TV incluido en la imagen oficial del emulador Android TV 12. Su interfaz, marcas, logotipos y miniaturas de recomendaciones pertenecen a sus respectivos titulares. Se muestran para comparar las interfaces y no quedan relicenciados bajo la GPL del proyecto ni se distribuyen como fondos o recursos del APK.
