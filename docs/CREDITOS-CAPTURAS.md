@@ -13,9 +13,9 @@ Las seis miniaturas de `paisajes.png` proceden del catálogo real de Wikimedia c
 
 Los fondos abstractos de Inicio y Panel TV fueron creados por el proyecto para la demostración. No se utilizaron fotografías personales.
 
-## Inicio estándar de Android TV
+## Interfaces de Android TV de fábrica
 
-`capturas/historico/inicio-fabrica-api31.png` es una captura real del launcher de Android TV incluido en la imagen oficial del emulador Android TV 12. Su interfaz, marcas, logotipos y miniaturas de recomendaciones pertenecen a sus respectivos titulares. Se muestran en el archivo visual del entorno original y no quedan relicenciados bajo la GPL del proyecto ni se distribuyen como fondos o recursos del APK.
+Las tres imágenes de `capturas/fabrica/` muestran el launcher, su lista de aplicaciones y los ajustes nativos incluidos en la imagen oficial del emulador Android TV 12. Su interfaz, marcas, logotipos y miniaturas de recomendaciones pertenecen a sus respectivos titulares. Se muestran para documentar el entorno original y no quedan relicenciados bajo la GPL del proyecto ni se distribuyen como fondos o recursos del APK.
 
 ## Interfaces históricas de Z6 Panel
 

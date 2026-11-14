@@ -2,7 +2,7 @@
 
 Capturas reales de las **interfaces actuales de Inicio y Panel TV 0.20.2/c62**, obtenidas en un emulador Android TV 12/API 31 separado, a **1280 × 720**. Usan nombres ficticios, aplicaciones de prueba y gráficos de demostración. El auxiliar de la demostración se inició desde ADB autorizado; estas imágenes no prueban recuperación autónoma tras reiniciar. No son fotografías del TV Box original ni pruebas físicas de reproducción o de un control Bluetooth.
 
-Las pantallas de etapas previas se consultan en [Interfaces anteriores](INTERFACES-ANTERIORES.md).
+Las interfaces nativas previas al uso del proyecto se consultan en [Android TV de fábrica](ANDROID-TV-DE-FABRICA.md). El archivo del desarrollo está separado en [Evolución del proyecto](EVOLUCION-DEL-PROYECTO.md).
 
 ## Inicio
 

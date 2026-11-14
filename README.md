@@ -30,7 +30,21 @@ Un inicio personalizable y un panel superpuesto para Android TV. Organiza tus ap
 
 El diseño conserva cachés acotadas, trabajo pesado fuera de la interfaz y actualizaciones por eventos. No utiliza fondos de video ni transiciones de imágenes. [Conoce su arquitectura](docs/ARQUITECTURA.md).
 
-## Mira cómo se usa
+## Antes: Android TV de fábrica
+
+Estas son las interfaces nativas del emulador Android TV 12 usado como referencia: su inicio, la lista de aplicaciones y los ajustes de Android.
+
+![Inicio de fábrica de Android TV 12 con búsqueda, aplicaciones y recomendaciones](docs/capturas/fabrica/inicio.png)
+
+| Aplicaciones de fábrica | Ajustes nativos de Android TV |
+|---|---|
+| ![Lista de aplicaciones del launcher de fábrica, sin el panel ni las apps de demostración](docs/capturas/fabrica/aplicaciones.png) | ![Ajustes nativos de Android TV con sus categorías de configuración](docs/capturas/fabrica/ajustes.png) |
+
+*Capturas reales de un emulador Android TV 12/API 31, a 1280 × 720. El inicio y las apps de fábrica varían según el fabricante. [Ver procedencia y detalles](docs/ANDROID-TV-DE-FABRICA.md).*
+
+## Después: con Inicio y Panel TV
+
+El proyecto incorpora el inicio personalizable, el panel sobre las aplicaciones y sus ajustes rápidos. Los ajustes nativos de Android continúan disponibles desde **Ajustes de Android**.
 
 | Panel sobre una app | Ajustes disponibles |
 |---|---|
@@ -41,10 +55,6 @@ El diseño conserva cachés acotadas, trabajo pesado fuera de la interfaz y actu
 | ![Selección de paisajes diarios con sus estados](docs/capturas/paisajes.png) | ![Acciones independientes para botones del control](docs/capturas/control.png) |
 
 [Ver todas las interfaces actuales y sus explicaciones](docs/CAPTURAS.md).
-
-## Interfaces anteriores
-
-El [archivo de capturas anteriores](docs/INTERFACES-ANTERIORES.md) reúne el inicio de fábrica y las interfaces históricas de Biblioteca, Fondos y Mi control y arranque. Cada imagen identifica su etapa y procedencia. Las capturas actuales permanecen en el recorrido principal.
 
 ## Antes de instalar
 

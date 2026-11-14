@@ -2,6 +2,8 @@
 
 El proyecto se llamó Z6 Panel hasta 0.20.1. Inicio y Panel TV conserva el mismo paquete, firma y datos. El historial Git conserva sus entregas completas: seleccionar una versión cambia el código, perfiles y documentación, no modifica por sí solo un TV Box o emulador.
 
+El [archivo visual de la evolución del proyecto](EVOLUCION-DEL-PROYECTO.md) conserva capturas de interfaces anteriores de Z6 Panel, identificadas por versión. Las interfaces del sistema original están documentadas aparte en [Android TV de fábrica](ANDROID-TV-DE-FABRICA.md).
+
 | Etiqueta fija | Rama | Contenido y evidencia |
 |---|---|---|
 | `v0.10.4` | `android10` | Base anterior, APK 0.10.4/codigo 22. Comportamiento comprobado en el TV Box Android 10 original. Los 21 archivos de app coinciden byte a byte con el respaldo previo a Android 12. |
