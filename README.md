@@ -46,13 +46,15 @@ Estas son las interfaces nativas del emulador Android TV 12 usado como referenci
 
 El proyecto incorpora el inicio personalizable, el panel sobre las aplicaciones y sus ajustes rápidos. Los ajustes nativos de Android continúan disponibles desde **Ajustes de Android**.
 
-| Panel sobre una app | Ajustes disponibles |
+| Panel sobre YouTube FOR | Ajustes superpuestos |
 |---|---|
-| ![Panel inferior y reloj sobre una app de demostración](docs/capturas/panel.png) | ![Menú de Ajustes con sus ocho apartados](docs/capturas/ajustes.png) |
+| ![Panel inferior y reloj sobre un video de YouTube FOR en el TV Box real](docs/capturas/panel-youtube-for.png) | ![Menú lateral de Ajustes sobre el video de YouTube FOR en el TV Box real](docs/capturas/ajustes-youtube-for.png) |
 | **Fondos y vista previa** | **Mis fotos** |
 | ![Fondos con cuatro modos y vista previa](docs/capturas/fondos.png) | ![Biblioteca de fotos con miniaturas](docs/capturas/biblioteca.png) |
 | **Los paisajes de hoy** | **Mi control y arranque** |
 | ![Selección de paisajes diarios con sus estados](docs/capturas/paisajes.png) | ![Acciones independientes para botones del control](docs/capturas/control.png) |
+
+*Panel y Ajustes: capturas del TV Box real sobre YouTube FOR. Video: Big Buck Bunny, © 2008 Blender Foundation. [Procedencia](docs/CAPTURAS.md#panel-superpuesto) · [Créditos y licencia](docs/CREDITOS-CAPTURAS.md#video-de-las-capturas-superpuestas).*
 
 [Ver todas las interfaces actuales y sus explicaciones](docs/CAPTURAS.md).
 

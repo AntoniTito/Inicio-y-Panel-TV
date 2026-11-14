@@ -1,4 +1,14 @@
-# Créditos de las fotografías de la captura
+# Créditos de las capturas
+
+## Video de las capturas superpuestas
+
+`panel-youtube-for.png` y `ajustes-youtube-for.png` se obtuvieron directamente del TV Box original, con el panel y los ajustes sobre YouTube FOR. El usuario dejó reproduciéndose **Big Buck Bunny**; el reproductor identificaba la publicación como «Cortometraje de animación Big Buck Bunny - 4K, larga duración», del canal AnimalsReview.
+
+Crédito de la película original: **(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org**. El proyecto Peach publica la película bajo [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/), según su [información oficial de licencia y atribución](https://peach.blender.org/about/).
+
+Las capturas documentan la interfaz sobre el video elegido por el usuario. La película, las marcas y la aplicación externa conservan sus propios derechos; no se relicencian bajo la GPL del código ni se incorporan al APK del panel.
+
+## Paisajes del catálogo
 
 Las seis miniaturas de `paisajes.png` proceden del catálogo real de Wikimedia consultado en la demostración. Conservan sus licencias; se muestran reducidas y encuadradas por la interfaz. Estas fotografías no quedan relicenciadas bajo la GPL del código.
 
